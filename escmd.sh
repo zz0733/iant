@@ -1,4 +1,4 @@
- curl -XPOST 'http://127.0.0.1:9200/script/table/_search?pretty' -d '
+ curl -XPOST 'http://127.0.0.1:9200/collect/table/_search?pretty' -d '
     {
       "query": { "match_all": {} },
       "from": 0,

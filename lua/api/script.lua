@@ -61,6 +61,7 @@ if 'insert' == method  then
     ngx.say(body)
 elseif "get" == method then
     local value, flags = shared_dict:get(type)
+    -- add lock
     if not value then
     	local resp, err = script_dao.search_by_type(type)
     	if resp then

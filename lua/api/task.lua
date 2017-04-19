@@ -50,12 +50,4 @@ elseif 'getmore' == method then
     message.error = err
     local body = cjson_safe.encode(message)
     ngx.say(body)
-elseif 'load' == method then
-	ngx.say('delete_by_ids.body:')
-	local resp, status = task_dao.load_by_level_status(es_index, es_type , body_json )
-	local message = {}
-    message.data = resp
-    message.status = status
-    local body = cjson_safe.encode(message)
-    ngx.say(body)
 end

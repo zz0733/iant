@@ -50,6 +50,7 @@ local check
                             task.type = source.type
                             task.url = source.url
                             task.ctime = source.create_time
+                            task.ltime = ngx.time()
                             task.params = source.params
                             task.pid = source.parent_id
                             task.batch_id = source.batch_id

@@ -1,11 +1,7 @@
-local elasticsearch = require "elasticsearch"
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
 
--- local req_method = ngx.req.get_method()
--- local args = ngx.req.get_uri_args()
--- local method = args.method
 local es_index = "task"
 local es_type = "table"
 
@@ -13,23 +9,6 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
--- if not method then
--- 	ngx.say('empty method')
--- 	return
--- end
--- ngx.say('method:' .. method)
-
--- local data = util_request.post_body(ngx.req)
--- local params = cjson_safe.encode(args)
--- local body = cjson_safe.encode(data)
--- local body_json = cjson_safe.decode(data)
-
-
--- ngx.say('params:' , params)
--- ngx.say('data:' , body_json.a)
--- ngx.say('req_method:' .. req_method)
--- ngx.say('body:' .. type(body))
--- ngx.say('body:' .. body)
 
 local ok, new_tab = pcall(require, "table.new")
 if not ok or type(new_tab) ~= "function" then
@@ -55,6 +34,21 @@ function _M.check_insert_tasks(index, type, tasks )
 	return true
 end
 
+function utcformat()
+	-- local now_time = ngx.now()
+ --    local str_now = tostring(now_time)
+	-- local cur_time = os.date ('%Y-%m-%dT%H:%M:%S.', now_time)
+	-- local from, to, err = ngx.re.find(str_now, "\\.", "jo")
+	-- str_now = '#000' .. string.sub(str_now, from + 1)
+	-- str_now = string.sub(str_now, -3)
+	-- cur_time = cur_time .. str_now .. "Z"
+	
+	local local_time = ngx.utctime()
+	local new_time, n, err = ngx.re.sub(local_time, " ", "T")
+	new_time = new_time .. ".000Z"
+	return new_time
+end
+
 function _M.insert_tasks(index, type, tasks )
 	if not _M.check_insert_tasks(index, type, tasks ) then
 		return
@@ -66,6 +60,12 @@ function _M.insert_tasks(index, type, tasks )
 	        ["_type"] = type
 	      }
 	    }
+	    if not v.create_time then
+	    	v.create_time = utcformat()
+	    end
+	    if not v.update_time then
+	    	v.update_time = utcformat()
+	    end
 	    es_body[#es_body + 1] = v
 	end
 
