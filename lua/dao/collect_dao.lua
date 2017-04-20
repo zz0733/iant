@@ -29,6 +29,32 @@ function _M.check_inserts(collects )
 	return true
 end
 
+function table.removeKey(t, k)
+	local i = 0
+	local keys, values = {},{}
+	for k,v in pairs(t) do
+		i = i + 1
+		keys[i] = k
+		values[i] = v
+	end
+ 
+	while i>0 do
+		if keys[i] == k then
+			table.remove(keys, i)
+			table.remove(values, i)
+			break
+		end
+		i = i - 1
+	end
+ 
+	local a = {}
+	for i = 1,#keys do
+		a[keys[i]] = values[i]
+	end
+ 
+	return a
+end
+
 function _M.inserts(collects )
 	if not _M.check_inserts(collects ) then
 		return
@@ -47,8 +73,12 @@ function _M.inserts(collects )
 		    }
 		    local collect_obj = {}
 		    collect_obj.type = task.type
-		    table.remove(task,"id") 
-		    table.remove(task,"type") 
+
+			--  can not use ipairs,iterator by pairs
+			--  table.remove(task,index) not work
+		    task.id = nil
+		    task.type = nil
+		    
 		    collect_obj.task = cjson_safe.encode(task)
 		    collect_obj.data = cjson_safe.encode(data)
 	    	collect_obj.create_time = ngx.time()
