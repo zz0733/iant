@@ -27,7 +27,7 @@ if 'insert' == method  then
 			type = filename[1]
 		end
 	end
-	ngx.say('insert_scripts.body,script:' .. script)
+	-- ngx.say('insert_scripts.body,script:' .. script)
 	local from, to, err = ngx.re.find(script, "(\r\n\r\n)", "jo")
 	script = string.sub(script, to)
 	from, to, err = ngx.re.find(script, "(\r\n[\\-]+[0-9a-z]+[\\-]+\r\n)", "jo")
@@ -38,45 +38,50 @@ if 'insert' == method  then
 	local script_obj = {}
 	script_obj.type = type
 	script_obj.script = script
+	script_obj.delete = 0
 	local scripts = {}
 	scripts[#scripts + 1] = script_obj
 	local resp, status = script_dao.insert_scripts(scripts )
 	local message = {}
-    message.status = status
-	if resp then
-		local cache = {}
-		cache.script = script
-		cache.utime = ngx.time
-		local script_val = cjson_safe.encode(cache)
-		-- seconds
-		local ok, err = shared_dict:set(type, script_val, exptime )
-		message.error = err
-        if err then
-        	log(CRIT,"script,update[" .. type .. "],cause:",err)
-    	else
-    		log(ERR,"script,update[" .. type .. "],expire:" .. exptime .. "s")
-        end
+    message.data = resp
+    message.code = 200
+    if status == 200 then
+       shared_dict:delete(type)
+	else
+	   message.code = 500
+	   message.error = status
 	end
 	local body = cjson_safe.encode(message)
     ngx.say(body)
 elseif "get" == method then
     local value, flags = shared_dict:get(type)
+    local message = {}
+    message.data = value
+    message.code = 200
     -- add lock
     if not value then
-    	local resp, err = script_dao.search_by_type(type)
+    	local resp, status = script_dao.search_by_type(type)
     	if resp then
     		local hits  = resp.hits.hits
     		for _,v in ipairs(hits) do
-	    		local script_obj = v._source
-	    		-- local cache = {}
-				-- cache.script = script_obj.script
-				-- cache.utime = ngx.time
-	    		value = cjson_safe.encode(script_obj)
-			    ngx.say("cjsdsds:",value)
-	    		-- local ok, err = shared_dict:set(type, value, exptime )
+    			local script_obj = v._source
+				script_obj.verion = ngx.time()
+				value = cjson_safe.encode(script_obj)
+				
+				-- seconds
+				log(ERR,"set share dict:" .. type .. ",expire:" .. exptime .. "s")
+				local ok, err = shared_dict:set(type, value, exptime )
+				if ok then
+					message.data = value
+				end
+				message.error = err
     		end
-    		
+    	elseif status ~= 200 then
+    		--todo
+    		message.code = 500
+    		message.error = status
     	end
     end
-    ngx.say(value)
+	local body = cjson_safe.encode(message)
+    ngx.say(body)
 end

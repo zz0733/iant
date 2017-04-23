@@ -21,11 +21,6 @@ _M._VERSION = '0.01'
 local client_utils = require("util.client_utils")
 local client = client_utils.client()
 
-local define_fields = {
-	"parent_id","batch_id","job_id","type",
-	"url","params","level","status",
-	"source","creator","create_time","update_time"
-}
 
 function _M.check_insert_tasks(index, type, tasks ) 
 	if not tasks or not util_table.is_array(tasks) then
@@ -60,11 +55,11 @@ function _M.insert_tasks(index, type, tasks )
 	        ["_type"] = type
 	      }
 	    }
-	    if not v.create_time then
-	    	v.create_time = utcformat()
+	    if not v.ctime then
+	    	v.ctime = ngx.time()
 	    end
-	    if not v.update_time then
-	    	v.update_time = utcformat()
+	    if not v.utime then
+	    	v.utime = ngx.time()
 	    end
 	    es_body[#es_body + 1] = v
 	end
@@ -97,7 +92,7 @@ function _M.search_by_level_status(index, type, params )
 	    size = params.size,
 	    sort = {
            {
-            create_time = {
+            ctime = {
               order = "asc"
        	    }
            }
@@ -146,6 +141,7 @@ function _M.check_delete_by_ids( ids )
 	end
 	return true
 end
+
 function _M.delete_by_ids( index, type, ids )
 	if not _M.check_delete_by_ids( ids ) then
 		return
@@ -190,25 +186,6 @@ function _M.load_by_level_status( index, type, body_json )
     _M.delete_by_ids(index, type, ids)
     return resp, status
 end
-
-local method = 1
--- ngx.say('delete_by_ids.body:',method == 'load')
--- if 'insert' == method  then
--- 	ngx.say('insert_tasks.body:')
--- 	insert_tasks(es_index, es_type , body_json )
--- elseif 'delete' == method then
--- 	ngx.say('delete_by_ids.body:')
--- 	delete_by_ids(es_index, es_type , body_json )
--- elseif 'search' == method then
--- 	ngx.say('delete_by_ids.body:')
--- 	search_by_level_status(es_index, es_type , body_json )
--- elseif 'load' == method then
--- 	ngx.say('delete_by_ids.body:')
--- 	load_by_level_status(es_index, es_type , body_json )
--- end
-
--- search_by_level_status(es_index, es_type , body_json )
--- delete_by_ids(es_index, es_type , body_json )
 
 return _M
 

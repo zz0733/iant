@@ -8,22 +8,49 @@
 
  exit 0
 
- curl -XPOST 'http://127.0.0.1:9200/task/table/_search?pretty' -d '
+#  curl -XPOST 'http://127.0.0.1:9200/task/table/_search?pretty' -d '
+# {
+#   "query": {
+#     "bool": {
+#       "filter": {
+#         "term": {
+#           "level": 0
+#         }
+#       }
+#     }
+#   },
+#   "from": 0,
+#   "size": 10
+# }
+#  '
+# exit 0
+# curl -XGET 'http://127.0.0.1:9200/task/table/_search?pretty' -d '
+# {
+#   "query": { 
+#     "bool": { 
+#       "filter": [ 
+#         { "range": { "create_time": { "gt": "2017-04-20" }}} 
+#       ]
+#     }
+#   }
+# }'
+# exit 0
+
+curl -XPOST 'http://127.0.0.1:9200/script/table/_search?pretty' -d '
 {
-  "query": {
-    "bool": {
-      "filter": {
-        "term": {
-          "level": 0
-        }
-      }
+  "query": { 
+    "bool": { 
+      "must": [
+        { "match": { "_id":   "douban-movie-detail"        }}
+      ]
+      ,
+      "filter": [ 
+        { "term":  { "delete": 0 }}
+      ]
     }
-  },
-  "from": 0,
-  "size": 10
+  }
 }
  '
-
 
 # exit 0
 

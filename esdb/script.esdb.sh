@@ -28,10 +28,10 @@ curl -XPUT 'http://localhost:9200/script/_mapping/table?pretty' -d '
     "delete": {
       "type": "short"
     },
-    "create_time": {
+    "ctime": {
       "type": "date"
     },
-    "update_time": {
+    "utime": {
       "type": "date"
     }
   }

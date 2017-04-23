@@ -37,7 +37,7 @@ curl -XPUT 'http://localhost:9200/image/_mapping/table?pretty' -d '
     "format": {
       "type": "keyword"
     },
-    "create_time": {
+    "ctime": {
       "type": "date"
     }
   }

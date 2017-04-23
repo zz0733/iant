@@ -22,32 +22,40 @@ if not method then
 	ngx.say('empty method')
 	return
 end
--- ngx.say('method:' .. method)
 local data = util_request.post_body(ngx.req)
--- local params = cjson_safe.encode(args)
--- local body = cjson_safe.encode(data)
 local body_json = cjson_safe.decode(data)
-
-
--- ngx.say('params:' , params)
--- ngx.say('data:' , body_json.a)
--- ngx.say('req_method:' .. req_method)
--- ngx.say('body:' .. type(body))
--- ngx.say('body:' .. body)
 
 
 if 'insert' == method  then
 	local resp, status = task_dao.insert_tasks(es_index, es_type , body_json )
 	local message = {}
     message.data = resp
-    message.status = status
+    message.code = 200
+    if status ~= 200 then
+        message.code = 500
+        message.error = status
+    end
     local body = cjson_safe.encode(message)
     ngx.say(body)
 elseif 'getmore' == method then
-    local val, err = shared_dict:rpop(task_queue_key)
+    local max = 5
+    local tasks = {}
     local message = {}
-    message.data = val
-    message.error = err
+    message.data = tasks
+    message.code = 200
+    for i = 1, max do
+      local val, err = shared_dict:rpop(task_queue_key)
+      if not val then
+          if err ~= 200 then
+              message.error = err
+          end
+          break
+      end
+      tasks[#tasks + 1] = val
+    end
+    if message.error then
+        message.code = 500
+    end
     local body = cjson_safe.encode(message)
     ngx.say(body)
 end

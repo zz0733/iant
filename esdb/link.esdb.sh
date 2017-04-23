@@ -148,10 +148,10 @@ curl -XPUT 'http://localhost:9200/link/_mapping/table?pretty' -d '
         }
       }
     },
-    "create_time": {
+    "ctime": {
       "type": "date"
     },
-    "update_time": {
+    "utime": {
       "type": "date"
     },
     "status": {

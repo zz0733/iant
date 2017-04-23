@@ -286,10 +286,10 @@ curl -XPUT 'http://localhost:9200/content/_mapping/table?pretty' -d '
       "type": "string",
       "index": "no"
     },
-    "create_time": {
+    "ctime": {
       "type": "date"
     },
-    "update_time": {
+    "utime": {
       "type": "date"
     }
   }

@@ -15,8 +15,7 @@ local exptime = 600
 local shared_dict = ngx.shared.shared_dict
 
 local message = {}
-message.status = 200
-message.message = "OK"
+message.code = 200
 if not method then
 	message.status = 400
 	message.message = "empty method"
@@ -24,16 +23,21 @@ if not method then
 	return
 end
 local data = util_request.post_body(ngx.req)
-ngx.say('data:' .. data)
 local body_json = cjson_safe.decode(data)
 if not body_json then
-	message.status = 400
-	message.message = "illegal params"
+	message.code = 400
+	message.error = "illegal params"
 	ngx.say(cjson_safe.encode(message))
 	return
 end
 if 'insert' == method  then
 	local resp, status = collect_dao.inserts(body_json )
-    message.data = resp
+    -- message.data = resp
+    if status == 200 then
+    	message.code = 200
+    else
+    	message.code = 500
+    	message.error = status
+    end
     ngx.say(cjson_safe.encode(message))
 end

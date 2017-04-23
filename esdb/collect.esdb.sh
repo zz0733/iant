@@ -29,7 +29,7 @@ curl -XPUT 'http://localhost:9200/collect/_mapping/table?pretty' -d '
       "type": "string",
       "index": "no"
     },
-    "create_time": {
+    "ctime": {
       "type": "date"
     }
   }

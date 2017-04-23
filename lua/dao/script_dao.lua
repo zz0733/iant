@@ -46,13 +46,18 @@ function _M.search_by_type( id )
 	  index = es_index,
 	  type = es_type,
 	  body = {
-		query = {
-		  match = {
-            _id = id
+		query =  { 
+		    bool =  { 
+		      must = { 
+		        match = { _id = id }
+		      },
+		      filter = { 
+		        { term =  { delete =  0 }}
+		      }
+		    }
 		  }
 		}
 	  }
-	}
 	return resp, status
 end
 

@@ -60,6 +60,7 @@ function _M.inserts(collects )
 		return
 	end
 	local es_body = {}
+	local count = 0
 	for _,v in ipairs(collects) do
 		local task = v.task
 	    local data = v.data
@@ -81,11 +82,15 @@ function _M.inserts(collects )
 		    
 		    collect_obj.task = cjson_safe.encode(task)
 		    collect_obj.data = cjson_safe.encode(data)
-	    	collect_obj.create_time = ngx.time()
+	    	collect_obj.ctime = ngx.time()
 		    es_body[#es_body + 1] = collect_obj
+		    count = count + 1
 	    end
 	end
-
+    if count < 1 then
+    	local resp = {}
+    	return resp, 200
+    end
 	local resp, status = client:bulk{
 	  index = es_index,
 	  body = es_body
