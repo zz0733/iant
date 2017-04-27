@@ -101,12 +101,18 @@ curl -XPUT 'http://localhost:9200/content/_mapping/table?pretty' -d '
         "year": {
           "type": "integer"
         },
-        "group": {
+        "lang": {
+          "type": "keyword"
+        },
+        "imdb": {
+          "type": "keyword"
+        },
+        "media": {
           "type": "keyword"
         }
       }
     },
-    "evaluate": {
+    "evaluates": {
       "type": "nested",
       "properties": {
         "source": {
@@ -162,6 +168,11 @@ curl -XPUT 'http://localhost:9200/content/_mapping/table?pretty' -d '
         }
       }
     },
+    "names": {
+      "type": "text",
+      "analyzer": "ik_max_word_synonym",
+      "search_analyzer": "ik_max_word_synonym"
+    },
     "genres": {
       "type": "text",
       "analyzer": "ik_max_word_synonym",
@@ -177,7 +188,7 @@ curl -XPUT 'http://localhost:9200/content/_mapping/table?pretty' -d '
       "analyzer": "ik_max_word_synonym",
       "search_analyzer": "ik_max_word_synonym"
     },
-    "image": {
+    "images": {
       "type": "nested",
       "properties": {
         "id": {
@@ -206,10 +217,14 @@ curl -XPUT 'http://localhost:9200/content/_mapping/table?pretty' -d '
     "digests": {
       "type": "nested",
       "properties": {
-        "part": {
+        "text": {
           "type": "text",
           "analyzer": "ik_max_word_synonym",
           "search_analyzer": "ik_max_word_synonym"
+        },
+        "content": {
+          "type": "string",
+          "index": "no"
         },
         "sort": {
           "type": "keyword"
@@ -225,10 +240,14 @@ curl -XPUT 'http://localhost:9200/content/_mapping/table?pretty' -d '
     "contents": {
       "type": "nested",
       "properties": {
-        "part": {
+        "text": {
           "type": "text",
           "analyzer": "ik_max_word_synonym",
           "search_analyzer": "ik_max_word_synonym"
+        },
+        "content": {
+          "type": "string",
+          "index": "no"
         },
         "sort": {
           "type": "keyword"

@@ -65,7 +65,7 @@ elseif "get" == method then
     		local hits  = resp.hits.hits
     		for _,v in ipairs(hits) do
     			local script_obj = v._source
-				script_obj.verion = ngx.time()
+				script_obj.version = ngx.time()
 				value = cjson_safe.encode(script_obj)
 				
 				-- seconds
