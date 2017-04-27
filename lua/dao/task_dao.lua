@@ -55,6 +55,9 @@ function _M.insert_tasks(index, type, tasks )
 	        ["_type"] = type
 	      }
 	    }
+	    if v.params and util_table.is_table(v.params) then
+	    	v.params = cjson_safe.encode(v.params)
+	    end
 	    if not v.ctime then
 	    	v.ctime = ngx.time()
 	    end

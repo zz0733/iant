@@ -1,8 +1,8 @@
 curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d '
  [{
-  "type": "type1",
-  "url": "url2",
-  "params": "{}",
+  "type": "douban-movie-link",
+  "url": "https://movie.douban.com/tag/2016",
+  "params": {"a":100},
   "level": 0,
   "status": 0
 }]

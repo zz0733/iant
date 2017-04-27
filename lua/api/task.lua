@@ -37,6 +37,60 @@ if 'insert' == method  then
     end
     local body = cjson_safe.encode(message)
     ngx.say(body)
+elseif 'nexts' == method then
+    function contains( table, value )
+      if table then
+        for _,v in ipairs(table) do
+            log(ERR,"handlers:" .. v)
+            if value == v then
+              return true
+            end
+        end
+      end
+      return false
+    end
+    local fields = {"type","url","batch_id","job_id","level"}
+    local task_array = {}
+    for _,v in ipairs(body_json) do
+      local task = v.task
+      local data = v.data
+      local status = v.status
+      if status == 1 and task and data and data.nextTasks and data.handlers then
+        local nextTasks = data.nextTasks
+        local handlers = data.handlers
+        if contains(handlers, "CreateNextTask") then
+          for _,v in ipairs(nextTasks) do
+              -- log(ERR,"next:" .. v)
+              local new_task = {}
+              new_task.status = 0
+              new_task.creator = "nexts"
+              if not new_task.parent_id then
+                new_task.parent_id = task.id
+              end
+              for _,key in ipairs(fields) do
+                new_task[key] = v[key]
+                v[key] = nil
+                if not new_task[key] then
+                  new_task[key] = task[key]
+                end
+              end
+              new_task.params = v
+              task_array[#task_array + 1] = new_task
+          end
+        end
+
+      end
+    end
+    local resp, status = task_dao.insert_tasks(es_index, es_type , task_array )
+    local message = {}
+    message.data = resp
+    message.code = 200
+    if status ~= 200 then
+        message.code = 500
+        message.error = status
+    end
+    local body = cjson_safe.encode(message)
+    ngx.say(body)
 elseif 'getmore' == method then
     local max = 5
     local tasks = {}
