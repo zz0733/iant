@@ -46,6 +46,17 @@ if 'insert' == method  then
     message.data = resp
     message.code = 200
     if status == 200 then
+       function importTypes( script )
+    		 -- local from, to, err = ngx.re.find(script, "([0-9]+)", "jo")
+    		 local m, err = ngx.re.match(script, "ScriptParser.prototype.getImportScrip","jo")
+    		 if m then
+    		 	local body = cjson_safe.encode(m)
+				ngx.say("match:",body)
+			 else
+			     ngx.say("match not err",err)
+			 end
+       end
+       importTypes(script)
        shared_dict:delete(type)
 	else
 	   message.code = 500
