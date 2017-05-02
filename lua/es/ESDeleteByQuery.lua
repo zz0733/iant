@@ -6,14 +6,14 @@ local Endpoint = require "elasticsearch.endpoints.Endpoint"
 -------------------------------------------------------------------------------
 -- Declaring module
 -------------------------------------------------------------------------------
-local RemoveByQuery = Endpoint:new()
+local ESDeleteByQuery = Endpoint:new()
 
 -------------------------------------------------------------------------------
 -- Declaring Instance variables
 -------------------------------------------------------------------------------
 
 -- The parameters that are allowed to be used in params
-RemoveByQuery.allowedParams = {
+ESDeleteByQuery.allowedParams = {
   ["q"] = true,
   ["consistency"] = true,
   ["ignore_unavailable"] = true,
@@ -34,7 +34,7 @@ RemoveByQuery.allowedParams = {
 --
 -- @return    string    The HTTP request method
 -------------------------------------------------------------------------------
-function RemoveByQuery:getMethod()
+function ESDeleteByQuery:getMethod()
   return "POST"
 end
 
@@ -43,7 +43,7 @@ end
 --
 -- @return    string    The URI
 -------------------------------------------------------------------------------
-function RemoveByQuery:getUri()
+function ESDeleteByQuery:getUri()
   if self.index == nil then
     return nil, "index not specified for CountPercolate"
   end
@@ -56,13 +56,13 @@ function RemoveByQuery:getUri()
 end
 
 -------------------------------------------------------------------------------
--- Returns an instance of RemoveByQuery class
+-- Returns an instance of ESDeleteByQuery class
 -------------------------------------------------------------------------------
-function RemoveByQuery:new(o)
+function ESDeleteByQuery:new(o)
   o = o or {}
   setmetatable(o, self)
   self.__index = self
   return o
 end
 
-return RemoveByQuery
+return ESDeleteByQuery

@@ -1,63 +1,20 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
+local ESClient = require "es.ESClient"
 
-local es_index = "collect"
-local es_type = "table"
 
 local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
-
-local ok, new_tab = pcall(require, "table.new")
-if not ok or type(new_tab) ~= "function" then
-    new_tab = function (narr, nrec) return {} end
-end
-local _M = new_tab(0, 2)
-_M._VERSION = '0.01'
+local _M = ESClient:new({index = "collect", type = "table"})
+-- _M._VERSION = '0.01'
 
 
-local client_utils = require("util.client_utils")
-local client = client_utils.client()
-
-
-function _M.check_inserts(collects ) 
-	if not collects or not util_table.is_array(collects) then
-		return false
-	end
-	return true
-end
-
-function table.removeKey(t, k)
-	local i = 0
-	local keys, values = {},{}
-	for k,v in pairs(t) do
-		i = i + 1
-		keys[i] = k
-		values[i] = v
-	end
- 
-	while i>0 do
-		if keys[i] == k then
-			table.remove(keys, i)
-			table.remove(values, i)
-			break
-		end
-		i = i - 1
-	end
- 
-	local a = {}
-	for i = 1,#keys do
-		a[keys[i]] = values[i]
-	end
- 
-	return a
-end
-
-function _M.inserts(collects )
-	if not _M.check_inserts(collects ) then
-		return
+function _M.inserts( collects )
+	if not collects then
+		return {}, 400
 	end
 	local es_body = {}
 	local count = 0
@@ -68,7 +25,7 @@ function _M.inserts(collects )
 	    if task and  data and status == 1 then
 			es_body[#es_body + 1] = {
 		      index = {
-		        ["_type"] = es_type,
+		        ["_type"] = _M.type,
 		        ["_id"] = task.id
 		      }
 		    }
@@ -79,9 +36,13 @@ function _M.inserts(collects )
 			--  table.remove(task,index) not work
 		    task.id = nil
 		    task.type = nil
-		    
+
+		    -- local data_json = cjson_safe.decode(data)
+		    local handlers = data.handlers
+		    data.handlers = nil
 		    collect_obj.task = cjson_safe.encode(task)
 		    collect_obj.data = cjson_safe.encode(data)
+		    collect_obj.handlers = handlers
 	    	collect_obj.ctime = ngx.time()
 		    es_body[#es_body + 1] = collect_obj
 		    count = count + 1
@@ -91,11 +52,24 @@ function _M.inserts(collects )
     	local resp = {}
     	return resp, 200
     end
-	local resp, status = client:bulk{
-	  index = es_index,
-	  body = es_body
-	}
-    
+	return _M:bulk( es_body )
+end
+
+function _M.load_by_handlers( from, size, handlers )
+	local body = {
+	    from = from,
+	    size = size,
+		query = {
+		  bool= {
+		    filter= {
+		      terms= {
+		        handlers= handlers
+		      }
+		    }
+		  }
+		}
+	  }
+	local resp, status = _M:search_then_delete(body)
 	return resp, status
 end
 

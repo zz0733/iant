@@ -1,11 +1,50 @@
- curl -XPOST 'http://127.0.0.1:9200/collect/table/_search?pretty' -d '
-    {
-      "query": { "match": {"type": "douban-movie-detail"} },
-      "from": 0,
-      "size": 10
-    }
+ curl -XPOST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  
+  "query": {
+    "match": {"title":"鲜肉"}
+  },
+  "from": 0,
+  "size": 5
+}
  '
+exit 0
+curl -XPOST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+{
+  
+  "query": {
+    "nested":{
+      "path" : "issueds",
+      "query":{
+        "match": {"issueds.country":"北京"}
+      }
+    }
+    
+  },
+  "from": 0,
+  "size": 2
+}
+ '
+ exit 0
 
+ curl -XGET 'http://127.0.0.1:9200/collect/table/_search?pretty' -d '
+ {
+  "query": {
+    "bool": {
+      "filter": {
+        "terms": {
+          "handlers": [
+            "content",
+            "logger"
+          ]
+        }
+      }
+    }
+  },
+  "from": 0,
+  "size": 10
+}
+ '
  exit 0
 
 #  curl -XPOST 'http://127.0.0.1:9200/task/table/_search?pretty' -d '

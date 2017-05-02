@@ -29,6 +29,9 @@ curl -XPUT 'http://localhost:9200/collect/_mapping/table?pretty' -d '
       "type": "string",
       "index": "no"
     },
+    "handlers": {
+      "type": "keyword"
+    },
     "ctime": {
       "type": "date"
     }

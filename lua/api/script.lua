@@ -12,6 +12,8 @@ local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 local exptime = 600
 
+local find = ngx.re.find
+
 local shared_dict = ngx.shared.shared_dict
 
 if not method then
@@ -46,17 +48,7 @@ if 'insert' == method  then
     message.data = resp
     message.code = 200
     if status == 200 then
-       function importTypes( script )
-    		 -- local from, to, err = ngx.re.find(script, "([0-9]+)", "jo")
-    		 local m, err = ngx.re.match(script, "ScriptParser.prototype.getImportScrip","jo")
-    		 if m then
-    		 	local body = cjson_safe.encode(m)
-				ngx.say("match:",body)
-			 else
-			     ngx.say("match not err",err)
-			 end
-       end
-       importTypes(script)
+		
        shared_dict:delete(type)
 	else
 	   message.code = 500
@@ -65,23 +57,54 @@ if 'insert' == method  then
 	local body = cjson_safe.encode(message)
     ngx.say(body)
 elseif "get" == method then
-    local value, flags = shared_dict:get(type)
+    local value, err = shared_dict:get(type)
     local message = {}
     message.data = value
     message.code = 200
     -- add lock
+    -- log(ERR,"shared_dict_script get[" .. type .. "],value:".. tostring(value) ..",cause:",err)
     if not value then
     	local resp, status = script_dao.search_by_type(type)
     	if resp then
     		local hits  = resp.hits.hits
-    		for _,v in ipairs(hits) do
+
+		    string.split = function(s, p)
+			    local rt= {}
+			    string.gsub(s, '[^'..p..']+', function(w) table.insert(rt, w) end )
+			    return rt
+			end
+			function importTypes(type, script )
+		    	 	 local from, to, err = find(script, "ScriptParser.prototype.getImportScripts", "jo")
+		    		 if not from or (from < 0) then
+		    		 	return
+		    		 end
+		    		 script = string.sub(script, to)
+		    		 from, to, err = find(script, "return", "jo")
+		    		 script = string.sub(script, to + 1)
+		    		 local m, err = ngx.re.match(script, "[0-9a-zA-Z,-]+","mjo")
+		    		 if m then
+		    		 	local body = cjson_safe.encode(m[0])
+		    		 	-- rm "
+		    		 	body = string.sub(body, 2,-2)
+			    		local types= string.split(body, ',')
+			    		local key = "import:" .. type 
+			    		local val = cjson_safe.encode(types)
+			    		local ok, err = shared_dict:set(key, val )
+			    		log(ERR,"shared_dict_import[" .. key .. "],value:".. val ..",success:" .. tostring(ok))
+					 end
+	        end
+    		-- log(ERR,"hits_type:" .. type .. ",hits:" .. cjson_safe.encode(hits))
+    		for _, v in ipairs(hits) do
+
     			local script_obj = v._source
+    			importTypes(type, script_obj.script)
+
 				script_obj.version = ngx.time()
 				value = cjson_safe.encode(script_obj)
 				
 				-- seconds
-				log(ERR,"set share dict:" .. type .. ",expire:" .. exptime .. "s")
 				local ok, err = shared_dict:set(type, value, exptime )
+				log(ERR,"shared_dict_script[" .. type .. "],expire:" .. exptime .. "s,success:" .. tostring(ok))
 				if ok then
 					message.data = value
 				end

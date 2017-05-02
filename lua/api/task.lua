@@ -55,7 +55,7 @@ elseif 'nexts' == method then
       local task = v.task
       local data = v.data
       local status = v.status
-      if status == 1 and task and data and data.nextTasks and data.handlers then
+      if status == 1 and task and data and data.nextTasks and not data.localize and data.handlers then
         local nextTasks = data.nextTasks
         local handlers = data.handlers
         if contains(handlers, "CreateNextTask") then
@@ -64,9 +64,7 @@ elseif 'nexts' == method then
               local new_task = {}
               new_task.status = 0
               new_task.creator = "nexts"
-              if not new_task.parent_id then
-                new_task.parent_id = task.id
-              end
+              new_task.parent_id = v.parent_id or task.id
               for _,key in ipairs(fields) do
                 new_task[key] = v[key]
                 v[key] = nil

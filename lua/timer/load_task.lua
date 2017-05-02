@@ -16,6 +16,33 @@ local task_type = "table"
 local task_level_size = {2,4,10}
 local check
 
+local importVersions = function ( task )
+    local importKey = "import:" .. task.type
+    local importVal, _ = shared_dict:get(importKey)
+    local imports = {}
+    if importVal then
+        imports = cjson_safe.decode(importVal)
+    end
+    imports[#imports + 1] = task.type
+    local import_verions = {}
+    for _,key in ipairs(imports) do
+        local scriptVal, err = shared_dict:get(key)
+        local ver = 1
+        if scriptVal then
+           script_obj = cjson_safe.decode(scriptVal)
+           log(ERR,"script["..key .. "]:" .. tostring(script_obj.version))
+           if script_obj.version then
+               ver = script_obj.version
+           end
+        else
+            log(ERR,"script["..key .. "]:" .. tostring(scriptVal) .. ",cause:",err)
+        end
+        import_verions[key] = ver
+    end
+    log(ERR,"import_verions["..task.type .. "]:" .. cjson_safe.encode(import_verions))
+    task.scripts = import_verions
+end
+
  check = function(premature)
      if not premature then
          -- do the health check or other routine work
@@ -27,19 +54,21 @@ local check
                 from = 0,
                 status = 0
              }
+             local from = 0
+             local status = 0
+             local size
              local level = #task_level_size
              for i = level, 1, -1 do
                  level = i -1
-                 params.level = level
-                 params.size = task_level_size[i]
+                 size = task_level_size[i]
                  local start = ngx.now()
-                 local resp,status = task_dao.load_by_level_status(task_index, task_type, params)
+                 local resp,status = task_dao.load_by_level_status(from,size, level)
                  ngx.update_time()
                  local cost = (ngx.now() - start)
                  cost = tonumber(string.format("%.3f", cost))
                  if resp then
                     local total  = resp.hits.total
-                    log(INFO,"task,load[" .. level .. "],limit:" .. params.size 
+                    log(INFO,"task,load[" .. level .. "],limit:" .. size 
                         ..",count:" .. total .. ",cost:" .. cost)
                     if total > 0 then
                         local hits  = resp.hits.hits
@@ -52,10 +81,11 @@ local check
                             task.ctime = source.create_time
                             task.ltime = ngx.time()
                             task.params = source.params
-                            task.pid = source.parent_id
+                            task.parent_id = source.parent_id
                             task.batch_id = source.batch_id
                             task.job_id = source.job_id
                             task.level = source.level
+                            importVersions(task)
                             local task_val = cjson_safe.encode(task)
                             local len, err = shared_dict:lpush(task_queue_key, task_val)
                             if err then
@@ -66,7 +96,7 @@ local check
                     end
                     need_count = need_count - total
                  else
-                    log(CRIT,"task,load[" .. level .. "],limit:" .. params.size
+                    log(CRIT,"task,load[" .. level .. "],limit:" .. size
                         ..",cost:" .. cost .. ",cause:", status)
                  end
                  if need_count < 0 then
