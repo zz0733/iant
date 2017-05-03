@@ -1,3 +1,58 @@
+
+curl -X GET 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+{
+  "from": 0,
+  "size": 1,
+  "query": {
+    "multi_match": {
+      "query": "Breakup",
+      "type": "best_fields",
+      "fields": [
+        "article.title",
+        "names"
+      ],
+      "operator": "and",
+      "minimum_should_match": "60%"
+    }
+  }
+}
+'
+exit 0
+curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "from": 0,
+  "size": 1,
+  "sort":{
+    "ctime":{
+      "order":"asc"
+    }
+  },
+  "query": {
+    "bool": {
+    "filter":{
+      "range":{
+        "ctime" :{
+          "gt":0,
+          "lte":1493715786318
+        }
+      }
+    },
+      "must_not": {
+        "term": {
+          "status":-1
+        }
+      },
+      "must_not": {
+        "term": {
+          "status":1
+        }
+      }
+    }
+  }
+}
+'
+exit 0
+
  curl -XPOST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   
@@ -122,7 +177,7 @@ curl -X GET 'http://127.0.0.1:9200/task/table/_search?pretty' -d '
   "size": 1,
   "sort": [
     {
-      "create_time": {
+      "ctime": {
         "order": "asc"
       }
     }

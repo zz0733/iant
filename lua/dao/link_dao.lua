@@ -43,4 +43,40 @@ function _M.inserts( params )
 	return _M:bulk( es_body )
 end
 
+function _M.query_unmatch( from_date, to_date, from, size)
+	local body = {
+	  from = from,
+	  size = size,
+	  sort = {
+	    ctime = {
+	      order = asc
+	    }
+	  },
+	  query = {
+	    bool = {
+		    filter = {
+		      range = {
+		        ctime ={
+		          gt = from_date,
+		          lte = to_date
+		        }
+		      }
+		    },
+		    must_not = {
+		        term = {
+		          status = -1
+		        }
+		    },
+		    must_not = {
+		        term = {
+		          status = 1
+		        }
+		    }
+	    }
+	  }
+	}
+	local resp, status = _M:search(body)
+	return resp, status
+end
+
 return _M

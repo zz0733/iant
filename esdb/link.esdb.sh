@@ -97,7 +97,18 @@ curl -XPUT 'http://localhost:9200/link/_mapping/table?pretty' -d '
       "index": "no"
     },
     "targets": {
-      "type": "keyword"
+      "type": "nested",
+      "properties": {
+        "id": {
+          "type": "keyword"
+        },
+        "score": {
+          "type": "integer"
+        },
+        "status": {
+          "type": "integer"
+        }
+      }
     },
     "md5": {
       "type": "keyword"

@@ -43,4 +43,22 @@ function _M.inserts( params )
 	return _M:bulk( es_body )
 end
 
+function _M.query_by_name( from, size, name )
+	local body = {
+	  from = from,
+	  size = size,
+	  query = {
+	    multi_match = {
+	      query = name,
+	      type = "best_fields",
+	      fields = {"article.title","names"},
+	      operator = "and",
+	      minimum_should_match = "60%"
+	    }
+	  }
+	}
+	local resp, status = _M:search(body)
+	return resp, status
+end
+
 return _M
