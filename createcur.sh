@@ -24,11 +24,20 @@
 # }]
 # '
 
+# curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d '
+#  [{
+#   "type": "douban-movie-link",
+#   "url": "https://movie.douban.com/tag/1988",
+#   "params": {"a":100},
+#   "level": 1,
+#   "status": 0
+# }]
+# '
+
 curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d '
  [{
-  "type": "douban-movie-link",
-  "url": "https://movie.douban.com/tag/1988",
-  "params": {"a":100},
+  "type": "bdp-share",
+  "params": {"uk":3398440525,"retry":1},
   "level": 1,
   "status": 0
 }]

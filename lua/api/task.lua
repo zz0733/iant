@@ -49,19 +49,30 @@ elseif 'retry' == method  then
           local params_obj = cjson_safe.decode(task.params)
           if params_obj and params_obj.retry then
             local retry_obj = params_obj.retry
+            if not util_table.is_table(retry_obj) then
+              retry_obj = {}
+            end
             local index = retry_obj.index or 0
             local total = retry_obj.total or 3
+            if total > 5 then
+              total = 5
+            end
             index = index + 1
             if index <= total then
               params_obj.retry = { index = index, total = total }
               task.params = cjson_safe.encode(params_obj)
               retry_count = retry_count + 1
               local task_val = cjson_safe.encode(task)
+              log(ERR,"retry["..task.id .."](".. index.."),task:" .. task_val)
               local len, err = shared_dict:lpush(task_queue_key, task_val)
               if err then
                   err_count = err_count + 1
                   log(CRIT,"shared_dict:lpush:" .. task_val .. ",cause:", err)
               end
+            else
+              local data_val = cjson_safe.encode(v)
+              index = index - 1
+              log(ERR,"fail.retry["..task.id .."](".. index.."),data:" .. data_val)
             end
           end
           
