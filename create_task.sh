@@ -48,17 +48,22 @@ TYPE=""
 if [[ $# -gt 0 ]]; then
 	TYPE=$1
 fi
+URL=""
+if [[ $# -gt 2 ]]; then
+	URL=$2
+fi
 PARAMS="{}"
 if [[ $# -gt 1 ]]; then
-	PARAMS=$2
+	PARAMS=$3
 fi
 LEVEL=0
-if [[ $# -gt 2 ]]; then
-	LEVEL=$3
+if [[ $# -gt 3 ]]; then
+	LEVEL=$4
 fi
 echo "TYPE=$TYPE,PARAMS=$PARAMS,LEVEL=$LEVEL"
 curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d "
  [{
+  \"url\": \"$URL\",
   \"type\": \"$TYPE\",
   \"params\": $PARAMS,
   \"level\": $LEVEL,
