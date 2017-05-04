@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source ~/.bash_profile
 # curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d '
 #  [{
 #   "type": "douban-movie-link",
@@ -71,5 +71,5 @@ TASK_BODY="[{
   \"level\": $LEVEL,
   \"status\": 0
 }]"
-echo "TASK_BODY=$TASK_BODY"
-curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d "$TASK_BODY"
+echo "SNAP_SERVER[$SNAP_SERVER],TASK_BODY=$TASK_BODY"
+curl -X POST "$SNAP_SERVER/api/task.json?method=insert" -d "$TASK_BODY"
