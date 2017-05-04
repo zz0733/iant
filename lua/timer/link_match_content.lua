@@ -15,6 +15,25 @@ local from_date = 0
 local to_date = ngx.time()
 local period_date = 60*1000
 
+local rematch = ngx.re.match
+
+local find_year = function ( name )
+    if not name then
+        return
+    end
+    local m, err = rematch(name, "(^|[^0-9])(19[0-9]{2}|20[0-9]{2})([^0-9]|$)")
+    if m then
+        return m[2]
+    end
+end
+
+local to_time_mills = function ( time )
+    if string.len(tostring(time))==10 then
+        time = time * 1000
+    end
+    return time
+end
+
 local max_issued_time = function ( doc )
     local dest = nil
     local source = doc._source
@@ -46,18 +65,19 @@ local select_match_doc = function ( doc, hits )
     end
     local source = doc._source
     local title = source.title
-    local max_issued = max_issued_time(doc)
-    max_issued = max_issued or source.ctime
-    if string.len(tostring(max_issued))==10 then
-        max_issued = max_issued * 1000
-    end
+    local end_mills = max_issued_time(doc)
+    end_mills = to_time_mills(end_mills or source.ctime)
+    local has_year = find_year(title) or 1970
+    local start_mills = os.time({year=has_year,month=1,day=1,hour=0,min=0,sec=0}) * 1000
     for _,v in ipairs(hits) do
+        local max_issued = max_issued_time(v)
         local min_issued = min_issued_time(v)
-        if min_issued then
-            if string.len(tostring(min_issued))== 10 then
-                min_issued = min_issued * 1000
-            end
-            log(ERR,"select_match_doc,title["..title .."],max_issued:" .. max_issued .. ",min_issued:" .. tostring(min_issued) ..",max_issued:" .. tostring(max_issued))
+        max_issued = to_time_mills(max_issued or 1)
+        min_issued = to_time_mills(min_issued or 1)
+        log(ERR,"select_match_doc,title["..title .."],year:"..has_year..",link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
+        if (start_mills >= min_issued and max_issued <= end_mills) 
+        or (start_mills < min_issued and end_mills > min_issued) then
+            log(ERR,"select_match_doc,title["..title .."],link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
             if min_issued < max_issued then
                 local source = v._source
                 local str_source = cjson_safe.encode(source)
@@ -69,7 +89,7 @@ local select_match_doc = function ( doc, hits )
     end
 end
 
-local do_match_doc = function ( doc )
+local find_similars = function ( doc )
     if not doc then
         return
     end
@@ -79,6 +99,8 @@ local do_match_doc = function ( doc )
     local limit = 10
     local max_issued = -1
     local start = ngx.now()
+    title = [[继承人2017]]
+    source.title = title
     local resp, status = content_dao.query_by_name(offset, limit, title)
     ngx.update_time()
     local cost = (ngx.now() - start)
@@ -87,19 +109,19 @@ local do_match_doc = function ( doc )
         local total  = resp.hits.total
         local hits  = resp.hits.hits
         local shits = cjson_safe.encode(hits)
-        log(ERR,"do_match_doc,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
+        log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
             .. ",max_issued:"..max_issued.. ",total:" .. total .. ",cost:" .. cost)
-        -- log(ERR,"do_match_doc,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits)
+        log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits)
         local targets = select_match_doc(doc, hits)
     end
 end
 
-local do_match_hits = function (hits )
+local search_similars = function (hits )
     if not hits then
         return
     end
     for _,v in ipairs(hits) do
-        do_match_doc(v)
+        find_similars(v)
     end
 end
 
@@ -123,7 +145,7 @@ local check
             local shits = cjson_safe.encode(hits)
             log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total .. ",cost:" .. cost)
             -- log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",hits:" .. shits)
-            do_match_hits(hits)
+            search_similars(hits)
             if from == total then
                from = 0
                from_date = to_date
