@@ -11,6 +11,7 @@ local CRIT = ngx.CRIT
 local _M = ESClient:new({index = "content", type = "table"})
 _M._VERSION = '0.01'
 
+local CHECK_FIELDS = {"evaluates","names","genres","actors","directors","images","tags","digests","contents","issueds"}
 
 function _M.inserts( params )
 	if not params then
@@ -31,6 +32,12 @@ function _M.inserts( params )
 	    end
 	    if not val.utime then
 	    	val.utime = ngx.time()
+	    end
+	    for _,key in ipairs(CHECK_FIELDS) do
+	    	local val_obj = val[key]
+	    	if val_obj and util_table.is_empty_table(val_obj) then
+	    		val[key] = nil
+	    	end
 	    end
 	    es_body[#es_body + 1] = val
 	    count = count + 1
