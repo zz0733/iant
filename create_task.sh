@@ -60,13 +60,16 @@ LEVEL=0
 if [[ $# -gt 3 ]]; then
 	LEVEL=$4
 fi
-echo "TYPE=$TYPE,PARAMS=$PARAMS,LEVEL=$LEVEL"
-curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d "
- [{
+
+if [[ "X$PARAMS" == "X" ]]; then
+	PARAMS="{}"
+fi
+TASK_BODY="[{
   \"url\": \"$URL\",
   \"type\": \"$TYPE\",
   \"params\": $PARAMS,
   \"level\": $LEVEL,
   \"status\": 0
-}]
-"
+}]"
+echo "TASK_BODY=$TASK_BODY"
+curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d "$TASK_BODY"
