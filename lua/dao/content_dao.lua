@@ -51,9 +51,19 @@ function _M.query_by_name( from, size, name )
 	    multi_match = {
 	      query = name,
 	      type = "best_fields",
-	      fields = {"article.title","names"},
+	      fields = {"names"},
 	      operator = "and",
 	      minimum_should_match = "60%"
+	    }
+	  },
+	  highlight = {
+	    order = "score",
+	    fields = {
+	      names = {
+	        fragment_size = 50,
+	        number_of_fragments = 1,
+	        fragmenter = "span"
+	      }
 	    }
 	  }
 	}

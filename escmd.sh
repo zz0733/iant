@@ -2,22 +2,29 @@
 curl -X GET 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "from": 0,
-  "size": 1,
+  "size": 2,
   "query": {
     "multi_match": {
-      "query": "继承人",
+      "query": "不懂撒娇的女人",
       "type": "best_fields",
       "fields": [
-        "article.title",
         "names"
-      ],
-      "operator": "and",
-      "minimum_should_match": "60%"
+      ]
+    }
+  },
+  "highlight": {
+    "order": "score",
+    "fields": {
+      "names": {
+        "fragment_size": 50,
+        "number_of_fragments": 3,
+        "fragmenter": "span"
+      }
     }
   }
 }
 '
-# exit 0
+exit 0
 # curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 # {
 #   "from": 0,

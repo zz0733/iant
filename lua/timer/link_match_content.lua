@@ -17,6 +17,26 @@ local period_date = 60*1000
 
 local rematch = ngx.re.match
 
+local to_highlight = function ( name )
+    local hl_arr = {}
+    if not name then
+        return hl_arr
+    end
+    local it, err = ngx.re.gmatch(name, "<em>(.+?)<\\/em>", "ijo")
+    if not it then
+       return hl_arr
+    end
+     while true do
+         local m, err = it()
+         if m then
+            hl_arr[#hl_arr + 1] = m[1]
+         else
+            break
+         end
+     end
+     return hl_arr
+end
+
 local find_year = function ( name )
     if not name then
         return
@@ -69,15 +89,38 @@ local select_match_doc = function ( doc, hits )
     end_mills = to_time_mills(end_mills or source.ctime)
     local has_year = find_year(title) or 1970
     local start_mills = os.time({year=has_year,month=1,day=1,hour=0,min=0,sec=0}) * 1000
+    local targets = {}
     for _,v in ipairs(hits) do
         local max_issued = max_issued_time(v)
         local min_issued = min_issued_time(v)
+        local source = v._source
+        local article = source.article
+        local cur_year = article.year
         max_issued = to_time_mills(max_issued or 1)
         min_issued = to_time_mills(min_issued or 1)
         log(ERR,"select_match_doc,title["..title .."],year:"..has_year..",link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
-        if (start_mills >= min_issued and max_issued <= end_mills) 
-        or (start_mills < min_issued and end_mills > min_issued) then
+        if ((cur_year and cur_year == has_year) or (start_mills <= min_issued and end_mills >= max_issued) ) then
             log(ERR,"select_match_doc,title["..title .."],link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
+            local highlight = v.highlight
+            if highlight then
+                local names = highlight.names
+                if names then
+                    local hl_name = names[1]
+                    local hl_arr = to_highlight(hl_name)
+                    local len_sum = 0
+                    for _,lv in ipairs(hl_arr) do
+                        len_sum = len_sum + string.len(lv)
+                    end
+                    local score = len_sum / string.len(title)
+                    local str_hl_arr = cjson_safe.encode(hl_arr)
+                     log(ERR,"select_match_doc,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],score:" .. tostring(score))
+                     if score >= 0.7 then
+                         local target = {id = v._id, score = score}
+                         targets[#targets + 1] = target
+                     end
+                end
+            end
+            
             if min_issued < max_issued then
                 local source = v._source
                 local str_source = cjson_safe.encode(source)
@@ -87,6 +130,9 @@ local select_match_doc = function ( doc, hits )
             end
         end
     end
+    local str_targets = cjson_safe.encode(targets)
+    log(ERR,"select_match_doc,title["..title .."],targets:"..tostring(str_targets) ..",size["..#targets .."]")
+    return targets
 end
 
 local find_similars = function ( doc )
@@ -99,7 +145,7 @@ local find_similars = function ( doc )
     local limit = 10
     local max_issued = -1
     local start = ngx.now()
-    title = [[继承人2017]]
+    -- title = [[继承人2017]]
     source.title = title
     local resp, status = content_dao.query_by_name(offset, limit, title)
     ngx.update_time()
