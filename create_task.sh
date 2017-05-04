@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d '
 #  [{
 #   "type": "douban-movie-link",
@@ -34,11 +36,32 @@
 # }]
 # '
 
-curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d '
+# curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d '
+#  [{
+#   "type": "bdp-share",
+#   "params": {"uk":3398440525,"retry":1},
+#   "level": 1,
+#   "status": 0
+# }]
+# '
+TYPE=""
+if [[ $# -gt 0 ]]; then
+	TYPE=$1
+fi
+PARAMS="{}"
+if [[ $# -gt 1 ]]; then
+	PARAMS=$2
+fi
+LEVEL=0
+if [[ $# -gt 2 ]]; then
+	LEVEL=$3
+fi
+echo "TYPE=$TYPE,PARAMS=$PARAMS,LEVEL=$LEVEL"
+curl -X POST '127.0.0.1:8088/api/task.json?method=insert' -d "
  [{
-  "type": "bdp-share",
-  "params": {"uk":3398440525,"retry":1},
-  "level": 1,
-  "status": 0
+  \"type\": \"$TYPE\",
+  \"params\": $PARAMS,
+  \"level\": $LEVEL,
+  \"status\": 0
 }]
-'
+"
