@@ -49,11 +49,11 @@ if [[ $# -gt 0 ]]; then
 	TYPE=$1
 fi
 URL=""
-if [[ $# -gt 2 ]]; then
+if [[ $# -gt 1 ]]; then
 	URL=$2
 fi
 PARAMS="{}"
-if [[ $# -gt 1 ]]; then
+if [[ $# -gt 2 ]]; then
 	PARAMS=$3
 fi
 LEVEL=0
