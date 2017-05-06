@@ -15,7 +15,10 @@ local from_date = 0
 local to_date = ngx.time()
 local period_date = 60*1000
 
-local rematch = ngx.re.match
+local match = ngx.re.match
+
+local intact = require("util.intact")
+
 
 local to_highlight = function ( name )
     local hl_arr = {}
@@ -41,7 +44,7 @@ local find_year = function ( name )
     if not name then
         return
     end
-    local m, err = rematch(name, "(^|[^0-9])(19[0-9]{2}|20[0-9]{2})([^0-9]|$)")
+    local m, err = match(name, "(^|[^0-9])(19[0-9]{2}|20[0-9]{2})([^0-9]|$)")
     if m then
         return m[2]
     end
@@ -107,14 +110,13 @@ local select_match_doc = function ( doc, hits )
                 if names then
                     local hl_name = names[1]
                     local hl_arr = to_highlight(hl_name)
-                    local len_sum = 0
-                    for _,lv in ipairs(hl_arr) do
-                        len_sum = len_sum + string.len(lv)
-                    end
-                    local score = len_sum / string.len(title)
                     local str_hl_arr = cjson_safe.encode(hl_arr)
-                     log(ERR,"select_match_doc,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],score:" .. tostring(score))
-                     if score >= 0.7 then
+                    log(ERR,"select_match_doc,title["..title .."],hl_arr["..str_hl_arr .."]")
+                    local intacts = intact.to_intact_words(title, hl_arr)
+                    -- table.sort(hl_arr)
+                    local str_intacts = cjson_safe.encode(intacts)
+                     log(ERR,"select_match_doc,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
+                     if #intacts > 0 then
                          local target = {id = v._id, score = score}
                          targets[#targets + 1] = target
                      end

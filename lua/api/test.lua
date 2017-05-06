@@ -1,29 +1,22 @@
+local cjson_safe = require "cjson.safe"
+local util_request = require "util.request"
+local util_table = require "util.table"
 
 local name = [[继承人2017]]
 local name = [[1901继承人2017]]
-local name = [[190继承人2017.ab]]
-local name = [[<em>继承人</em>‎ (<em>2017</em>)]]
+local name = [[190继承人.2017]]
 
- local it, err = ngx.re.gmatch(name, "<em>(.+?)<\\/em>", "ijo")
- if not it then
-     ngx.log(ngx.ERR, "error: ", err)
-     return
- end
+local find = ngx.re.find
+local intact = require("util.intact")
 
- while true do
-     local m, err = it()
-     if err then
-         ngx.log(ngx.ERR, "error: ", err)
-         return
-     end
 
-     if not m then
-         -- no match found (any more)
-         break
-     end
+local hit_arr = {}
+hit_arr[#hit_arr + 1] = "190"
+hit_arr[#hit_arr + 1] = "继承人"
+hit_arr[#hit_arr + 1] = "xx"
+hit_arr[#hit_arr + 1] = "2017"
 
-     -- found a match
-     ngx.say(m[1])
-     -- ngx.say(m[1])
- end
- ngx.say("end")
+local rchar = intact.to_intact_words(name,hit_arr)
+rchar = cjson_safe.encode(rchar)
+-- local rchar = to_intact_words(name,"继承人")
+ ngx.say("end:" .. name .. ",rchar:" .. tostring(rchar) .. ",len:" .. tostring(string.len(name)))
