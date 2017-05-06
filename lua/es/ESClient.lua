@@ -129,4 +129,18 @@ function ESClient:search_then_delete( body )
     return resp, status
 end
 
+function ESClient:update( id, new_doc )
+    local res, status = self.client:update{
+      index = self.index,
+      type = self.type,
+      id = id,
+      body = {
+        doc = new_doc
+      }
+    }
+    return resp, status
+end
+
+
+
 return ESClient

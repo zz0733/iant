@@ -1,4 +1,15 @@
-
+curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "from": 0,
+  "size": 1,
+  "query": {
+      "match": {
+        "title":"巴霍巴利王2"
+      }
+  }
+}
+'
+exit 0
 # curl -X GET 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 # {
 #   "from": 0,

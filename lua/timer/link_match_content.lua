@@ -18,6 +18,7 @@ local period_date = 60*1000
 local match = ngx.re.match
 
 local intact = require("util.intact")
+local util_table = require "util.table"
 
 
 local to_highlight = function ( name )
@@ -135,8 +136,9 @@ local select_match_doc = function ( doc, hits )
                         local score = mol_num / denom_num
                          log(ERR,"select_match_doc_score,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
                          log(ERR,"select_match_doc_score,title["..title .."],mol_num:"..tostring(mol_num) ..",denom_num["..tostring(denom_num) .."],score:" .. tostring(score))
-                         if score >= 0.9 then
-                             local target = {id = v._id, score = score}
+                         if score >= 0.85 then
+                             score = tonumber(string.format("%.3f", score))
+                             local target = {id = v._id, score = score, status=0 }
                              targets[#targets + 1] = target
                          end
                     end
@@ -144,7 +146,7 @@ local select_match_doc = function ( doc, hits )
             end
         end
     end
-    local str_targets = cjson_safe.encode(targets)
+    -- local str_targets = cjson_safe.encode(targets)
     -- log(ERR,"select_match_doc,title["..title .."],targets:"..tostring(str_targets) ..",size["..#targets .."]")
     return targets
 end
@@ -169,10 +171,22 @@ local find_similars = function ( doc )
         local total  = resp.hits.total
         local hits  = resp.hits.hits
         local shits = cjson_safe.encode(hits)
+        local targets = select_match_doc(doc, hits)
+        if not util_table.is_empty_table(targets) then
+            local bulk_docs = {}
+            
+            local link_doc = {}
+            link_doc.targets = targets
+            link_doc.status = 1
+
+            link_dao.update_doc(doc._id, link_doc)
+        end
+        
+        local stargets = cjson_safe.encode(targets)
         log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
             .. ",max_issued:"..max_issued.. ",total:" .. total .. ",cost:" .. cost)
-        log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits)
-        local targets = select_match_doc(doc, hits)
+        log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits .. ",targets:" .. tostring(stargets))
+        
     end
 end
 

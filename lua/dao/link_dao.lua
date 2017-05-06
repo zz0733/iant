@@ -26,6 +26,7 @@ function _M.inserts( params )
 	        ["_id"] = id
 	      }
 	    }
+	    val.id = nil
 	    if not val.ctime then
 	    	val.ctime = ngx.time()
 	    end
@@ -76,6 +77,15 @@ function _M.query_unmatch( from_date, to_date, from, size)
 	  }
 	}
 	local resp, status = _M:search(body)
+	return resp, status
+end
+
+function _M.update_doc(id, doc)
+	if not doc or not id then
+		return {}, 400
+	end
+	local resp, status = _M:update(id, doc)
+	-- log(ERR,"update_doc.resp:" ..  cjson_safe.encode(resp) ..",status:" .. tostring(status))
 	return resp, status
 end
 
