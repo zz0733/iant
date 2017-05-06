@@ -110,16 +110,38 @@ local select_match_doc = function ( doc, hits )
                 if names then
                     local hl_name = names[1]
                     local hl_arr = to_highlight(hl_name)
-                    local str_hl_arr = cjson_safe.encode(hl_arr)
-                    log(ERR,"select_match_doc,title["..title .."],hl_arr["..str_hl_arr .."]")
+
                     local intacts = intact.to_intact_words(title, hl_arr)
-                    -- table.sort(hl_arr)
-                    local str_intacts = cjson_safe.encode(intacts)
-                     log(ERR,"select_match_doc,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
-                     if #intacts > 0 then
-                         local target = {id = v._id, score = score}
-                         targets[#targets + 1] = target
-                     end
+                    if #intacts > 0 then
+                        local str_hl_arr = cjson_safe.encode(hl_arr)
+                        local str_intacts = cjson_safe.encode(intacts)
+                        local total = nil
+                        local mol_num = 0
+                        
+                        for _,v in ipairs(intacts) do
+                            if v.total and not total then
+                               total = v.total
+                            end
+                            local sum = 0
+                            for i = v.from, v.to do
+                                sum = sum + total - i
+                            end
+                            if v.intact then
+                                sum = (1 + (total - v.from ) / total ) * sum
+                            end
+                            mol_num = mol_num + sum
+                        end
+                        local denom_num = total * (total+1) / 2
+                        local score = mol_num / denom_num
+                         log(ERR,"select_match_doc,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
+                         log(ERR,"select_match_doc,title["..title .."],mol_num:"..tostring(mol_num) ..",denom_num["..tostring(denom_num) .."],score:" .. tostring(score))
+                         if #intacts > 10 then
+                             local target = {id = v._id, score = score}
+                             targets[#targets + 1] = target
+                         end
+                    end
+                    
+     
                 end
             end
             

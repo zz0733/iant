@@ -10,7 +10,7 @@ local elasticsearch = require "elasticsearch"
 local client = elasticsearch.client{
   hosts = {
     {
-      host = "localhost",
+      host = "127.0.0.1",
       port = "9200"
     }
   }
