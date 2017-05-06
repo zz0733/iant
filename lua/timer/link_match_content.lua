@@ -133,29 +133,19 @@ local select_match_doc = function ( doc, hits )
                         end
                         local denom_num = total * (total+1) / 2
                         local score = mol_num / denom_num
-                         log(ERR,"select_match_doc,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
-                         log(ERR,"select_match_doc,title["..title .."],mol_num:"..tostring(mol_num) ..",denom_num["..tostring(denom_num) .."],score:" .. tostring(score))
-                         if #intacts > 10 then
+                         log(ERR,"select_match_doc_score,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
+                         log(ERR,"select_match_doc_score,title["..title .."],mol_num:"..tostring(mol_num) ..",denom_num["..tostring(denom_num) .."],score:" .. tostring(score))
+                         if score >= 0.9 then
                              local target = {id = v._id, score = score}
                              targets[#targets + 1] = target
                          end
                     end
-                    
-     
                 end
-            end
-            
-            if min_issued < max_issued then
-                local source = v._source
-                local str_source = cjson_safe.encode(source)
-                local names = cjson_safe.encode(source.names)
-                local src_title = source.article.title
-                log(ERR,"select_match_doc,title["..title .."],score:"..tostring(v._score) ..",src.title["..src_title .."],names".. names .. ",doc:" .. str_source)
             end
         end
     end
     local str_targets = cjson_safe.encode(targets)
-    log(ERR,"select_match_doc,title["..title .."],targets:"..tostring(str_targets) ..",size["..#targets .."]")
+    -- log(ERR,"select_match_doc,title["..title .."],targets:"..tostring(str_targets) ..",size["..#targets .."]")
     return targets
 end
 
