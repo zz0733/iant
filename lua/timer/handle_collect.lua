@@ -2,7 +2,7 @@
 local collect_dao = require "dao.collect_dao"
 local handlers = require "handler.handlers"
 local cjson_safe = require("cjson.safe")
-local delay = 5  -- in seconds
+local delay = 10  -- in seconds
 local new_timer = ngx.timer.at
 
 local log = ngx.log
