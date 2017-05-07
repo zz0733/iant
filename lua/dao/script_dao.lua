@@ -1,20 +1,14 @@
 local cjson_safe = require "cjson.safe"
-local client_utils = require("util.client_utils")
-local client = client_utils.client()
+local util_request = require "util.request"
+local util_table = require "util.table"
+local ESClient = require "es.ESClient"
 
-local es_index = "script"
-local es_type = "table"
 
 local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
-
-local ok, new_tab = pcall(require, "table.new")
-if not ok or type(new_tab) ~= "function" then
-    new_tab = function (narr, nrec) return {} end
-end
-local _M = new_tab(0, 2)
+local _M = ESClient:new({index = "script", type = "table"})
 _M._VERSION = '0.01'
 
 
@@ -23,7 +17,7 @@ function _M.insert_scripts(scripts )
 	for k,v in ipairs(scripts) do
 		es_body[#es_body + 1] = {
 	      index = {
-	        ["_type"] = es_type,
+	        ["_type"] = _M.type,
 	        ["_id"] = v.type
 	      }
 	    }
@@ -33,8 +27,8 @@ function _M.insert_scripts(scripts )
 	    es_body[#es_body + 1] = v
 	end
 
-	local resp, status = client:bulk{
-	  index = es_index,
+	local resp, status = _M:bulk{
+	  index = _M.index,
 	  body = es_body
 	}
     
@@ -42,7 +36,7 @@ function _M.insert_scripts(scripts )
 end
 
 function _M.search_by_type( id )
-	local resp, status = client:search{
+	local resp, status = _M:search{
 	  index = es_index,
 	  type = es_type,
 	  body = {
@@ -58,6 +52,22 @@ function _M.search_by_type( id )
 		  }
 		}
 	  }
+	return resp, status
+end
+
+function _M.search_all_ids()
+	local resp, status = _M:search{
+		_source = false,
+		query = {
+			bool = {
+			  must_not = {
+			    term = {
+			      delete = 1
+			    }
+			  }
+			}
+		}
+	}
 	return resp, status
 end
 

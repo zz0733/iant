@@ -9,11 +9,11 @@ local INFO = ngx.ERR
 local CRIT = ngx.CRIT
 local shared_dict = ngx.shared.shared_dict
 local task_queue_key = "task_queue"
-local size_count = 10
-local max_count = 13
+local scrip_type_key = "scrip_types"
+local max_count = 100
 local task_index = "task"
 local task_type = "table"
-local task_level_size = {2,4,10}
+local task_level_size = {5,10,20}
 local check
 
 local importVersions = function ( task )
@@ -49,29 +49,41 @@ end
          local has_count ,err = shared_dict:llen(task_queue_key)
          local need_count = max_count - has_count
          log(INFO,'task,cache:' .. tostring(has_count) .. ",need:" .. tostring(need_count))
-         if has_count < max_count then
+         local str_types ,err = shared_dict:get(scrip_type_key)
+         local script_types = cjson_safe.decode(str_types)
+         local type_count = 0
+         if script_types then
+             type_count = #script_types
+         end
+         log(INFO,'task,script:' .. tostring(type_count) ..",types:" .. tostring(str_types))
+         if has_count < max_count and type_count > 0 then
              local params = {
                 from = 0,
                 status = 0
              }
              local from = 0
              local status = 0
-             local size
+             local limit = 10
              local level = #task_level_size
+
              for i = level, 1, -1 do
                  level = i -1
-                 size = task_level_size[i]
+                 limit = task_level_size[i]
                  local start = ngx.now()
-                 local resp,status = task_dao.load_by_level_status(from,size, level)
+                 local resp,status = task_dao.load_by_level_status(from,limit, level, script_types)
                  ngx.update_time()
                  local cost = (ngx.now() - start)
                  cost = tonumber(string.format("%.3f", cost))
                  if resp then
+                    local hits  = resp.hits.hits
                     local total  = resp.hits.total
-                    log(INFO,"task,load[" .. level .. "],limit:" .. size 
-                        ..",count:" .. total .. ",cost:" .. cost)
+                    local count = 0
+                    if hits then
+                        count = #hits
+                    end
+                    log(INFO,"task,load[" .. level .. "],total:" .. total .. ",count:" ..tostring(count) ..",limit:" .. limit 
+                        ..",cost:" .. cost)
                     if total > 0 then
-                        local hits  = resp.hits.hits
                         for _,v in ipairs(hits) do
                             local source = v._source
                             local task = {}
@@ -96,7 +108,7 @@ end
                     end
                     need_count = need_count - total
                  else
-                    log(CRIT,"task,load[" .. level .. "],limit:" .. size
+                    log(CRIT,"task,load[" .. level .. "],limit:" .. limit
                         ..",cost:" .. cost .. ",cause:", status)
                  end
                  if need_count < 0 then

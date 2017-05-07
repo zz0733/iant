@@ -12,6 +12,7 @@ local find = ngx.re.find
 local intact = require("util.intact")
 local utf8 = require("3th.utf8")
 local link_dao = require "dao.link_dao"
+local script_dao = require "dao.script_dao"
 
 
 local hit_arr = {}
@@ -37,6 +38,6 @@ rchar = cjson_safe.encode(rchar)
  targets[#targets + 1] = {id="123",score=1.23,status=1}
  doc.targets = targets
  doc.status = 1
- local resp, status = link_dao.update_doc(id, doc)
+ local resp, status = script_dao.search_all_ids()
  local str_resp = cjson_safe.encode(resp)
   ngx.say("str_resp:" .. str_resp .. ",status:".. tostring(status))

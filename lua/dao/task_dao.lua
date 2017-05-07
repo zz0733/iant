@@ -64,7 +64,7 @@ function _M.insert_tasks(index, type, tasks )
 	return resp, status
 end
 
-function _M.load_by_level_status( from, size, level, status )
+function _M.load_by_level_status( from, size, level, types )
 	local body = {
 	    from = from,
 	    size = size,
@@ -81,7 +81,12 @@ function _M.load_by_level_status( from, size, level, status )
               	term = {
                   level = level
 	            }
-	          }
+	          },
+	          must = {
+	            terms = {
+	              type = types
+		        }
+		      }
 		   }
 		}
 	  }
