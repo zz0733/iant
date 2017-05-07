@@ -27,19 +27,12 @@ function _M.insert_scripts(scripts )
 	    es_body[#es_body + 1] = v
 	end
 
-	local resp, status = _M:bulk{
-	  index = _M.index,
-	  body = es_body
-	}
-    
+	local resp, status = _M:bulk(es_body)
 	return resp, status
 end
 
 function _M.search_by_type( id )
 	local resp, status = _M:search{
-	  index = es_index,
-	  type = es_type,
-	  body = {
 		query =  { 
 		    bool =  { 
 		      must = { 
@@ -50,8 +43,7 @@ function _M.search_by_type( id )
 		      }
 		    }
 		  }
-		}
-	  }
+	}
 	return resp, status
 end
 
