@@ -26,7 +26,7 @@ function _M.inserts( collects )
 	    	local handlers = data.handlers
 	    	local str_task = cjson_safe.encode(task)
 		    local str_data = cjson_safe.encode(data)
-		    if handlers and !util_table.is_empty_table(handlers) then
+		    if handlers and not util_table.is_empty_table(handlers) then
 		    	es_body[#es_body + 1] = {
 			      index = {
 			        ["_type"] = _M.type,
