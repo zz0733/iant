@@ -49,7 +49,7 @@ function _M.inserts( collects )
 		    	collect_obj.ctime = ngx.time()
 
 			    es_body[#es_body + 1] = collect_obj
-			    count = count + 1
+			    count = count + 1			    
 			else
 			    log(ERR,"ignore.task:" .. str_task .. ",data:" .. str_data)
 		    end

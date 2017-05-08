@@ -47,12 +47,41 @@ function ESClient:new(o)
   return o, error
 end
 
-function ESClient:bulk( params )
-	local resp, status = self.client:bulk{
-	  index = self.index,
-	  body = params
-	}
-	return resp, status
+function ESClient:bulk( params, batch )
+  local resp, status
+  local es_body = {}
+  local batch_size = batch or 10
+  local sum = 0
+  for _,v in ipairs(params) do
+    sum = sum + 1
+    es_body[#es_body + 1] = v
+    if #es_body == batch_size then
+        resp, status = self.client:bulk{
+          index = self.index,
+          body = es_body
+        }
+        if not resp then
+          local count = #es_body / 2
+          local total = sum / 2
+          log(CRIT,"fail.batch.bulk,count:" .. count .. ",total:" .. total .. ",cause:", status)
+        end
+        es_body = {}
+    end
+  end
+  if #es_body >= 1 then
+      resp, status = self.client:bulk{
+        index = self.index,
+        body = es_body
+      }
+      if not resp then
+        local count = #es_body / 2
+        local total = sum / 2
+        log(CRIT,"fail.batch.bulk,count:" .. count .. ",total:" .. total .. ",cause:", status)
+      end
+  end
+
+  return resp, status
+
 end
 
 function ESClient:search( body )
