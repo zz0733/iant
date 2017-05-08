@@ -42,6 +42,7 @@ function _M.inserts( collects )
 			    task.type = nil
 
 			    data.handlers = nil
+			    data.nextTasks = nil
 			    collect_obj.task = str_task
 			    collect_obj.data = str_data
 			    collect_obj.handlers = handlers
