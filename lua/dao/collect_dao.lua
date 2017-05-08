@@ -23,29 +23,36 @@ function _M.inserts( collects )
 	    local data = v.data
 	    local status = v.status
 	    if task and  data and status == 1 then
-			es_body[#es_body + 1] = {
-		      index = {
-		        ["_type"] = _M.type,
-		        ["_id"] = task.id
-		      }
-		    }
-		    local collect_obj = {}
-		    collect_obj.type = task.type
+	    	local handlers = data.handlers
+	    	local str_task = cjson_safe.encode(task)
+		    local str_data = cjson_safe.encode(data)
+		    if handlers and !util_table.is_empty_table(handlers) then
+		    	es_body[#es_body + 1] = {
+			      index = {
+			        ["_type"] = _M.type,
+			        ["_id"] = task.id
+			      }
+			    }
+			    local collect_obj = {}
+			    collect_obj.type = task.type
 
-			--  can not use ipairs,iterator by pairs
-			--  table.remove(task,index) not work
-		    task.id = nil
-		    task.type = nil
+				--  can not use ipairs,iterator by pairs
+				--  table.remove(task,index) not work
+			    task.id = nil
+			    task.type = nil
 
-		    -- local data_json = cjson_safe.decode(data)
-		    local handlers = data.handlers
-		    data.handlers = nil
-		    collect_obj.task = cjson_safe.encode(task)
-		    collect_obj.data = cjson_safe.encode(data)
-		    collect_obj.handlers = handlers
-	    	collect_obj.ctime = ngx.time()
-		    es_body[#es_body + 1] = collect_obj
-		    count = count + 1
+			    data.handlers = nil
+			    collect_obj.task = str_task
+			    collect_obj.data = str_data
+			    collect_obj.handlers = handlers
+		    	collect_obj.ctime = ngx.time()
+
+			    es_body[#es_body + 1] = collect_obj
+			    count = count + 1
+			else
+			    log(ERR,"ignore.task:" .. str_task .. ",data:" .. str_data)
+		    end
+			
 	    end
 	end
     if count < 1 then
