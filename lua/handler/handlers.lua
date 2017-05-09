@@ -8,6 +8,8 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
+local decode_base64 = ngx.decode_base64
+
 
 local ok, new_tab = pcall(require, "table.new")
 if not ok or type(new_tab) ~= "function" then
@@ -39,7 +41,8 @@ _M.content = function(id, source)
    elseif not source.data then
    	 return nil, "source.data is nil"
    end
-   local data = cjson_safe.decode(source.data)
+   local str_date = decode_base64(source.data)
+   local data = cjson_safe.decode(str_date)
    -- log(ERR,"handleXXXXXXX[content],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
    if not data then
    	 return nil, "es[source.data] is not json"
@@ -65,7 +68,8 @@ _M.link = function(id, source)
    elseif not source.data then
        return nil, "source.data is nil"
    end
-   local data = cjson_safe.decode(source.data)
+   local str_date = decode_base64(source.data)
+   local data = cjson_safe.decode(str_date)
    log(ERR,"handleXXXXXXX[content],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
    if not data then
        return nil, "es[source.data] is not json"

@@ -100,27 +100,18 @@
 # '
 # exit 0
 
-#  curl -XPOST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
-# {
+ curl -XPOST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+{
   
-#   "query": {
-#     "match": {"names":"继承大丈夫(港)"}
-#   },
-#   "highlight": {
-#     "order": "score",
-#     "fields": {
-#       "names": {
-#         "fragment_size": 50,
-#         "number_of_fragments": 3,
-#         "fragmenter": "span"
-#       }
-#     }
-#   },
-#   "from": 0,
-#   "size": 3
-# }
-#  '
-# exit 0
+  "query": {
+    "match": {"article.code":"23761370"}
+  },
+  
+  "from": 0,
+  "size": 3
+}
+ '
+exit 0
 # curl -XPOST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 # {
   

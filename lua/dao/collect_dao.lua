@@ -8,6 +8,8 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
+local encode_base64 = ngx.encode_base64
+
 local _M = ESClient:new({index = "collect", type = "table"})
 -- _M._VERSION = '0.01'
 
@@ -44,7 +46,7 @@ function _M.inserts( collects )
 			    data.handlers = nil
 			    data.nextTasks = nil
 			    collect_obj.task = str_task
-			    collect_obj.data = str_data
+			    collect_obj.data = encode_base64(str_data)
 			    collect_obj.handlers = handlers
 		    	collect_obj.ctime = ngx.time()
 

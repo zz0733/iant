@@ -26,8 +26,8 @@ curl -XPUT 'http://localhost:9200/collect/_mapping/table?pretty' -d '
       "index": "no"
     },
     "data": {
-      "type": "string",
-      "index": "no"
+      "type": "binary",
+      "doc_values": "false"
     },
     "handlers": {
       "type": "keyword"
