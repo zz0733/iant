@@ -8,6 +8,8 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
+local max_len = 32760
+
 local encode_base64 = ngx.encode_base64
 
 local _M = ESClient:new({index = "collect", type = "table"})
@@ -45,6 +47,9 @@ function _M.inserts( collects )
 
 			    data.handlers = nil
 			    data.nextTasks = nil
+			    if string.len(str_task) >= max_len then
+			    	str_task = string.sub(str_task, 1, max_len)
+			    end
 			    collect_obj.task = str_task
 			    collect_obj.data = encode_base64(str_data)
 			    collect_obj.handlers = handlers
