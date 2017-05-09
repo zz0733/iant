@@ -59,8 +59,7 @@ function _M.query_by_name( from, size, name )
 	      query = name,
 	      type = "best_fields",
 	      fields = {"names"},
-	      operator = "and",
-	      minimum_should_match = "60%"
+	      minimum_should_match = "45%"
 	    }
 	  },
 	  highlight = {

@@ -48,8 +48,7 @@
 #       "fields": [
 #         "names"
 #       ],
-#       "operator": "and",
-#       "minimum_should_match": "60%"
+#       "minimum_should_match": "45%"
 #     }
 #   },
 #   "highlight": {
