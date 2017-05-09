@@ -37,33 +37,28 @@
 # }
 # '
 # exit 0
-# curl -X GET 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
-# {
-#   "from": 0,
-#   "size": 2,
-#   "query": {
-#     "multi_match": {
-#       "query": "继",
-#       "type": "best_fields",
-#       "fields": [
-#         "names"
-#       ],
-#       "minimum_should_match": "45%"
-#     }
-#   },
-#   "highlight": {
-#     "order": "score",
-#     "fields": {
-#       "names": {
-#         "fragment_size": 50,
-#         "number_of_fragments": 3,
-#         "fragmenter": "span"
-#       }
-#     }
-#   }
-# }
-# '
-# exit 0
+curl -X GET 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+{
+  "from": 0,
+  "size": 2,
+  "query": {
+    "match": {
+      "names": "继"
+    }
+  },
+  "highlight": {
+    "order": "score",
+    "fields": {
+      "names": {
+        "fragment_size": 50,
+        "number_of_fragments": 3,
+        "fragmenter": "span"
+      }
+    }
+  }
+}
+'
+exit 0
 # curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 # {
 #   "from": 0,

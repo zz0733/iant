@@ -55,11 +55,8 @@ function _M.query_by_name( from, size, name )
 	  from = from,
 	  size = size,
 	  query = {
-	    multi_match = {
-	      query = name,
-	      type = "best_fields",
-	      fields = {"names"},
-	      minimum_should_match = "45%"
+	    match = {
+	      names = name
 	    }
 	  },
 	  highlight = {
