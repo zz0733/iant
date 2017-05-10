@@ -87,10 +87,11 @@ _M.to_intact_words = function ( content, segments )
     	local from, to, err = find(content, seg)
     	if not err and from then
     		intacts[#intacts + 1] = {from = from, to = to, seg = seg, total = total }
+            if _M.is_intact_range(content,from , to) then
+                intacts[#intacts].intact = true
+            end
     	end
-    	if _M.is_intact_range(content,from , to) then
-			intacts[#intacts].intact = true
-		end
+    	
     end
     return intacts
 end
@@ -103,27 +104,24 @@ _M.concat_segments = function ( content, segments )
     if not util_table.is_table(segments) or util_table.is_empty_table(segments) then
     	return concats
     end
-    local word = nil
     local len = #segments
-    local index = 1
-    while index <= len do
-    	local from, to
-    	local step = 0
-    	local seg = ""
-    	local tmp = nil
-    	while index + step <= len do
-    		tmp = seg .. segments[index + step]
-    		-- log(ERR,"step:".. step .. ",index:" .. index .. ",len:" .. len ..",tmp:" .. tmp)
-			from, to, err = find(content, tmp)
-	    	if err or not from then
-	    		step = step - 1
-	    		break
-			end
-			seg = tmp 
-			step = step + 1
-	    end
-	    concats[#concats + 1] = seg
-	    index = index + step + 1
+    local from, to, err
+    local i = 1
+    while i <= len do
+        local seg = segments[i]
+        local tmp = nil
+        for j = i + 1 , len do
+            tmp = seg .. segments[j]
+            from, to, err = find(content, tmp)
+            if err or not from then
+                break
+            else
+                seg = tmp
+                i = j
+            end
+        end
+        concats[#concats + 1] = seg
+        i = i + 1
     end
     return concats
 end

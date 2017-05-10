@@ -13,6 +13,9 @@ local client = elasticsearch.client{
       host = "127.0.0.1",
       port = "9200"
     }
+  },
+  params = {
+	maxRetryCount = 1
   }
 }
 

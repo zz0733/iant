@@ -2,7 +2,7 @@
 local link_dao = require "dao.link_dao"
 local content_dao = require "dao.content_dao"
 local cjson_safe = require("cjson.safe")
-local delay = 10  -- in seconds
+local delay = 1  -- in seconds
 local new_timer = ngx.timer.at
 
 local log = ngx.log
@@ -16,6 +16,7 @@ local to_date = ngx.time()
 local period_date = 60*1000
 
 local match = ngx.re.match
+local last_worker = ngx.worker.count() - 1
 
 local intact = require("util.intact")
 local util_table = require "util.table"
@@ -100,11 +101,11 @@ local select_match_doc = function ( doc, hits )
         local source = v._source
         local article = source.article
         local cur_year = article.year
+        local cur_title = article.title
         max_issued = to_time_mills(max_issued or 1)
         min_issued = to_time_mills(min_issued or 1)
-        log(ERR,"select_match_doc,title["..title .."],year:"..has_year..",link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
-        if ((cur_year and cur_year == has_year) or (start_mills <= min_issued and end_mills >= max_issued) ) then
-            log(ERR,"select_match_doc,title["..title .."],link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
+        log(ERR,"select_match_doc,title["..title .."]vs["..cur_title.."],year["..has_year .."]vs[" .. cur_year .."],link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
+        if ((cur_year and cur_year == has_year) or (start_mills <= max_issued and end_mills >= min_issued) ) then
             local highlight = v.highlight
             if highlight then
                 local names = highlight.names
@@ -128,7 +129,7 @@ local select_match_doc = function ( doc, hits )
                                 sum = sum + total - i
                             end
                             if v.intact then
-                                sum = (1 + (total - v.from ) / total ) * sum
+                                sum = (1 + 2*(total - v.from ) / total ) * sum
                             end
                             mol_num = mol_num + sum
                         end
@@ -146,8 +147,8 @@ local select_match_doc = function ( doc, hits )
             end
         end
     end
-    -- local str_targets = cjson_safe.encode(targets)
-    -- log(ERR,"select_match_doc,title["..title .."],targets:"..tostring(str_targets) ..",size["..#targets .."]")
+    local str_targets = cjson_safe.encode(targets)
+    log(ERR,"select_match_doc,title["..title .."],targets:"..tostring(str_targets) ..",size["..#targets .."]")
     return targets
 end
 
@@ -158,7 +159,7 @@ local find_similars = function ( doc )
     local source = doc._source
     local title = source.title
     local offset = 0
-    local limit = 10
+    local limit = 3
     local max_issued = -1
     local start = ngx.now()
     -- title = [[继承人2017]]
@@ -173,19 +174,15 @@ local find_similars = function ( doc )
         local shits = cjson_safe.encode(hits)
         local targets = select_match_doc(doc, hits)
         if not util_table.is_empty_table(targets) then
-            local bulk_docs = {}
-            
             local link_doc = {}
             link_doc.targets = targets
             link_doc.status = 1
-
             link_dao.update_doc(doc._id, link_doc)
         end
-        
         local stargets = cjson_safe.encode(targets)
         log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
             .. ",max_issued:"..max_issued.. ",total:" .. total .. ",cost:" .. cost)
-        log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits .. ",targets:" .. tostring(stargets))
+        -- log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits .. ",targets:" .. tostring(stargets))
         
     end
 end
@@ -217,9 +214,9 @@ local check
             local total  = resp.hits.total
             local hits  = resp.hits.hits
             local shits = cjson_safe.encode(hits)
-            log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total .. ",cost:" .. cost)
+            log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total ..",hits:" .. tostring(#hits).. ",cost:" .. cost)
             -- log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",hits:" .. shits)
-            search_similars(hits)
+            -- search_similars(hits)
             if (total == 0) or (from == total) then
                from = 0
                from_date = to_date
@@ -229,12 +226,14 @@ local check
                    to_date = cur_date
                end
             else
-               if from_date == 0 then
-                local last = hits[#hits]
-                from_date = last._source.ctime
-                from = 0
+               local last = hits[#hits]
+               local last_date = last._source.ctime
+               -- log(ERR,"query_unmatch:from_date:" .. tostring(from_date) ..",last_date:" ..tostring(last_date))
+               if from_date == last_date  then
+                   from = from + #hits
                else 
-                from = from + #hits
+                   from_date = last_date
+                   from = 0
                end
             end
          else 
@@ -249,7 +248,7 @@ local check
      end
  end
 
- if 1 == ngx.worker.id() then
+ if last_worker == ngx.worker.id() then
      log(ERR, "match_timer start")
      local ok, err = new_timer(delay, check)
      if not ok then

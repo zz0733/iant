@@ -58,8 +58,8 @@ function _M.query_unmatch( from_date, to_date, from, size)
 		    filter = {
 		      range = {
 		        ctime ={
-		          gt = from_date,
-		          lte = to_date
+		          gte = from_date,
+		          lt = to_date
 		        }
 		      }
 		    },
