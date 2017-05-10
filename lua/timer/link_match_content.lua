@@ -216,7 +216,7 @@ local check
             local shits = cjson_safe.encode(hits)
             log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total ..",hits:" .. tostring(#hits).. ",cost:" .. cost)
             -- log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",hits:" .. shits)
-            -- search_similars(hits)
+            search_similars(hits)
             if (total == 0) or (from == total) then
                from = 0
                from_date = to_date
