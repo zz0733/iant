@@ -66,8 +66,8 @@ _M.is_intact_range = function ( content, from, to )
     if end_char then
     	concat = concat .. end_char
     end
-    log(ERR,"start_char:" ..tostring(start_char) ..",end_char:" .. tostring(end_char) .. ",concat:" .. tostring(concat))
-    log(ERR,"end_char:" ..tostring(end_char) ..",is_word_char:" .. tostring(_M.is_word_char(end_char)))
+    -- log(ERR,"start_char:" ..tostring(start_char) ..",end_char:" .. tostring(end_char) .. ",concat:" .. tostring(concat))
+    -- log(ERR,"end_char:" ..tostring(end_char) ..",is_word_char:" .. tostring(_M.is_word_char(end_char)))
     local word = utf8match(concat, "%w+")
     local ret = word == nil
     return ret
