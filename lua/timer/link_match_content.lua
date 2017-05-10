@@ -220,7 +220,7 @@ local check
             log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total .. ",cost:" .. cost)
             -- log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",hits:" .. shits)
             search_similars(hits)
-            if (total = 0) or (from == total) then
+            if (total == 0) or (from == total) then
                from = 0
                from_date = to_date
                cur_date = ngx.time()
