@@ -247,7 +247,7 @@ local check
      end
  end
 
- if 0 == ngx.worker.id() then
+ if 1 == ngx.worker.id() then
      log(ERR, "match_timer start")
      local ok, err = new_timer(delay, check)
      if not ok then
