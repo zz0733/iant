@@ -223,7 +223,7 @@ local check
             log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total ..",hits:" .. tostring(#hits).. ",cost:" .. cost)
             -- log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",hits:" .. shits)
             search_similars(hits)
-            if (total == 0) or (from == total) then
+            if (total == 0) or (from >= total) then
                from = 0
                from_date = to_date
                cur_date = ngx.time()
@@ -232,16 +232,22 @@ local check
                    to_date = cur_date
                end
             else
-               local last = hits[#hits]
-               if(#hits < 1)
-               local last_date = last._source.ctime
-               -- log(ERR,"query_unmatch:from_date:" .. tostring(from_date) ..",last_date:" ..tostring(last_date))
-               if from_date == last_date  then
-                   from = from + #hits
-               else 
-                   from_date = last_date
+                local hit_count = #hits
+                if hit_count < 1 then
+                   from_date = to_date
                    from = 0
-               end
+                else 
+                   local last = hits[hit_count]
+                   local last_date = last._source.ctime
+                   -- log(ERR,"query_unmatch:from_date:" .. tostring(from_date) ..",last_date:" ..tostring(last_date))
+                   if from_date == last_date  then
+                       from = from + hit_count
+                   else 
+                       from_date = last_date
+                       from = 0
+                   end
+                end
+  
             end
          else 
            log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",cost:"..cost..",cause:", tostring(status))
