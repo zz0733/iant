@@ -54,7 +54,6 @@ function _M.query_by_name( from, size, name )
 	local body = {
 	  from = from,
 	  size = size,
-	  min_score = 30,
 	  query = {
 	    match = {
 	      names = name
