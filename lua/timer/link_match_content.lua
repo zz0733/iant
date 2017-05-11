@@ -102,9 +102,10 @@ local select_match_doc = function ( doc, hits )
         local article = source.article
         local cur_year = article.year
         local cur_title = article.title
+        local cur_code = article.code
         max_issued = to_time_mills(max_issued or 1)
         min_issued = to_time_mills(min_issued or 1)
-        log(ERR,"select_match_doc,title["..title .."]vs["..cur_title.."],year["..has_year .."]vs[" .. cur_year .."],link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
+        log(ERR,"select_match_doc[".. v._id .."],title["..title .."]vs["..cur_title.."]code[".. cur_code .."],year["..has_year .."]vs[" .. cur_year .."],link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
         if ((cur_year and cur_year == has_year) or (start_mills <= max_issued and end_mills >= min_issued) ) then
             local highlight = v.highlight
             if highlight then
@@ -125,11 +126,13 @@ local select_match_doc = function ( doc, hits )
                                total = v.total
                             end
                             local sum = 0
+                            local weight = 0
                             for i = v.from, v.to do
-                                sum = sum + total - i
-                            end
-                            if v.intact then
-                                sum = (1 + 2*(total - v.from ) / total ) * sum
+                                weight = total - i
+                                if v.intact then
+                                   weight =  weight*2
+                                end
+                                sum = sum + weight
                             end
                             mol_num = mol_num + sum
                         end
