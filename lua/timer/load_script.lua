@@ -34,12 +34,12 @@ local check
             local types_val = cjson_safe.encode(types)
             local ok, err = shared_dict:set(scrip_type_key, types_val )
             if err then
-                log(CRIT,"fail.script.set,types:" .. types_val .. ",cause:", err)
+                log(CRIT,"fail.script.set,types:" .. types_val .. ",count:" .. #types ..",total:" ..total .. ",cause:", err)
             else 
-                log(ERR,"script.set,types:" .. types_val .. ",count:" .. total)
+                log(ERR,"script.set,types:" .. types_val .. ",count:" .. #types ..",total:" ..total)
             end
          else
-            log(CRIT,"script,load,cost:" .. cost .. ",cause:", status)
+            log(CRIT,"fail.script,load,cost:" .. cost .. ",cause:", status)
          end
          local ok, err = new_timer(delay, check)
          if not ok then
