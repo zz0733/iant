@@ -115,35 +115,41 @@ local select_match_doc = function ( doc, hits )
                     local hl_arr = to_highlight(hl_name)
 
                     local intacts = intact.to_intact_words(title, hl_arr)
-                    local seg_total = #intacts
-                    if  seg_total > 0 then
+                    local seg_count = #intacts
+                    if  seg_count > 0 then
                         local str_hl_arr = cjson_safe.encode(hl_arr)
                         local str_intacts = cjson_safe.encode(intacts)
-                        local total = nil
+                        local total = 0
                         local mol_num = 0
-                        
                         local intact_count = 0
                         for _,v in ipairs(intacts) do
-                            if v.total and not total then
+                            if v.intact then
+                                intact_count = intact_count + 1
+                            end
+                        end
+                        local seg_per = intact_count / seg_count
+                        for _,v in ipairs(intacts) do
+                            if v.total and  total < 1 then
                                total = v.total
                             end
                             local sum = 0
-                            local weight = 0
                             for i = v.from, v.to do
-                                weight = total - i
+                                local weight = total - i
+                                if v.intact then
+                                    weight = weight * (weight + 1) * seg_per
+                                end
                                 sum = sum + weight
                             end
-                            if v.intact then
-                                intact_count = intact_count + 1
-                                sum = 2 * sum
-                            end 
                             mol_num = mol_num + sum
                         end
-                        local denom_num = total * (total+1) / 2
-                        local score = mol_num*(1 + intact_count / seg_total) / denom_num
+                        local len = intact.wordlen(title)
+
+                        local denom_num = len * (len+1) / 2
+                        local score = mol_num / denom_num
+                        -- local score = char_per*0.4 + 0.6*seg_per
                          log(ERR,"select_match_doc_score,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
                          log(ERR,"select_match_doc_score,title["..title .."],mol_num:"..tostring(mol_num) ..",denom_num["..tostring(denom_num) .."],score:" .. tostring(score))
-                         if score >= 0.85 then
+                         if score >= 0.6 then
                              score = tonumber(string.format("%.3f", score))
                              local target = {id = v._id, score = score, status=0 }
                              targets[#targets + 1] = target

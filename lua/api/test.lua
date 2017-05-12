@@ -6,7 +6,8 @@ local name = [[继承人2017]]
 local name = [[1901继承人2017]]
 local name = [[190继承人.2017]]
 local name = [[巴霍巴利王2.2017.123.wex]]
--- local name = [[破产姐妹【第四季】]]
+local name = [[破产姐妹【第四季】]]
+local name = [[[720粤语]不懂撒娇的女人[第1集].rmvb]]
 
 local find = ngx.re.find
 local intact = require("util.intact")
@@ -23,6 +24,7 @@ hit_arr[#hit_arr + 1] = "2017"
 hit_arr={"巴","霍","巴","利","王","2017","123","wex"}
 -- hit_arr={"破产","姐妹","第四季"}
 -- hit_arr={"破产姐妹","第四季"}
+hit_arr={"八个","女人"}
 
 -- local rchar = intact.to_intact_words(name,hit_arr)
 -- local concats = intact.concat_segments(name,hit_arr)

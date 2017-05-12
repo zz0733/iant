@@ -18,6 +18,8 @@ local utf8match = utf8.match
 local log = ngx.log
 local ERR = ngx.ERR
 
+-- local cjson_safe = require "cjson.safe"
+
 -- for k,v in pairs(utf8) do
 --         string[k] = v
 -- end
@@ -45,16 +47,31 @@ _M.is_word_char = function ( char )
 
 end
 
-_M.is_intact_word = function ( content, word )
-    if not content or not word then
-        return false
-    end
-    local from, to, err = find(content, word)
-    if err or not from then
-    	return false
-    end
-    return _M.is_intact_range(content,from, to)
+_M.filter_spec_chars = function(s)  
+    local ss = {}  
+    for k = 1, #s do  
+        local c = string.byte(s,k)  
+        if not c then break end  
+        if (c>=48 and c<=57) or (c>= 65 and c<=90) or (c>=97 and c<=122) then  
+            table.insert(ss, string.char(c))  
+        elseif c>=228 and c<=233 then  
+            local c1 = string.byte(s,k+1)  
+            local c2 = string.byte(s,k+2)  
+            if c1 and c2 then  
+                local a1,a2,a3,a4 = 128,191,128,191  
+                if c == 228 then a1 = 184  
+                elseif c == 233 then a2,a4 = 190,165  
+                end  
+                if c1>=a1 and c1<=a2 and c2>=a3 and c2<=a4 then  
+                    k = k + 2  
+                    table.insert(ss, string.char(c,c1,c2))  
+                end  
+            end  
+        end  
+    end  
+    return table.concat(ss)  
 end
+
 
 _M.is_intact_range = function ( content, from, to )
     if not content then
@@ -67,10 +84,16 @@ _M.is_intact_range = function ( content, from, to )
     	concat = concat .. end_char
     end
     -- log(ERR,"start_char:" ..tostring(start_char) ..",end_char:" .. tostring(end_char) .. ",concat:" .. tostring(concat))
-    -- log(ERR,"end_char:" ..tostring(end_char) ..",is_word_char:" .. tostring(_M.is_word_char(end_char)))
-    local word = utf8match(concat, "%w+")
-    local ret = word == nil
+    local word = _M.filter_spec_chars(concat)
+    -- local str_word = cjson_safe.encode(word)
+    -- log(ERR,"word:" .. tostring(str_word) ..",#word:" .. #word)
+    local ret = (#word == 0)
     return ret
+end
+
+_M.wordlen = function (content)
+  content = _M.filter_spec_chars(content)
+  return utf8len(content)
 end
 
 _M.to_intact_words = function ( content, segments )
