@@ -50,6 +50,7 @@ end
 function _M.search_all_ids()
 	local resp, status = _M:search{
 		_source = false,
+		size = 1000,
 		query = {
 			bool = {
 			  must_not = {
