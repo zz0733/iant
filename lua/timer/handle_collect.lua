@@ -39,7 +39,7 @@ local check
                             
                             local resp,status = handlers.execute(cmd, v._id, source)
                             if not resp then
-                                log(ERR,"handlers[" .. cmd .."],id:" .. tostring(v._id) .. ",status:" .. tostring(status) )
+                                log(CRIT,"handlers[" .. cmd .."],id:" .. tostring(v._id) .. ",status:" .. tostring(status) )
                             end
                             
                        end
