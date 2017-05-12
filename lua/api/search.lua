@@ -12,7 +12,7 @@ local client_utils = require("util.client_utils")
 local client = client_utils.client()
 
 local post_body = util_request.post_body(ngx.req)
-log(ERR,"params:" ..tostring(post_body))
+-- log(ERR,"params:" ..tostring(post_body))
 local message = {}
 message.code = 200
 if  post_body then
