@@ -152,7 +152,7 @@ _M.getSegmentDistance = function ( title, hl_title)
     local str_intacts = cjson_safe.encode(intacts)
     local intact_count = 0
     for _,v in ipairs(intacts) do
-        if v.intact and not tonumber(v.seg) then
+        if v.intact and (v.to - v.from >= 1) and not tonumber(v.seg) then
             intact_count = intact_count + 1
         end
     end
