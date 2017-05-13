@@ -50,7 +50,7 @@ exit 0
 curl -X POST 'http://127.0.0.1:9200/link/table/_update_by_query' -d '
 {
   "script": {
-    "inline": "ctx._source.status=0",
+    "inline": "ctx._source.status=0; ctx._source.targets=null;",
     "lang": "painless"
   },
   "query": {

@@ -95,6 +95,7 @@ elseif 'nexts' == method then
       return false
     end
     local fields = {"type","url","batch_id","job_id","level"}
+    local param_fields = {"_acceptor","_localize"}
     local task_array = {}
     for _,v in ipairs(body_json) do
       local task = v.task
@@ -104,6 +105,10 @@ elseif 'nexts' == method then
         local nextTasks = data.nextTasks
         local handlers = data.handlers
         if contains(handlers, "CreateNextTask") then
+          local oParams = {}
+          if task.params then
+             oParams = cjson_safe.decode(task.params)
+          end
           for _,v in ipairs(nextTasks) do
               -- log(ERR,"next:" .. v)
               local new_task = {}
@@ -115,6 +120,11 @@ elseif 'nexts' == method then
                 v[key] = nil
                 if not new_task[key] then
                   new_task[key] = task[key]
+                end
+              end
+              for _,pkey in ipairs(param_fields) do
+                if not v[pkey] then
+                  v[pkey] = oParams[pkey]
                 end
               end
               new_task.params = v
