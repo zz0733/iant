@@ -164,15 +164,16 @@ _M.getSegmentDistance = function ( title, hl_title)
     local jar_dist = _M.getJaroWinklerDistance(title,hl_title)
     local sim_seg_per = 0
     local score = jar_dist
-    if seg_count > 0 then
+    if seg_count > 0 and intact_count > 0 then
         sim_seg_per = intact_count / seg_count
-        if sim_seg_per > 0 and sim_seg_per < 1 then
-            score = math.pow(jar_dist, 1 - sim_seg_per)
+        if sim_seg_per >= 1 then
+            sim_seg_per = 0.9
         end
+        score = math.pow(jar_dist, 1 - sim_seg_per)
     end
     -- local score = char_per*0.4 + 0.6*seg_per
      log(ERR,"select_match_doc_score,title["..title .."],hl_title:"..tostring(hl_title) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
-     log(ERR,"select_match_doc_score,title["..title .."],,"..sim_seg_per..",score:" .. tostring(score))
+     log(ERR,"select_match_doc_score,title["..title .."],sim_seg_per:"..sim_seg_per..",score:" .. tostring(score))
      score = tonumber(string.format("%.3f", score))
      return score
 end

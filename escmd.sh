@@ -37,12 +37,8 @@
 # }
 # '
 # exit 0
-curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query' -d '
+curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
 {
-  "script": {
-    "inline": "ctx._source.status=0",
-    "lang": "painless"
-  },
   "query": {
     "match": {
       "status": 1
@@ -51,7 +47,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query' -d '
 }
 '
 exit 0
-curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query' -d '
+curl -X POST 'http://127.0.0.1:9200/link/table/_update_by_query' -d '
 {
   "script": {
     "inline": "ctx._source.status=0",
