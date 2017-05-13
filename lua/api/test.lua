@@ -33,3 +33,16 @@ local rchar = intact.to_intact_words(name,hit_arr)
 rchar = cjson_safe.encode(rchar)
 -- local rchar = to_intact_words(name,"继承人")
  ngx.say("end:" .. name .. ",lchar:"..lchar .. ",rchar:" .. tostring(rchar) .. ",len:" .. tostring(string.len(name)))
+
+
+local similar = require("util.similar")
+local first = "hello"
+local second = "hallo"
+
+local first = "人气歌谣.2017.综艺更"
+local second = "<em>人气</em><em>歌谣</em> 인기가요‎ (2000)"
+
+-- local score = similar.getJaroWinklerDistance("hello", "hallo") 
+-- local score = similar.getJaroWinklerDistance("fly", "ant")
+ngx.say("getSegmentDistance:" .. similar.getSegmentDistance(first, second))
+ngx.say("getJaroWinklerDistance:" .. similar.getJaroWinklerDistance(first, second))

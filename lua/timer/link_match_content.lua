@@ -20,27 +20,8 @@ local last_worker = ngx.worker.count() - 1
 
 local intact = require("util.intact")
 local util_table = require "util.table"
+local similar = require("util.similar")
 
-
-local to_highlight = function ( name )
-    local hl_arr = {}
-    if not name then
-        return hl_arr
-    end
-    local it, err = ngx.re.gmatch(name, "<em>(.+?)<\\/em>", "ijo")
-    if not it then
-       return hl_arr
-    end
-     while true do
-         local m, err = it()
-         if m then
-            hl_arr[#hl_arr + 1] = m[1]
-         else
-            break
-         end
-     end
-     return hl_arr
-end
 
 local find_year = function ( name )
     if not name then
@@ -111,50 +92,13 @@ local select_match_doc = function ( doc, hits )
             if highlight then
                 local names = highlight.names
                 if names then
-                    local hl_name = names[1]
-                    local hl_arr = to_highlight(hl_name)
-
-                    local intacts = intact.to_intact_words(title, hl_arr)
-                    local seg_count = #intacts
-                    if  seg_count > 0 then
-                        local str_hl_arr = cjson_safe.encode(hl_arr)
-                        local str_intacts = cjson_safe.encode(intacts)
-                        local total = 0
-                        local mol_num = 0
-                        local intact_count = 0
-                        for _,v in ipairs(intacts) do
-                            if v.intact then
-                                intact_count = intact_count + 1
-                            end
-                        end
-                        local seg_per = intact_count / seg_count
-                        for _,v in ipairs(intacts) do
-                            if v.total and  total < 1 then
-                               total = v.total
-                            end
-                            local sum = 0
-                            for i = v.from, v.to do
-                                local weight = total - i
-                                if v.intact then
-                                    weight = weight * (weight + 1) * seg_per
-                                end
-                                sum = sum + weight
-                            end
-                            mol_num = mol_num + sum
-                        end
-                        local len = intact.wordlen(title)
-
-                        local denom_num = len * (len+1) / 2
-                        local score = mol_num / denom_num
-                        -- local score = char_per*0.4 + 0.6*seg_per
-                         log(ERR,"select_match_doc_score,title["..title .."],hl_name:"..tostring(hl_name) ..",hl_arr["..str_hl_arr .."],str_intacts:" .. tostring(str_intacts))
-                         log(ERR,"select_match_doc_score,title["..title .."],mol_num:"..tostring(mol_num) ..",denom_num["..tostring(denom_num) .."],score:" .. tostring(score))
-                         if score >= 0.6 then
-                             score = tonumber(string.format("%.3f", score))
-                             local target = {id = v._id, score = score, status=0 }
-                             targets[#targets + 1] = target
-                         end
-                    end
+                     local hl_name = names[1]
+                     local score = similar.getSegmentDistance(title, hl_name)
+                     if score >= 0.6 then
+                         score = tonumber(string.format("%.3f", score))
+                         local target = {id = v._id, score = score, status=0 }
+                         targets[#targets + 1] = target
+                     end
                 end
             end
         end
