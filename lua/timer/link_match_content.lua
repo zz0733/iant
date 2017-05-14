@@ -21,6 +21,7 @@ local last_worker = ngx.worker.count() - 1
 local intact = require("util.intact")
 local util_table = require "util.table"
 local similar = require("util.similar")
+local content_fields = {"names","directors","issueds","article","ctime"}
 
 
 local find_year = function ( name )
@@ -130,7 +131,7 @@ local find_similars = function ( doc )
     local start = ngx.now()
     -- title = [[继承人2017]]
     source.title = title
-    local resp, status = content_dao.query_by_name(offset, limit, title)
+    local resp, status = content_dao.query_by_name(offset, limit, title, content_fields)
     ngx.update_time()
     local cost = (ngx.now() - start)
     cost = tonumber(string.format("%.3f", cost))

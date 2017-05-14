@@ -50,10 +50,11 @@ function _M.inserts( params )
 	return _M:bulk( es_body )
 end
 
-function _M.query_by_name( from, size, name )
+function _M.query_by_name( from, size, name,fields )
 	local body = {
 	  from = from,
 	  size = size,
+	  _source = fields,
 	  query = {
 	    match = {
 	      names = name
