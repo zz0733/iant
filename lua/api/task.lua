@@ -63,7 +63,7 @@ elseif 'retry' == method  then
               task.params = cjson_safe.encode(params_obj)
               retry_count = retry_count + 1
               local task_val = cjson_safe.encode(task)
-              local data_val = cjson_safe.encode(v.data)
+              local data_val = cjson_safe.encode(v.error)
               log(ERR,"retry["..task.id .."](".. index.."),task:" .. task_val..",data:" .. data_val)
               local len, err = shared_dict:lpush(task_queue_key, task_val)
               if err then
