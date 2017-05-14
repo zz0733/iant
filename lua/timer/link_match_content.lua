@@ -98,7 +98,7 @@ local select_match_doc = function ( doc, hits )
                      local director_score = similar.getDirectorDistance(source.directors, doc.directors)
                      local actor_score = similar.getDirectorDistance(source.actors, doc.actors)
                      local score = seg_score + imdb_score + director_score
-                     log(ERR,"select_match_doc_score,title["..title .."],seg:"..tostring(seg_score) 
+                     log(ERR,"select_match_doc_score,title["..title .."]vs["..cur_title.."],seg:"..tostring(seg_score) 
                             ..",imdb:" .. tostring(imdb_score)
                             ..",director:" .. tostring(director_score) 
                             .. ",actor:"..tostring(actor_score)
@@ -221,11 +221,11 @@ local check
      end
  end
 
- -- if last_worker == ngx.worker.id() then
+ if last_worker == ngx.worker.id() then
      log(ERR, "match_timer start")
      local ok, err = new_timer(delay, check)
      if not ok then
          log(ERR, "match_timer fail to run: ", err)
          return
      end
- -- end
+ end
