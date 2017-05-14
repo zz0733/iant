@@ -221,11 +221,11 @@ local check
      end
  end
 
- if last_worker == ngx.worker.id() then
-     log(ERR, "match_timer start")
+ -- if last_worker == ngx.worker.id() then
+     log(ERR, "match_timer["..ngx.worker.id() .."] start")
      local ok, err = new_timer(delay, check)
      if not ok then
          log(ERR, "match_timer fail to run: ", err)
          return
      end
- end
+ -- end
