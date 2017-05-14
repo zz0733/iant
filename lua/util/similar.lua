@@ -178,4 +178,34 @@ _M.getSegmentDistance = function ( title, hl_title)
      return score
 end
 
+_M.getImdbDistance = function ( by_content, by_link)
+     if not by_content or not by_link then
+         return 0
+     end
+     local imdb_prefix = "imdb"
+     local from, to, err = find(by_link, imdb_prefix)
+     if err or from ~= 1 then
+         return 0
+     end
+     by_content = imdb_prefix .. by_content
+     local score = 0.4999
+     if by_link ~= by_content then
+        score = -1 * score
+     end
+     return score
+end
+
+_M.getDirectorDistance = function ( by_content, by_link)
+     if not by_content or not by_link then
+         return 0
+     end
+     by_content = table.concat( by_content, ",")
+     by_link = table.concat( by_link, ",")
+     local score = _M.getJaroWinklerDistance(by_content,by_link)
+     if score < 0.5 then
+        score = -1 * score
+     end
+     return score
+end
+
 return _M

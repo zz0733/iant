@@ -63,7 +63,8 @@ elseif 'retry' == method  then
               task.params = cjson_safe.encode(params_obj)
               retry_count = retry_count + 1
               local task_val = cjson_safe.encode(task)
-              log(ERR,"retry["..task.id .."](".. index.."),task:" .. task_val)
+              local data_val = cjson_safe.encode(v.data)
+              log(ERR,"retry["..task.id .."](".. index.."),task:" .. task_val..",data:" .. data_val)
               local len, err = shared_dict:lpush(task_queue_key, task_val)
               if err then
                   err_count = err_count + 1
@@ -72,7 +73,7 @@ elseif 'retry' == method  then
             else
               local data_val = cjson_safe.encode(v)
               index = index - 1
-              log(ERR,"fail.retry["..task.id .."](".. index.."),data:" .. data_val)
+              log(ERR,"fail.retry["..task.id .."](".. index.."),return:" .. data_val)
             end
           end
           

@@ -93,7 +93,12 @@ local select_match_doc = function ( doc, hits )
                 local names = highlight.names
                 if names then
                      local hl_name = names[1]
-                     local score = similar.getSegmentDistance(title, hl_name)
+                     local seg_score = similar.getSegmentDistance(title, hl_name)
+                     local imdb_score = similar.getImdbDistance(source.imdb, doc.code)
+                     local director_score = similar.getDirectorDistance(source.directors, doc.directors)
+                     local score = seg_score + imdb_score + director_score
+                     log(ERR,"select_match_doc_score,title["..title .."],seg:"..tostring(seg_score) ..",imdb:" .. tostring(imdb_score)
+                            ..",director:" .. tostring(director_score) .. ",score:" .. tostring(score))
                      if score >= 0.6 then
                          score = tonumber(string.format("%.3f", score))
                          local target = {id = v._id, score = score, status=0 }
@@ -133,6 +138,7 @@ local find_similars = function ( doc )
             local link_doc = {}
             link_doc.targets = targets
             link_doc.status = 1
+            link_doc.utime = ngx.time()
             link_dao.update_doc(doc._id, link_doc)
         end
         local stargets = cjson_safe.encode(targets)

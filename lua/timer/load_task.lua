@@ -1,7 +1,7 @@
 -- init_worker_by_lua
 local task_dao = require("dao.task_dao")
 local cjson_safe = require("cjson.safe")
-local delay = 5  -- in seconds
+local delay = 1  -- in seconds
 local new_timer = ngx.timer.at
 local log = ngx.log
 local ERR = ngx.ERR
