@@ -15,19 +15,22 @@ local cache, err = lrucache.new(1000)
 -- seconds
 local ttl = 5 * 60
 
-function _M.incr(ip_addr)
+function _M.incr(ip_addr, count_stat)
     if not ip_addr then
       return
     end
+    count_stat = count_stat or {}
     local key = "ip:" .. ip_addr
     local visit_obj, _ = cache:get(key)
     if not visit_obj then
-      visit_obj = {ctime= ngx.time(), visit= 1 }
-    else
-      visit_obj.visit = visit_obj.visit + 1
+      visit_obj = { ctime = ngx.time(), visit = 0,detail = 0, download = 0 }
     end
-    local value = visit_num
-    log(ERR,"visit["..ip_addr.. "],visit:" .. visit_obj.visit)
+    visit_obj.visit = visit_obj.visit + 1
+    visit_obj.detail = visit_obj.detail + count_stat.detail
+    visit_obj.download = visit_obj.download + count_stat.download
+    log(ERR,"visit["..ip_addr.. "],visit:" .. visit_obj.visit 
+      .. ",detail:" .. visit_obj.detail 
+      .. ",download:" .. visit_obj.download)
     cache:set(key, visit_obj, ttl)
 end
 
