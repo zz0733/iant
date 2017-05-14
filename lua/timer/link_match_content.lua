@@ -96,10 +96,14 @@ local select_match_doc = function ( doc, hits )
                      local seg_score = similar.getSegmentDistance(title, hl_name)
                      local imdb_score = similar.getImdbDistance(source.imdb, doc.code)
                      local director_score = similar.getDirectorDistance(source.directors, doc.directors)
+                     local actor_score = similar.getDirectorDistance(source.actors, doc.actors)
                      local score = seg_score + imdb_score + director_score
-                     log(ERR,"select_match_doc_score,title["..title .."],seg:"..tostring(seg_score) ..",imdb:" .. tostring(imdb_score)
-                            ..",director:" .. tostring(director_score) .. ",score:" .. tostring(score))
-                     if score >= 0.6 then
+                     log(ERR,"select_match_doc_score,title["..title .."],seg:"..tostring(seg_score) 
+                            ..",imdb:" .. tostring(imdb_score)
+                            ..",director:" .. tostring(director_score) 
+                            .. ",actor:"..tostring(actor_score)
+                            ..",score:" .. tostring(score))
+                     if score >= 0.7 then
                          score = tonumber(string.format("%.3f", score))
                          local target = {id = v._id, score = score, status=0 }
                          targets[#targets + 1] = target

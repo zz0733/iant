@@ -202,7 +202,20 @@ _M.getDirectorDistance = function ( by_content, by_link)
      by_content = table.concat( by_content, ",")
      by_link = table.concat( by_link, ",")
      local score = _M.getJaroWinklerDistance(by_content,by_link)
-     if score < 0.5 then
+     if score < 0.3999 then
+        score = -1 * score
+     end
+     return score
+end
+
+_M.getActorDistance = function ( by_content, by_link)
+     if not by_content or not by_link then
+         return 0
+     end
+     by_content = table.concat( by_content, ",")
+     by_link = table.concat( by_link, ",")
+     local score = _M.getJaroWinklerDistance(by_content,by_link)
+     if score < 0.2999 then
         score = -1 * score
      end
      return score
