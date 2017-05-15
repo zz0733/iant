@@ -38,10 +38,12 @@ function _M.bulk_docs( params )
 	    if not val.utime then
 	    	val.utime = ngx.time()
 	    end
-	    local new_doc = {}
-	    new_doc.doc = val
-	    new_doc.doc_as_upsert = true
-
+	    local new_doc = val
+	    if cmd == 'update' then
+	       new_doc = {}
+	       new_doc.doc = val
+	       new_doc.doc_as_upsert = true
+	    end
 	    es_body[#es_body + 1] = new_doc
 	    count = count + 1
 	end

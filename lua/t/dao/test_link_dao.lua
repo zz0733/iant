@@ -25,16 +25,16 @@ function tb:test_bulk_docs()
   local doc = {}
   doc.id = test_id
   -- doc._doc_cmd = "update"
-  doc.code = "code..updat/123"
+  doc.code = "code..updat@#23"
   local paths = {}
   paths[#paths + 1] = {name = "name123xxx", length = 1024}
-  doc.paths = paths
+  -- doc.paths = paths
   
   -- doc.link = "link"
   local targets = {}
-  local target = {id = "12323",score = 0.235}
+  local target = {id = "12323",score = 0.23125}
   targets[#targets + 1] = target
-  -- doc.targets = targets
+  doc.targets = targets
   docs[#docs + 1] = doc
   local resp,status = link_dao.bulk_docs(docs)
   local str_resp = cjson_safe.decode(resp)
