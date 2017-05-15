@@ -31,14 +31,14 @@ local incr_count = function (ip_addr, count_stat)
       return
     end
     count_stat = count_stat or {}
-    local dest_stat, _ = cache:get(ip_addr)
+    local dest_stat, _ = ip_cache:get(ip_addr)
     if not dest_stat then
       dest_stat = { ctime = ngx.time(), visit = 0,detail = 0, download = 0 }
     end
     dest_stat.visit = dest_stat.visit + 1
     dest_stat.detail = dest_stat.detail + count_stat.detail
     dest_stat.download = dest_stat.download + count_stat.download
-    cache:set(ip_addr, dest_stat, ttl)
+    ip_cache:set(ip_addr, dest_stat, ttl)
     return dest_stat
 end
 
