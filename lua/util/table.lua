@@ -35,4 +35,8 @@ function _M.is_empty_table(t)
     end
 end
 
+function _M.new_table(index_count,key_count)
+    return new_tab(index_count, key_count)
+end
+
 return _M
