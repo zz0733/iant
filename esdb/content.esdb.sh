@@ -305,6 +305,9 @@ curl -XPUT 'http://localhost:9200/content/_mapping/table?pretty' -d '
       "type": "string",
       "index": "no"
     },
+    "lcount": {
+      "type": "integer"
+    },
     "ctime": {
       "type": "date"
     },

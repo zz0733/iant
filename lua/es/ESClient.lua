@@ -26,6 +26,7 @@ ESClient.index = nil
 -- The type
 ESClient.type = nil
 
+ESClient.accept_commands = {update = 1, index =1, create = 1, delete = 1}
 
 function ESClient:new(o)
   o = o or {}

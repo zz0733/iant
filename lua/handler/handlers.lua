@@ -86,7 +86,7 @@ _M.link = function(id, source)
         end
    end
    log(ERR,"handleXXXXXXX[link],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
-   return link_dao.inserts(docs)
+   return link_dao.bulk_docs(docs)
 end
 
 local commands = {}

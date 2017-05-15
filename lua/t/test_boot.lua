@@ -1,0 +1,1 @@
+local test_link_dao = require "t.dao.test_link_dao"

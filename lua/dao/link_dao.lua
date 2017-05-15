@@ -12,7 +12,7 @@ local _M = ESClient:new({index = "link", type = "table"})
 _M._VERSION = '0.01'
 
 
-function _M.inserts( params )
+function _M.bulk_docs( params )
 	if not params then
 		return {}, 400
 	end
@@ -20,20 +20,29 @@ function _M.inserts( params )
 	local count = 0
 	for _, val in ipairs(params) do
 	    local id = val.id
-		es_body[#es_body + 1] = {
-	      index = {
+	    local cmd = val._doc_cmd or "update"
+	    if not _M.accept_commands[cmd] then
+	    	cmd = "update"
+	    end
+	    local cmd_doc = {}
+	    cmd_doc[cmd] = {
 	        ["_type"] = _M.type,
 	        ["_id"] = id
-	      }
 	    }
+		es_body[#es_body + 1] = cmd_doc
 	    val.id = nil
+	    val._doc_cmd = nil
 	    if not val.ctime then
 	    	val.ctime = ngx.time()
 	    end
 	    if not val.utime then
 	    	val.utime = ngx.time()
 	    end
-	    es_body[#es_body + 1] = val
+	    local new_doc = {}
+	    new_doc.doc = val
+	    new_doc.doc_as_upsert = true
+
+	    es_body[#es_body + 1] = new_doc
 	    count = count + 1
 	end
     if count < 1 then
