@@ -27,7 +27,7 @@ ESClient.index = nil
 ESClient.type = nil
 
 ESClient.accept_commands = {update = 1, index =1, create = 1, delete = 1}
-
+ESClient.default_bulk_command = "create"
 function ESClient:new(o)
   o = o or {}
   setmetatable(o, self)
@@ -46,6 +46,49 @@ function ESClient:new(o)
   	log(ERR,"ESClient:new",error)
   end
   return o, error
+end
+
+function ESClient:bulk_docs( params )
+  if not params then
+    return {}, 400
+  end
+  local es_body = {}
+  local count = 0
+  for _, val in ipairs(params) do
+      local id = val.id
+      local cmd = val._doc_cmd
+      if not self.accept_commands[cmd] then
+        cmd = self.default_bulk_command
+      end
+      local cmd_doc = {}
+      cmd_doc[cmd] = {
+          ["_type"] = self.type,
+          ["_id"] = id
+      }
+      es_body[#es_body + 1] = cmd_doc
+      val.id = nil
+      val._doc_cmd = nil
+      if not val.ctime then
+        val.ctime = ngx.time()
+      end
+      if not val.utime then
+        val.utime = ngx.time()
+      end
+      local new_doc = val
+      if cmd == 'update' then
+         new_doc = {}
+         new_doc.doc = val
+         new_doc.doc_as_upsert = true
+      end
+      es_body[#es_body + 1] = new_doc
+      count = count + 1
+  end
+    if count < 1 then
+      local resp = {}
+      return resp, 200
+    end
+    -- log(ERR,"content.es_body" ..  cjson_safe.encode(es_body))
+  return self:bulk( es_body )
 end
 
 function ESClient:bulk( params, batch )

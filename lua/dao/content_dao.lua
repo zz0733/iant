@@ -75,4 +75,30 @@ function _M.query_by_name( from, size, name,fields )
 	return resp, status
 end
 
+function _M.query_by_ctime( from, size, from_date, to_date)
+	local body = {
+	  from = from,
+	  size = size,
+	  sort = {
+	    ctime = {
+	      order = asc
+	    }
+	  },
+	  query = {
+	    bool = {
+		    filter = {
+		      range = {
+		        ctime ={
+		          gte = from_date,
+		          lt = to_date
+		        }
+		      }
+		    }
+	    }
+	  }
+	}
+	local resp, status = _M:search(body)
+	return resp, status
+end
+
 return _M
