@@ -199,6 +199,7 @@ local build_similar = function ( doc )
     local title = article.title
     local offset = 0
     local limit = 50
+    local max_count = 200
     local dstart = ngx.now()
     local str_doc = cjson_safe.encode(doc)
     log(ERR,"build_similar,title["..title .."],str_doc:" .. str_doc)
@@ -217,7 +218,7 @@ local build_similar = function ( doc )
             log(ERR,"build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
                 .. ",total:" .. total .. ",cost:" .. cost)
             offset = offset + hcount
-            if offset >=total or hcount < 1  then
+            if offset >=total or offset >= max_count or hcount < 1  then
                 break
             end
         else
