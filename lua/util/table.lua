@@ -39,4 +39,18 @@ function _M.new_table(index_count,key_count)
     return new_tab(index_count, key_count)
 end
 
+function _M.equals(left,rigth)
+    if not left and not right then
+        return true
+    elseif left == right then
+        return true
+    end
+    for k,v in pairs(left) do
+        if rigth[k] ~= v then
+            return false
+        end
+    end
+    return true
+end
+
 return _M

@@ -2,7 +2,7 @@
 local link_dao = require "dao.link_dao"
 local content_dao = require "dao.content_dao"
 local cjson_safe = require("cjson.safe")
-local delay = 1  -- in seconds
+local delay = 5  -- in seconds
 local done_wait = 6  -- in seconds
 local new_timer = ngx.timer.at
 
@@ -141,20 +141,40 @@ local update_match_doc = function ( doc, hits )
                          for _,v in ipairs(old_targets) do
                              target_map[v.id] = v
                          end
-                         local target = {id = doc._id, score = score, status=0 }
-                         target_map[target.id] = target
-                         local dest_targets = {}
-                         for k,v in ipairs(target_map) do
-                             dest_targets[#dest_targets + 1] = v
+                         local old_target = target_map[doc._id]
+                         local new_target = {id = doc._id, score = score, status=0 }
+                         if not util_table.equals(old_target, new_target) then
+                             target_map[target.id] = target
+                             local dest_targets = {}
+                             for k,v in pairs(target_map) do
+                                 dest_targets[#dest_targets + 1] = v
+                             end
+                             table.sort(dest_targets, desc_score_comp)
+                             local update_doc = {}
+                             update_doc.id = v._id
+                             update_doc.targets = dest_targets
+                             update_doc.status = 1
+                             dest_update_docs[#dest_update_docs + 1] = update_doc
+                         else
+                            log(ERR,"match.ignore exist("..v._id .. "),content[".. doc._id .."]")
                          end
-                         table.sort(dest_targets, desc_score_comp)
-                         local update_doc = {}
-                         update_doc.id = v._id
-                         update_doc.targets = dest_targets
-                         update_doc.status = 1
-                         dest_update_docs[#dest_update_docs + 1] = update_doc
                      end
             end
+        end
+    end
+    local resp, status = link_dao:update_docs(dest_update_docs)
+    if resp then
+        local lcount = link_dao:count_by_target(doc._id)
+        local content_docs = {}
+        local update_doc = {}
+        update_doc.id = doc._id
+        update_doc.lcount = lcount
+        content_docs[#content_docs + 1] = update_doc
+        local resp, status = content_dao:update_docs(content_docs)
+        if resp then
+            log(ERR,"update.match count,content[".. doc._id .."],lcount:" .. lcount)
+        else
+            log(CRIT,"update.match count,content[".. doc._id .."],lcount:" .. lcount..",cause:", tostring(status))
         end
     end
     local str_targets = cjson_safe.encode(dest_update_docs)

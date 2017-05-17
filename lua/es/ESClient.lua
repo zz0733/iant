@@ -80,7 +80,7 @@ end
 
 function ESClient:bulk_docs( params )
   if not params then
-    return {}, 400
+    return nil, 400
   end
   local es_body = {}
   local count = 0
@@ -255,6 +255,15 @@ function ESClient:update( id, new_doc )
       body = {
         doc = new_doc
       }
+    }
+    return resp, status
+end
+
+function ESClient:count( body )
+    local resp, status = self.client:count{
+      index = self.index,
+      type = self.type,
+      body = body
     }
     return resp, status
 end

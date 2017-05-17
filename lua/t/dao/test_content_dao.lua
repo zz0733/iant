@@ -49,16 +49,19 @@ function tb:test_1update_docs()
     self:log("query_by_ids.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(qstatus))
 end
 
--- function tb:test1_delete()
---   local ids = {}
---   ids[#ids + 1] = test_id
---   local resp,status = link_dao:delete_by_ids(ids)
---   local str_resp = cjson_safe.encode(resp)
---   self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
---   if not resp then
---     error("error:" .. tostring(status))
---   end
--- end
+function tb:test_2count()
+  local body = {
+     query = {
+        match_all = {}
+     }
+  }
+  local resp,status = content_dao:count(body)
+  local str_resp = cjson_safe.encode(resp)
+  self:log("count:str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
+  if not resp then
+    error("error:" .. tostring(status))
+  end
+end
 
 
 tb:run()

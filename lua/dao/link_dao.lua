@@ -95,4 +95,28 @@ function _M:query_by_titles( from, size, names,fields )
 	return resp, status
 end
 
+function _M:count_by_target( target_id )
+  if not target_id then
+  	return 0
+  end
+  local  body = {
+    query = {
+      nested = {
+        path = "targets",
+         query ={
+           match = { 
+              ["targets.id"] = target_id
+           }
+         }
+      }
+    }
+  }
+  local resp, status = _M:count(body)
+  if resp then
+  	return resp.count
+  else
+  	return nil, status
+  end
+end
+
 return _M
