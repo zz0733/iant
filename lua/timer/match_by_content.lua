@@ -148,7 +148,7 @@ local update_match_doc = function ( doc, hits )
                          end
                          local old_target = target_map[doc._id]
                          local new_target = {id = doc._id, score = score, status=0 }
-                         if not util_table.equals(old_target, nil) then
+                         if not util_table.equals(nil, new_target) then
                              target_map[new_target.id] = new_target
                              local dest_targets = {}
                              for k,v in pairs(target_map) do
