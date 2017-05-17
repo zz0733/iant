@@ -145,11 +145,15 @@ local build_similar = function ( doc )
         return
     end
     local source = doc._source
-    local title = source.names
+    local article = source.article
+    local title = article.title
     local offset = 0
     local limit = 500
     local max_issued = -1
     local start = ngx.now()
+    local str_doc = cjson_safe.encode(doc)
+    log(ERR,"build_similar,title["..title .."],str_doc:" .. str_doc)
+
     local resp, status = link_dao.query_by_titles(offset, limit, source.names, link_fields)
     ngx.update_time()
     local cost = (ngx.now() - start)
@@ -159,9 +163,8 @@ local build_similar = function ( doc )
         local hits  = resp.hits.hits
         local shits = cjson_safe.encode(hits)
         update_match_doc(doc, hits)
-        log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
+        log(ERR,"build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
             .. ",max_issued:"..max_issued.. ",total:" .. total .. ",cost:" .. cost)
-        log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits .. ",targets:" .. tostring(stargets))
         
     end
 end

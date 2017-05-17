@@ -59,6 +59,9 @@ function _M:update_doc(id, doc)
 end
 
 function _M:query_by_titles( from, size, names,fields )
+	if not names or #names < 1 then
+		return nil, "400,names is empty"
+	end
 	local shoulds = {}
 	for _,v in ipairs(names) do
 		local should = {
