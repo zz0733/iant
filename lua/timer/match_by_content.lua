@@ -102,9 +102,15 @@ local update_match_doc = function ( doc, hits )
         local link_title = link_source.title
         local link_year = find_year(link_title) or 0
         local start_mills = os.time({year=link_year,month=1,day=1,hour=0,min=0,sec=0})
-        local end_mills = max_issued_time(v) 
+        local end_mills = max_issued_time(v) or link_source.ctime
         if not end_mills then
-           end_mills = tonumber(link_source.ctime) or tonumber(link_source.utime)
+            if not link_source.utime then
+               end_mills =  ngx.time()
+               log(ERR,"update_match_doc,link[".. v._id .."],title["..link_title.."],end_mills use ngx.time")
+            elseif
+               end_mills =  link_source.utime
+               log(ERR,"update_match_doc,link[".. v._id .."],title["..link_title.."],end_mills use utime")
+            end
         end
         log(ERR,"update_match_doc[".. doc._id .."],title["..cur_title .."]vs["..link_title.."]code[".. cur_code .."],year["..cur_year .."]vs[" .. link_year .."],link["..start_mills..","..tostring(end_mills).."],issued["..min_cur_issued..","..max_cur_issued.."]")
         if ((cur_year and cur_year == link_year) or (start_mills <= max_cur_issued and end_mills >= min_cur_issued) ) then
