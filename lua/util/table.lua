@@ -40,15 +40,19 @@ function _M.new_table(index_count,key_count)
 end
 
 function _M.equals(left,rigth)
-    if not left and not right then
-        return true
-    elseif left == right then
-        return true
-    elseif not left or not right then
+    if _M.is_table(left) ~= _M.is_table(rigth) then
         return false
+    end
+    if left == right then
+        return true
     end
     for k,v in pairs(left) do
         if rigth[k] ~= v then
+            return false
+        end
+    end
+    for k,v in pairs(rigth) do
+        if left[k] ~= v then
             return false
         end
     end
