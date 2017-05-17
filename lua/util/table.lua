@@ -44,6 +44,8 @@ function _M.equals(left,rigth)
         return true
     elseif left == right then
         return true
+    elseif not left or not right then
+        return false
     end
     for k,v in pairs(left) do
         if rigth[k] ~= v then
