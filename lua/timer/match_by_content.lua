@@ -198,26 +198,37 @@ local build_similar = function ( doc )
     local article = source.article
     local title = article.title
     local offset = 0
-    local limit = 500
-    local start = ngx.now()
+    local limit = 50
+    local dstart = ngx.now()
     local str_doc = cjson_safe.encode(doc)
     log(ERR,"build_similar,title["..title .."],str_doc:" .. str_doc)
-
-    local resp, status = link_dao:query_by_titles(offset, limit, source.names, link_fields)
-    ngx.update_time()
-    local cost = (ngx.now() - start)
-    cost = tonumber(string.format("%.3f", cost))
-    if resp then
-        local total  = resp.hits.total
-        local hits  = resp.hits.hits
-        local shits = cjson_safe.encode(hits)
-        update_match_doc(doc, hits)
-        log(ERR,"build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
-            .. ",total:" .. total .. ",cost:" .. cost)
-    else
-        log(CRIT,"error.build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
-            .. ",status:" .. tostring(status) .. ",cost:" .. cost)
+    while true do
+        local start = ngx.now()
+        local resp, status = link_dao:query_by_titles(offset, limit, source.names, link_fields)
+        ngx.update_time()
+        local cost = (ngx.now() - start)
+        cost = tonumber(string.format("%.3f", cost))
+        if resp then
+            local total  = resp.hits.total
+            local hits  = resp.hits.hits
+            local hcount  = #hits
+            local shits = cjson_safe.encode(hits)
+            update_match_doc(doc, hits)
+            log(ERR,"build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
+                .. ",total:" .. total .. ",cost:" .. cost)
+            offset = offset + hcount
+            if offset >=total or hcount < 1  then
+                break
+            end
+        else
+            log(CRIT,"error.build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
+                .. ",status:" .. tostring(status) .. ",cost:" .. cost)
+        end
     end
+    local cost = (ngx.now() - dstart)
+    cost = tonumber(string.format("%.3f", cost))
+    log(ERR,"build_similar.end,title["..title .."],total:" .. tostring(offset) ..",cost:" .. tostring(cost))
+
 end
 
 local build_similars = function (hits )

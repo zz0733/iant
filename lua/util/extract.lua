@@ -26,6 +26,7 @@ local cn_maps = {
  local STR_NUM_REG = [["0-9一二三四五六七八九十"]]
 
 
+
  local convert_number = function ( name )
      if not name then
          return 
@@ -40,17 +41,26 @@ local cn_maps = {
      return tonumber(dest)
  end
 
+ function convert_number_safe( name )
+    local ok, t = pcall(convert_number, name)
+    if not ok then
+      return nil
+    end
+
+    return t
+end
+
 function _M.find_season(title)
     if not title then
         return
     end
     local m = match(title, "第(?<snum>["..STR_NUM_REG.."]+)(部|季)","joi")
     if m and m.snum then
-        return convert_number(m.snum)
+        return convert_number_safe(m.snum)
     end
     local mmm = match(title, "[^a-z]S(?<snum>[0-9]+)E[0-9]+","joi")
     if mmm and mmm.snum then
-        return convert_number(mmm.snum)
+        return convert_number_safe(mmm.snum)
     end
 end
 
@@ -60,15 +70,15 @@ function _M.find_episode(title)
     end
     local m = match(title, "(更新至|连载至|EP)(?<enum>["..STR_NUM_REG.."]+)[集]?","joi")
     if m and m.enum then
-        return convert_number(m.enum)
+        return convert_number_safe(m.enum)
     end
     local mm = match(title, "(?<enum>["..STR_NUM_REG.."]+)\\.[a-zA-Z0-9]{1,4}$","joi")
     if mm and mm.enum then
-        return convert_number(mm.enum)
+        return convert_number_safe(mm.enum)
     end  
     local mmm = match(title, "[^a-z]S[0-9]+E(?<enum>[0-9]+)","joi")
     if mmm and mmm.enum then
-        return convert_number(mmm.enum)
+        return convert_number_safe(mmm.enum)
     end
 end
 
