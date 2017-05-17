@@ -162,6 +162,8 @@ local update_match_doc = function ( doc, hits )
                              update_doc.episode = extract.find_episode(link_title)
                              update_doc.season = extract.find_season(link_title)
                              dest_update_docs[#dest_update_docs + 1] = update_doc
+                             local str_docs = cjson_safe.encode(update_doc)
+                             log(ERR,"match add("..update_doc.id .. "),content[".. doc._id .."],doc:" ..tostring(str_docs) .. ",len:"..tostring(#dest_update_docs))
                          else
                             log(ERR,"match.ignore exist("..v._id .. "),content[".. doc._id .."]")
                          end
