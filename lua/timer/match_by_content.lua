@@ -3,6 +3,7 @@ local link_dao = require "dao.link_dao"
 local content_dao = require "dao.content_dao"
 local cjson_safe = require("cjson.safe")
 local delay = 5  -- in seconds
+local done_wait = 6  -- in seconds
 local new_timer = ngx.timer.at
 
 local log = ngx.log
@@ -26,6 +27,15 @@ local similar = require("util.similar")
 local content_fields = {"names","directors","issueds","article","ctime"}
 local link_fields = nil
 
+local desc_score_comp = function ( a, b )
+    if not a or not a.score then
+        return true
+    end
+    if not b or not b.score then
+        return false
+    end
+    return   b.score < a.score
+end
 
 local find_year = function ( name )
     if not name then
@@ -73,63 +83,71 @@ local update_match_doc = function ( doc, hits )
     if not hits then
         return
     end
-    local source = doc._source
-    local title = source.title
-    local end_mills = max_issued_time(doc)
-    end_mills = to_time_mills(end_mills or source.ctime)
-    local has_year = find_year(title) or 1970
-    local start_mills = os.time({year=has_year,month=1,day=1,hour=0,min=0,sec=0}) * 1000
-    local targets = {}
+    local doc_source = doc._source
+    local dest_update_docs = {}
+    local max_cur_issued = max_issued_time(doc) or doc_source.ctime
+    local min_cur_issued = min_issued_time(doc) or 0
+    local article = doc_source.article
+    local cur_year = article.year or 0
+    local cur_title = article.title
+    local cur_code = article.code
     for _,v in ipairs(hits) do
-        local max_issued = max_issued_time(v)
-        local min_issued = min_issued_time(v)
-        local source = v._source
-        local article = source.article
-        local cur_year = article.year
-        local cur_title = article.title
-        local cur_code = article.code
-        max_issued = to_time_mills(max_issued or 1)
-        min_issued = to_time_mills(min_issued or 1)
-        log(ERR,"select_match_doc[".. v._id .."],title["..title .."]vs["..cur_title.."]code[".. cur_code .."],year["..has_year .."]vs[" .. cur_year .."],link["..start_mills..","..end_mills.."],issued["..min_issued..","..max_issued.."]")
-        if ((cur_year and cur_year == has_year) or (start_mills <= max_issued and end_mills >= min_issued) ) then
+        local link_source = v._source
+        local link_title = link_source.title
+        local link_year = find_year(link_title) or 0
+        local start_mills = os.time({year=link_year,month=1,day=1,hour=0,min=0,sec=0})
+        local end_mills = max_issued_time(v) or v.ctime
+        log(ERR,"update_match_doc[".. doc._id .."],title["..cur_title .."]vs["..link_title.."]code[".. cur_code .."],year["..cur_year .."]vs[" .. link_year .."],link["..start_mills..","..end_mills.."],issued["..min_cur_issued..","..max_cur_issued.."]")
+        if ((cur_year and cur_year == link_year) or (start_mills <= max_cur_issued and end_mills >= min_cur_issued) ) then
             local highlight = v.highlight
-            if highlight then
-                local names = highlight.names
-                if names then
-                     local hl_name = names[1]
-                     local seg_score = similar.getSegmentDistance(title, hl_name)
-                     local imdb_score = similar.getImdbDistance(source.imdb, doc.code)
-                     local director_score = similar.getDirectorDistance(source.directors, doc.directors)
-                     local actor_score = similar.getDirectorDistance(source.actors, doc.actors)
+            if highlight  and highlight.title then
+                     local hl_name = highlight.title
+                     local seg_score = similar.getSegmentDistance(cur_title, hl_name)
+                     local imdb_score = similar.getImdbDistance(article.imdb, doc.code)
+                     local director_score = similar.getDirectorDistance(doc_source.directors, doc.directors)
+                     local actor_score = similar.getDirectorDistance(doc_source.actors, doc.actors)
                      local score = seg_score + imdb_score + director_score
                      local is_pass = score >= 0.7
-                     log(ERR,"select_match_doc_score:"..tostring(is_pass)..",title["..title .."]vs["..cur_title.."],seg:"..tostring(seg_score) 
+                     log(ERR,"update_match_doc_score:"..tostring(is_pass)..",title["..cur_title .."]vs["..link_title.."],seg:"..tostring(seg_score) 
                             ..",imdb:" .. tostring(imdb_score)
                             ..",director:" .. tostring(director_score) 
                             .. ",actor:"..tostring(actor_score)
                             ..",score:" .. tostring(score))
                      if is_pass then
                          score = tonumber(string.format("%.3f", score))
-                         local target = {id = v._id, score = score, status=0 }
-                         targets[#targets + 1] = target
+                         local old_targets = link_source.targets or {}
+                         local target_map =  {}
+                         for _,v in ipairs(old_targets) do
+                             target_map[v.id] = v
+                         end
+                         local target = {id = doc._id, score = score, status=0 }
+                         target_map[target.id] = target
+                         local dest_targets = {}
+                         for k,v in ipairs(target_map) do
+                             dest_targets[#dest_targets + 1] = v
+                         end
+                         table.sort(dest_targets, desc_score_comp)
+                         local update_doc = {}
+                         update_doc.id = v._id
+                         update_doc.targets = dest_targets
+                         update_doc.status = 1
+                         dest_update_docs[#dest_update_docs + 1] = update_doc
                      end
-                end
             end
         end
     end
-    local str_targets = cjson_safe.encode(targets)
-    log(ERR,"select_match_doc,title["..title .."],targets:"..tostring(str_targets) ..",size["..#targets .."]")
-    return targets
+    local str_targets = cjson_safe.encode(dest_update_docs)
+    log(ERR,"update_match_doc_targets("..doc._id .. "),title["..cur_title .."],update_docs:"..tostring(str_targets) ..",size["..#dest_update_docs .."]")
 end
 
-local find_similars = function ( doc )
+local build_similar = function ( doc )
     if not doc then
         return
     end
     local source = doc._source
     local title = source.names
     local offset = 0
-    local limit = 1000
+    local limit = 500
     local max_issued = -1
     local start = ngx.now()
     local resp, status = link_dao.query_by_titles(offset, limit, source.names, link_fields)
@@ -143,17 +161,17 @@ local find_similars = function ( doc )
         update_match_doc(doc, hits)
         log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
             .. ",max_issued:"..max_issued.. ",total:" .. total .. ",cost:" .. cost)
-        -- log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits .. ",targets:" .. tostring(stargets))
+        log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits .. ",targets:" .. tostring(stargets))
         
     end
 end
 
-local search_similars = function (hits )
+local build_similars = function (hits )
     if not hits then
         return
     end
     for _,v in ipairs(hits) do
-        find_similars(v)
+        build_similar(v)
     end
 end
 
@@ -167,8 +185,10 @@ local query_min_ctime = function (  )
    local min_ctime = 0
    local resp, status = content_dao:search(body)
    if resp and resp.aggregations and resp.aggregations.min_ctime then
-       min_ctime = resp.aggregations.min_ctime.value
+       min_ctime = tonumber(resp.aggregations.min_ctime.value) or 0
    end
+   local str_min_ctime = cjson_safe.encode(min_ctime)
+   log(ERR,"min_ctime:" .. str_min_ctime)
    return min_ctime
 end
 
@@ -194,7 +214,7 @@ local check
             scan_count = scan_count + #hits
             local shits = cjson_safe.encode(hits)
             log(ERR,"query_by_ctime,range["..min_date..","..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total ..",hits:" .. tostring(#hits).. ",scan:"..scan_count..",cost:" .. cost)
-            -- search_similars(hits)
+            build_similars(hits)
             if (total == 0) or (from >= total) then
                from = 0
                to_date = from_date
@@ -209,6 +229,7 @@ local check
                     else
                         log(ERR, "done.wait["..done_wait.."],create timer: ")
                     end
+                    return
                end
             else
                 local hit_count = #hits

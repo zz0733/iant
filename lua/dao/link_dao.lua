@@ -80,7 +80,7 @@ function _M:query_by_titles( from, size, names,fields )
 		highlight = {
 		  order = "score",
 		  fields = {
-		    paths = {
+		    title = {
 		      fragment_size = 50,
 		      number_of_fragments = 1,
 		      fragmenter = "span"
