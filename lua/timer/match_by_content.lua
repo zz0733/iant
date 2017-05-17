@@ -149,7 +149,6 @@ local build_similar = function ( doc )
     local title = article.title
     local offset = 0
     local limit = 500
-    local max_issued = -1
     local start = ngx.now()
     local str_doc = cjson_safe.encode(doc)
     log(ERR,"build_similar,title["..title .."],str_doc:" .. str_doc)
@@ -164,8 +163,10 @@ local build_similar = function ( doc )
         local shits = cjson_safe.encode(hits)
         update_match_doc(doc, hits)
         log(ERR,"build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
-            .. ",max_issued:"..max_issued.. ",total:" .. total .. ",cost:" .. cost)
-        
+            .. ",total:" .. total .. ",cost:" .. cost)
+    else
+        log(CRIT,"error.build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
+            .. ",status:" .. tostring(status) .. ",cost:" .. cost)
     end
 end
 
