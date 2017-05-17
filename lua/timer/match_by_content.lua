@@ -169,6 +169,8 @@ local update_match_doc = function ( doc, hits )
             end
         end
     end
+    local str_targets = cjson_safe.encode(dest_update_docs)
+    log(ERR,"update_match_doc_targets("..doc._id .. "),title["..cur_title .."],update_docs:"..tostring(str_targets) ..",size["..#dest_update_docs .."]")
     local resp, status = link_dao:update_docs(dest_update_docs)
     if resp then
         local lcount = link_dao:count_by_target(doc._id)
@@ -184,8 +186,6 @@ local update_match_doc = function ( doc, hits )
             log(CRIT,"update.match count,content[".. doc._id .."],lcount:" .. lcount..",cause:", tostring(status))
         end
     end
-    local str_targets = cjson_safe.encode(dest_update_docs)
-    log(ERR,"update_match_doc_targets("..doc._id .. "),title["..cur_title .."],update_docs:"..tostring(str_targets) ..",size["..#dest_update_docs .."]")
 end
 
 local build_similar = function ( doc )
