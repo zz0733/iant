@@ -74,6 +74,11 @@ curl -XPUT 'http://localhost:9200/link/_mapping/table?pretty' -d '
     }
   ],
   "properties": {
+    "season": {
+      "type": "short"
+    },"episode": {
+      "type": "integer"
+    },
     "title": {
       "type": "text",
       "analyzer": "ik_max_word_synonym",

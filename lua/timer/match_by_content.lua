@@ -23,7 +23,10 @@ local last_worker = ngx.worker.count() - 1
 
 local intact = require("util.intact")
 local util_table = require "util.table"
+local extract = require("util.extract")
 local similar = require("util.similar")
+
+
 local content_fields = {"names","directors","issueds","article","ctime"}
 local link_fields = nil
 
@@ -143,7 +146,7 @@ local update_match_doc = function ( doc, hits )
                          end
                          local old_target = target_map[doc._id]
                          local new_target = {id = doc._id, score = score, status=0 }
-                         if not util_table.equals(old_target, new_target) then
+                         if not util_table.equals(old_target, nil) then
                              target_map[new_target.id] = new_target
                              local dest_targets = {}
                              for k,v in pairs(target_map) do
@@ -154,6 +157,8 @@ local update_match_doc = function ( doc, hits )
                              update_doc.id = v._id
                              update_doc.targets = dest_targets
                              update_doc.status = 1
+                             update_doc.episode = extract.find_episode(link_title)
+                             update_doc.season = extract.find_season(link_title)
                              dest_update_docs[#dest_update_docs + 1] = update_doc
                          else
                             log(ERR,"match.ignore exist("..v._id .. "),content[".. doc._id .."]")
