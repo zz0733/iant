@@ -58,6 +58,9 @@ local max_issued_time = function ( doc )
     local dest = nil
     local source = doc._source
     local issueds = source.issueds
+    if not issueds then
+        return dest
+    end
     for _,v in ipairs(issueds) do
         if v.time and (not dest or v.time > dest) then
             dest = v.time
@@ -70,6 +73,9 @@ local min_issued_time = function ( doc )
     local dest = nil
     local source = doc._source
     local issueds = source.issueds
+    if not issueds then
+        return dest
+    end
     for _,v in ipairs(issueds) do
         if v.time and (not dest or v.time < dest) then
             dest = v.time
@@ -96,7 +102,7 @@ local update_match_doc = function ( doc, hits )
         local link_title = link_source.title
         local link_year = find_year(link_title) or 0
         local start_mills = os.time({year=link_year,month=1,day=1,hour=0,min=0,sec=0})
-        local end_mills = max_issued_time(v) or link_source.ctime
+        local end_mills = max_issued_time(v) or link_source.ctime or link_source.utime
         log(ERR,"update_match_doc[".. doc._id .."],title["..cur_title .."]vs["..link_title.."]code[".. cur_code .."],year["..cur_year .."]vs[" .. link_year .."],link["..start_mills..","..end_mills.."],issued["..min_cur_issued..","..max_cur_issued.."]")
         if ((cur_year and cur_year == link_year) or (start_mills <= max_cur_issued and end_mills >= min_cur_issued) ) then
             local highlight = v.highlight
