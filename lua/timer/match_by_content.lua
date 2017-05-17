@@ -69,6 +69,7 @@ local max_issued_time = function ( doc )
             dest = v.time
         end
     end
+    dest = tonumber(dest)
     if dest and string.len(tostring(dest)) > 10  then
         dest = math.modf(dest / 1000)
     end
@@ -87,6 +88,7 @@ local min_issued_time = function ( doc )
             dest = v.time
         end
     end
+    dest = tonumber(dest)
     if dest and string.len(tostring(dest)) > 10  then
         dest = math.modf(dest / 1000)
     end
