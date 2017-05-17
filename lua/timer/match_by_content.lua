@@ -153,7 +153,7 @@ local build_similar = function ( doc )
     local str_doc = cjson_safe.encode(doc)
     log(ERR,"build_similar,title["..title .."],str_doc:" .. str_doc)
 
-    local resp, status = link_dao.query_by_titles(offset, limit, source.names, link_fields)
+    local resp, status = link_dao:query_by_titles(offset, limit, source.names, link_fields)
     ngx.update_time()
     local cost = (ngx.now() - start)
     cost = tonumber(string.format("%.3f", cost))
