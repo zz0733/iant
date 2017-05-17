@@ -2,7 +2,7 @@
 local link_dao = require "dao.link_dao"
 local content_dao = require "dao.content_dao"
 local cjson_safe = require("cjson.safe")
-local delay = 5  -- in seconds
+local delay = 1  -- in seconds
 local done_wait = 6  -- in seconds
 local new_timer = ngx.timer.at
 
@@ -11,12 +11,12 @@ local ERR = ngx.ERR
 local INFO = ngx.ERR
 local CRIT = ngx.CRIT
 local from = 0
-local size = 1
+local size = 10
 local from_date = 0
 local to_date = ngx.time()
 local min_date = 0
 local scan_count = 0
-local period_date = 60
+local period_date = 60*60
 
 local match = ngx.re.match
 local last_worker = ngx.worker.count() - 1
@@ -66,6 +66,9 @@ local max_issued_time = function ( doc )
             dest = v.time
         end
     end
+    if dest and string.len(tostring(dest)) > 10  then
+        dest = math.modf(dest / 1000)
+    end
     return dest
 end
 
@@ -80,6 +83,9 @@ local min_issued_time = function ( doc )
         if v.time and (not dest or v.time < dest) then
             dest = v.time
         end
+    end
+    if dest and string.len(tostring(dest)) > 10  then
+        dest = math.modf(dest / 1000)
     end
     return dest
 end
@@ -100,14 +106,14 @@ local update_match_doc = function ( doc, hits )
     for _,v in ipairs(hits) do
         local link_source = v._source
         local link_title = link_source.title
-        local link_year = find_year(link_title) or 0
+        local link_year = find_year(link_title) or 1970
         local start_mills = os.time({year=link_year,month=1,day=1,hour=0,min=0,sec=0})
         local end_mills = max_issued_time(v) or link_source.ctime
         if not end_mills then
             if not link_source.utime then
                end_mills =  ngx.time()
                log(ERR,"update_match_doc,link[".. v._id .."],title["..link_title.."],end_mills use ngx.time")
-            elseif
+            else
                end_mills =  link_source.utime
                log(ERR,"update_match_doc,link[".. v._id .."],title["..link_title.."],end_mills use utime")
             end
@@ -116,7 +122,7 @@ local update_match_doc = function ( doc, hits )
         if ((cur_year and cur_year == link_year) or (start_mills <= max_cur_issued and end_mills >= min_cur_issued) ) then
             local highlight = v.highlight
             if highlight  and highlight.title then
-                     local hl_name = highlight.title
+                     local hl_name = highlight.title[1]
                      local seg_score = similar.getSegmentDistance(cur_title, hl_name)
                      local imdb_score = similar.getImdbDistance(article.imdb, doc.code)
                      local director_score = similar.getDirectorDistance(doc_source.directors, doc.directors)
