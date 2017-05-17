@@ -28,6 +28,8 @@ ESClient.type = nil
 
 ESClient.accept_commands = {update = 1, index =1, create = 1, delete = 1}
 ESClient.default_bulk_command = "create"
+ESClient.bulk_cmd_field = "_doc_cmd"
+
 function ESClient:new(o)
   o = o or {}
   setmetatable(o, self)
@@ -48,6 +50,34 @@ function ESClient:new(o)
   return o, error
 end
 
+function ESClient:create_docs( docs )
+  for _, doc in ipairs(docs) do
+    doc[self.bulk_cmd_field] = "create"
+  end
+  return self:bulk_docs(docs)
+end
+
+function ESClient:index_docs( docs )
+  for _, doc in ipairs(docs) do
+    doc[self.bulk_cmd_field] = "index"
+  end
+  return self:bulk_docs(docs)
+end
+
+function ESClient:update_docs( docs )
+  for _, doc in ipairs(docs) do
+    doc[self.bulk_cmd_field] = "update"
+  end
+  return self:bulk_docs(docs)
+end
+
+function ESClient:delete_docs( docs )
+  for _, doc in ipairs(docs) do
+    doc[self.bulk_cmd_field] = "delete"
+  end
+  return self:bulk_docs(docs)
+end
+
 function ESClient:bulk_docs( params )
   if not params then
     return {}, 400
@@ -56,7 +86,7 @@ function ESClient:bulk_docs( params )
   local count = 0
   for _, val in ipairs(params) do
       local id = val.id
-      local cmd = val._doc_cmd
+      local cmd = val[self.bulk_cmd_field]
       if not self.accept_commands[cmd] then
         cmd = self.default_bulk_command
       end
@@ -67,7 +97,7 @@ function ESClient:bulk_docs( params )
       }
       es_body[#es_body + 1] = cmd_doc
       val.id = nil
-      val._doc_cmd = nil
+      val[self.bulk_cmd_field] = nil
       if not val.ctime then
         val.ctime = ngx.time()
       end
@@ -78,15 +108,16 @@ function ESClient:bulk_docs( params )
       if cmd == 'update' then
          new_doc = {}
          new_doc.doc = val
+         new_doc.doc.ctime = nil
          new_doc.doc_as_upsert = true
       end
       es_body[#es_body + 1] = new_doc
       count = count + 1
   end
-    if count < 1 then
+  if count < 1 then
       local resp = {}
       return resp, 200
-    end
+  end
     -- log(ERR,"content.es_body" ..  cjson_safe.encode(es_body))
   return self:bulk( es_body )
 end
@@ -161,6 +192,20 @@ function ESClient:delete_by_query(params, endpointParams)
   end
   -- Request successful, return body
   return response.body, response.statusCode
+end
+
+function ESClient:query_by_ids( ids )
+  if not ids then
+    return nil, 400
+  end
+  local body = {
+      query = {
+         terms = {
+           _id = ids
+         }
+      }
+  }
+  return self:search(body)
 end
 
 

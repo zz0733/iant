@@ -18,7 +18,7 @@ function tb:test_0search()
       }
     }
     local sresp, sstatus = link_dao:search(body)
-    local str_sresp = cjson_safe.decode(sresp)
+    local str_sresp = cjson_safe.encode(sresp)
     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
 end
 
@@ -26,7 +26,7 @@ end
 --   local ids = {}
 --   ids[#ids + 1] = test_id
 --   local resp,status = link_dao:delete_by_ids(ids)
---   local str_resp = cjson_safe.decode(resp)
+--   local str_resp = cjson_safe.encode(resp)
 --   self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
 --   if not resp then
 --     error("error:" .. tostring(status))
@@ -49,7 +49,7 @@ function tb:test_2create()
   doc.targets = targets
   docs[#docs + 1] = doc
   local resp,status = link_dao:bulk_docs(docs)
-  local str_resp = cjson_safe.decode(resp)
+  local str_resp = cjson_safe.encode(resp)
   self:log("create.str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
   if not resp then
   	error("error:" .. tostring(status))
@@ -62,32 +62,33 @@ function tb:test_2create()
       }
     }
     local sresp, sstatus = link_dao:search(body)
-    local str_sresp = cjson_safe.decode(sresp)
+    local str_sresp = cjson_safe.encode(sresp)
     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
   end
 end
 
--- function tb:test3_bulk_docs()
---   local docs = {}
---   local doc = {}
---   doc.id = test_id
---   doc._doc_cmd = "update"
---   doc.code = "code..updat@#23"
---   local paths = {}
---   paths[#paths + 1] = {name = "name123xxx", length = 1024}
+function tb:test_3bulk_docs()
+  local docs = {}
+  local doc = {}
+  doc.id = test_id
+  doc._doc_cmd = "update"
+  doc.code = "code..updat@#23"
+  local paths = {}
+  paths[#paths + 1] = {name = "name12.update", length = 1024}
   
---   -- doc.link = "link"
---   local targets = {}
---   local target = {id = "12323",score = 0.23125}
---   targets[#targets + 1] = target
---   doc.targets = targets
---   docs[#docs + 1] = doc
---   local resp,status = link_dao.bulk_docs(docs)
---   local str_resp = cjson_safe.decode(resp)
---   self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
---   if not resp then
---     error("error:" .. tostring(status))
---   end
--- end
+  -- doc.link = "link"
+  local targets = {}
+  local target = {id = "12u23",score = 0.23125}
+  targets[#targets + 1] = target
+  doc.targets = targets
+  doc.ctime = ngx.time()
+  docs[#docs + 1] = doc
+  local resp,status = link_dao:bulk_docs(docs)
+  local str_resp = cjson_safe.encode(resp)
+  self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
+  if not resp then
+    error("error:" .. tostring(status))
+  end
+end
 
 tb:run()

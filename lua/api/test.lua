@@ -46,3 +46,15 @@ local second = "<em>人气</em><em>歌谣</em> 인기가요‎ (2000)"
 -- local score = similar.getJaroWinklerDistance("fly", "ant")
 ngx.say("getSegmentDistance:" .. similar.getSegmentDistance(first, second))
 ngx.say("getJaroWinklerDistance:" .. similar.getJaroWinklerDistance(first, second))
+
+
+local content_dao = require "dao.content_dao"
+local from = 0
+local size = 10
+local from_date = 0
+local to_date = ngx.time()
+local fields = {"utime","ctime"}
+local sresp, sstatus = content_dao:query_by_ctime(from, size, from_date, to_date,fields)
+local str_sresp = cjson_safe.encode(sresp)
+ngx.say("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
+

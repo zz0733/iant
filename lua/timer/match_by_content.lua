@@ -13,7 +13,9 @@ local from = 0
 local size = 1
 local from_date = 0
 local to_date = ngx.time()
-local period_date = 60*1000
+local min_date = 0
+local scan_count = 0
+local period_date = 60
 
 local match = ngx.re.match
 local last_worker = ngx.worker.count() - 1
@@ -22,6 +24,7 @@ local intact = require("util.intact")
 local util_table = require "util.table"
 local similar = require("util.similar")
 local content_fields = {"names","directors","issueds","article","ctime"}
+local link_fields = nil
 
 
 local find_year = function ( name )
@@ -66,7 +69,7 @@ local min_issued_time = function ( doc )
 end
 
 
-local select_match_doc = function ( doc, hits )
+local update_match_doc = function ( doc, hits )
     if not hits then
         return
     end
@@ -124,15 +127,12 @@ local find_similars = function ( doc )
         return
     end
     local source = doc._source
-    local title = source.title
+    local title = source.names
     local offset = 0
-    local limit = 3
+    local limit = 1000
     local max_issued = -1
     local start = ngx.now()
-    -- title = [[继承人2017]]
-    source.title = title
-    local resp, status = content_dao.query_by_name(offset, limit, title, content_fields)
-    local resp, status = link_dao.query_by_title(from_date, to_date, from, size)
+    local resp, status = link_dao.query_by_titles(offset, limit, source.names, link_fields)
     ngx.update_time()
     local cost = (ngx.now() - start)
     cost = tonumber(string.format("%.3f", cost))
@@ -140,15 +140,7 @@ local find_similars = function ( doc )
         local total  = resp.hits.total
         local hits  = resp.hits.hits
         local shits = cjson_safe.encode(hits)
-        local targets = select_match_doc(doc, hits)
-        if not util_table.is_empty_table(targets) then
-            local link_doc = {}
-            link_doc.targets = targets
-            link_doc.status = 1
-            link_doc.utime = ngx.time()
-            link_dao.update_doc(doc._id, link_doc)
-        end
-        local stargets = cjson_safe.encode(targets)
+        update_match_doc(doc, hits)
         log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
             .. ",max_issued:"..max_issued.. ",total:" .. total .. ",cost:" .. cost)
         -- log(ERR,"find_similars,title["..title .."],offset:" .. offset .. ",limit:" .. limit .. ",hit:" .. shits .. ",targets:" .. tostring(stargets))
@@ -165,45 +157,68 @@ local search_similars = function (hits )
     end
 end
 
+local query_min_ctime = function (  )
+   local body = {
+        size = 0,
+        aggs  = {
+            min_ctime  = { min  = { field  = "ctime" } }
+        }
+    }
+   local min_ctime = 0
+   local resp, status = content_dao:search(body)
+   if resp and resp.aggregations and resp.aggregations.min_ctime then
+       min_ctime = resp.aggregations.min_ctime.value
+   end
+   return min_ctime
+end
 
 
 local check
 
  check = function(premature)
      if not premature then
+         if min_date < 1 then
+            min_date = query_min_ctime()     
+         end
          if from == 0  and from_date > 0 then
-             to_date = from_date + period_date
+             from_date = to_date - period_date
          end
          local start = ngx.now()
-         local resp, status = content_dao.query_by_name(offset, limit, title, content_fields)
+         local resp, status = content_dao:query_by_ctime(from, limit, from_date, to_date, content_fields)
          ngx.update_time()
          local cost = (ngx.now() - start)
          cost = tonumber(string.format("%.3f", cost))
          if resp then
             local total  = resp.hits.total
             local hits  = resp.hits.hits
+            scan_count = scan_count + #hits
             local shits = cjson_safe.encode(hits)
-            log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total ..",hits:" .. tostring(#hits).. ",cost:" .. cost)
-            -- log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",hits:" .. shits)
-            search_similars(hits)
+            log(ERR,"query_by_ctime,range["..min_date..","..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",total:" .. total ..",hits:" .. tostring(#hits).. ",scan:"..scan_count..",cost:" .. cost)
+            -- search_similars(hits)
             if (total == 0) or (from >= total) then
                from = 0
-               from_date = to_date
-               cur_date = ngx.time()
-               if from_date > cur_date then
+               to_date = from_date
+               if to_date <= min_date then
+                   scan_count = 0
                    from_date = 0
-                   to_date = cur_date
+                   to_date = ngx.time()
+                   local ok, err = new_timer(done_wait, check)
+                    if not ok then
+                         log(CRIT, "done.failed to create timer: ", err)
+                         return
+                    else
+                        log(ERR, "done.wait["..done_wait.."],create timer: ")
+                    end
                end
             else
                 local hit_count = #hits
                 if hit_count < 1 then
-                   from_date = to_date
+                   to_date = from_date
                    from = 0
                 else 
                    local last = hits[hit_count]
                    local last_date = last._source.ctime
-                   -- log(ERR,"query_unmatch:from_date:" .. tostring(from_date) ..",last_date:" ..tostring(last_date))
-                   if from_date == last_date  then
+                   if from_date > 1  then
                        from = from + hit_count
                    else 
                        from_date = last_date
@@ -213,7 +228,7 @@ local check
   
             end
          else 
-           log(ERR,"query_unmatch,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",cost:"..cost..",cause:", tostring(status))
+           log(ERR,"query_by_ctime,range["..from_date .."," .. to_date .. "],from:" .. from .. ",size:" .. size .. ",cost:"..cost..",cause:", tostring(status))
          end
          
          local ok, err = new_timer(delay, check)
@@ -224,11 +239,11 @@ local check
      end
  end
 
- -- if last_worker == ngx.worker.id() then
+ if last_worker == ngx.worker.id() then
      log(ERR, "match_timer["..ngx.worker.id() .."] start")
      local ok, err = new_timer(delay, check)
      if not ok then
          log(ERR, "match_timer fail to run: ", err)
          return
      end
- -- end
+ end

@@ -21,7 +21,19 @@ _M._VERSION = '0.01'
 -- The index
 _M.active_cmds = { content=1, logger=1, link=1}
 
+local CHECK_FIELDS = {"evaluates","names","genres","actors","directors","images","tags","digests","contents","issueds"}
 
+local ensure_doc = function ( doc )
+  if not doc then
+    return 
+  end
+  for _,key in ipairs(CHECK_FIELDS) do
+    local val_obj = doc[key]
+    if val_obj and util_table.is_empty_table(val_obj) then
+      doc[key] = cjson_safe.empty_array
+    end
+  end
+end
 
 _M.execute = function (cmd, ... )
    if not _M.active_cmds[cmd] then
@@ -57,9 +69,10 @@ _M.content = function(id, source)
    	  if not v.id then
    	  	v.id = tostring(type) .. tostring(id)
    	  end
+      ensure_doc(v)
    end
    -- log(ERR,"handleXXXXXXX[content],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
-   return content_dao.inserts(docs)
+   return content_dao:bulk_docs(docs)
 end
 
 _M.link = function(id, source)
@@ -84,9 +97,10 @@ _M.link = function(id, source)
         if not v.id then
          v.id = tostring(type) .. tostring(id)
         end
+         ensure_doc(v)
    end
    log(ERR,"handleXXXXXXX[link],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
-   return link_dao.bulk_docs(docs)
+   return link_dao:bulk_docs(docs)
 end
 
 local commands = {}
