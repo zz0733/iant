@@ -338,7 +338,7 @@ local check
      end
  end
 
- if last_worker == ngx.worker.id() then
+ if 0 == ngx.worker.id() then
      log(ERR, "match_timer["..ngx.worker.id() .."] start")
      local ok, err = new_timer(delay, check)
      if not ok then
