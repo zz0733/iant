@@ -65,8 +65,9 @@ local max_issued_time = function ( doc )
         return dest
     end
     for _,v in ipairs(issueds) do
-        if v.time and (not dest or v.time > dest) then
-            dest = v.time
+        local time = tonumber(v.time)
+        if time and (not dest or time > dest) then
+            dest = time
         end
     end
     dest = tonumber(dest)
@@ -84,8 +85,9 @@ local min_issued_time = function ( doc )
         return dest
     end
     for _,v in ipairs(issueds) do
-        if v.time and (not dest or v.time < dest) then
-            dest = v.time
+        local time = tonumber(v.time)
+        if time and (not dest or time < dest) then
+            dest = time
         end
     end
     dest = tonumber(dest)
