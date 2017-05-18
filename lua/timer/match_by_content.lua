@@ -10,10 +10,14 @@ local log = ngx.log
 local ERR = ngx.ERR
 local INFO = ngx.ERR
 local CRIT = ngx.CRIT
+
+local shared_dict = ngx.shared.shared_dict
+local key_match_to_date = "match_to_date"
+
 local from = 0
 local size = 10
 local from_date = 0
-local to_date = ngx.time()
+local to_date = shared_dict:get(key_match_to_date) or ngx.time()
 local min_date = 0
 local scan_count = 0
 local period_date = 60*60
@@ -270,6 +274,12 @@ local check
          end
          if from == 0  and from_date > 0 then
              from_date = to_date - period_date
+             local ok, err = shared_dict:set(key_match_to_date, to_date )
+             if ok then
+                 log(ERR,"shared_dict.set[" .. key_match_to_date .. "=" .. tostring(to_date) .. "]" )
+             else
+                log(CRIT,"error.shared_dict.set[" .. key_match_to_date .. "=" .. tostring(to_date) .. "],cause:", err)
+             end
          end
          local start = ngx.now()
          local resp, status = content_dao:query_by_ctime(from, limit, from_date, to_date, content_fields)
