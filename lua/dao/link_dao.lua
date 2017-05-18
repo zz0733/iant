@@ -119,4 +119,25 @@ function _M:count_by_target( target_id )
   end
 end
 
+function _M:query_by_target( target_id, from , size )
+  if not target_id then
+  	return 0
+  end
+  local  body = {
+    from = from,
+    size = size,
+    query = {
+      nested = {
+        path = "targets",
+         query ={
+           match = { 
+              ["targets.id"] = target_id
+           }
+         }
+      }
+    }
+  }
+  return _M:search(body)
+end
+
 return _M

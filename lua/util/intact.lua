@@ -11,18 +11,20 @@ local utf8 = require("3th.utf8")
 -- local match = ngx.re.match
 
 local sub = utf8.sub
-local find = utf8.find
+-- local find = utf8.find
 local utf8len = utf8.len
 local utf8match = utf8.match
 
 local log = ngx.log
 local ERR = ngx.ERR
 
--- local cjson_safe = require "cjson.safe"
-
--- for k,v in pairs(utf8) do
---         string[k] = v
--- end
+local escapse = function ( regex )
+     return string.gsub(regex, "%p", "\\\\%1")
+end
+local find = function (content, regex, ...)
+    local str_escape = escapse(regex)
+    return utf8.find(content,str_escape, ...)
+end
 
 _M.is_word_char = function ( char )
     char = tonumber(char)
