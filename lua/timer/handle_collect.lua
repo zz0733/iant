@@ -2,7 +2,7 @@
 local collect_dao = require "dao.collect_dao"
 local handlers = require "handler.handlers"
 local cjson_safe = require("cjson.safe")
-local delay = 1  -- in seconds
+local delay = 10  -- in seconds
 local new_timer = ngx.timer.at
 
 local log = ngx.log
@@ -59,11 +59,11 @@ local check
      end
  end
 
- -- if 0 == ngx.worker.id() then
+ if 0 == ngx.worker.id() then
      log(ERR, "handle_collect_timer start")
      local ok, err = new_timer(delay, check)
      if not ok then
          log(ERR, "handle_collect_timer fail to run: ", err)
          return
      end
- -- end
+ end
