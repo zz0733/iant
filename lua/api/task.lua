@@ -146,7 +146,7 @@ elseif 'nexts' == method then
     local body = cjson_safe.encode(message)
     ngx.say(body)
 elseif 'getmore' == method then
-    local max = 20
+    local max = 5
     local tasks = {}
     local message = {}
     message.data = tasks

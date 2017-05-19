@@ -14,7 +14,19 @@ local encode_base64 = ngx.encode_base64
 
 local _M = ESClient:new({index = "collect", type = "table"})
 -- _M._VERSION = '0.01'
-
+local can_insert = function ( task , data, status )
+	if not task or not data or status ~= 1 then
+		return false
+	end
+	local handlers = data.handlers
+	if not handlers or #handlers < 1 then
+      return false
+	end
+	if #handlers == 1 and handlers[1] == "CreateNextTask" then
+		return false
+	end
+	return true
+end
 
 function _M.inserts( collects )
 	if not collects then
@@ -26,41 +38,38 @@ function _M.inserts( collects )
 		local task = v.task
 	    local data = v.data
 	    local status = v.status
-	    if task and  data and status == 1 then
+    	local str_task = cjson_safe.encode(task)
+	    local str_data = cjson_safe.encode(data)
+	    if can_insert(task, data, status) then
 	    	local handlers = data.handlers
-	    	local str_task = cjson_safe.encode(task)
-		    local str_data = cjson_safe.encode(data)
-		    if handlers and not util_table.is_empty_table(handlers) then
-		    	es_body[#es_body + 1] = {
-			      index = {
-			        ["_type"] = _M.type,
-			        ["_id"] = task.id
-			      }
-			    }
-			    local collect_obj = {}
-			    collect_obj.type = task.type
+	    	es_body[#es_body + 1] = {
+		      index = {
+		        ["_type"] = _M.type,
+		        ["_id"] = task.id
+		      }
+		    }
+		    local collect_obj = {}
+		    collect_obj.type = task.type
 
-				--  can not use ipairs,iterator by pairs
-				--  table.remove(task,index) not work
-			    task.id = nil
-			    task.type = nil
+			--  can not use ipairs,iterator by pairs
+			--  table.remove(task,index) not work
+		    task.id = nil
+		    task.type = nil
 
-			    data.handlers = nil
-			    data.nextTasks = nil
-			    if string.len(str_task) >= max_len then
-			    	str_task = string.sub(str_task, 1, max_len)
-			    end
-			    collect_obj.task = str_task
-			    collect_obj.data = encode_base64(str_data)
-			    collect_obj.handlers = handlers
-		    	collect_obj.ctime = ngx.time()
-
-			    es_body[#es_body + 1] = collect_obj
-			    count = count + 1			    
-			else
-			    log(ERR,"ignore.task:" .. str_task .. ",data:" .. str_data)
+		    data.handlers = nil
+		    data.nextTasks = nil
+		    if string.len(str_task) >= max_len then
+		    	str_task = string.sub(str_task, 1, max_len)
 		    end
-			
+		    collect_obj.task = str_task
+		    collect_obj.data = encode_base64(str_data)
+		    collect_obj.handlers = handlers
+	    	collect_obj.ctime = ngx.time()
+
+		    es_body[#es_body + 1] = collect_obj
+		    count = count + 1			    
+		else
+		    log(ERR,"ignore.collect:" .. str_task .. ",data:" .. str_data)
 	    end
 	end
     if count < 1 then
