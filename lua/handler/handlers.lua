@@ -126,4 +126,17 @@ _M.channel = function(id, source)
    return channel_dao:save_docs(docs)
 end
 
+_M.commands = {
+  link = _M.link,
+  content = _M.content,
+  channel = _M.channel
+}
+
+setmetatable(_M, {
+  __index = function(self, cmd)
+      local method = _M[cmd] or _M.commands[cmd]
+      return method 
+  end
+})
+
 return _M
