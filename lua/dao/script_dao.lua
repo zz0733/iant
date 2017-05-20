@@ -3,7 +3,6 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local ESClient = require "es.ESClient"
 
-
 local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
@@ -12,26 +11,28 @@ local _M = ESClient:new({index = "script", type = "table"})
 _M._VERSION = '0.01'
 
 
-function _M.insert_scripts(scripts )
-	local es_body = {}
-	for k,v in ipairs(scripts) do
-		es_body[#es_body + 1] = {
-	      index = {
-	        ["_type"] = _M.type,
-	        ["_id"] = v.type
-	      }
-	    }
-	    if not v.type or v.type == "" then
-	    	return nil, "type is empty"
-	    end
-	    es_body[#es_body + 1] = v
-	end
-
-	local resp, status = _M:bulk(es_body)
-	return resp, status
+function _M:insert_scripts(params )
+  if not params then
+    return nil, 400
+  end
+  local configs = {
+	  refresh = "true"
+   }
+  return self:index_docs( params, configs )
 end
 
-function _M.search_by_type( id )
+function _M:update_scripts(params )
+	if not params then
+      return nil, 400
+	end
+	-- refresh,use in buildQuery,must be string
+    local configs = {
+	  refresh = "true"
+    }
+   return self:update_docs( params, configs )
+end
+
+function _M:search_by_type( id )
 	local resp, status = _M:search{
 		query =  { 
 		    bool =  { 
@@ -47,7 +48,7 @@ function _M.search_by_type( id )
 	return resp, status
 end
 
-function _M.search_all_ids()
+function _M:search_all_ids()
 	local resp, status = _M:search{
 		_source = false,
 		size = 1000,

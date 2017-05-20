@@ -15,7 +15,7 @@ local check
  check = function(premature)
      if not premature then
          local start = ngx.now()
-         local resp,status = script_dao.search_all_ids()
+         local resp,status = script_dao:search_all_ids()
          ngx.update_time()
          local cost = (ngx.now() - start)
          cost = tonumber(string.format("%.3f", cost))

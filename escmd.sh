@@ -1,11 +1,25 @@
-# curl -X POST 'http://127.0.0.1:9200/script/table/bdp-share/_update?pretty' -d '
-# {
-#     "doc" : {
-#         "delete" : 1
-#     }
-# }
-# '
-# exit 0
+curl -X POST 'http://127.0.0.1:9200/script/table/douban-movie-link/_update?pretty' -d '
+{
+    "doc" : {
+        "delete" : 1
+    }
+}
+'
+exit 0
+
+curl -X POST 'http://127.0.0.1:9200/collect/_delete_by_query?pretty' -d '
+{
+  "query": { 
+    "bool": {
+      "filter": {
+        "terms":{
+          "handlers":["nexts"]
+        }
+      }
+    }
+  }
+}
+'
 
 # curl -X GET 'http://127.0.0.1:9200/script/table/_search?pretty' -d '
 # {

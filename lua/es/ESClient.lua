@@ -50,41 +50,43 @@ function ESClient:new(o)
   return o, error
 end
 
-function ESClient:create_docs( docs )
+function ESClient:create_docs( docs, configs )
   for _, doc in ipairs(docs) do
     doc[self.bulk_cmd_field] = "create"
   end
-  return self:bulk_docs(docs)
+  return self:bulk_docs(docs, configs )
 end
 
-function ESClient:index_docs( docs )
+function ESClient:index_docs( docs, configs )
   for _, doc in ipairs(docs) do
     doc[self.bulk_cmd_field] = "index"
   end
-  return self:bulk_docs(docs)
+  return self:bulk_docs(docs, configs )
 end
 
-function ESClient:update_docs( docs )
+function ESClient:update_docs( docs, configs )
   for _, doc in ipairs(docs) do
     doc[self.bulk_cmd_field] = "update"
   end
-  return self:bulk_docs(docs)
+  return self:bulk_docs(docs, configs )
 end
 
-function ESClient:delete_docs( docs )
+function ESClient:delete_docs( docs, configs )
   for _, doc in ipairs(docs) do
     doc[self.bulk_cmd_field] = "delete"
   end
-  return self:bulk_docs(docs)
+  return self:bulk_docs(docs, configs)
 end
 
-function ESClient:bulk_docs( params )
-  if not params then
+function ESClient:bulk_docs( docs, configs )
+  if not docs then
     return nil, 400
   end
+  -- log(ERR,"bulk_docs.docs" ..  cjson_safe.encode(docs))
+  -- log(ERR,"bulk_docs.configs" ..  cjson_safe.encode(configs))
   local es_body = {}
   local count = 0
-  for _, val in ipairs(params) do
+  for _, val in ipairs(docs) do
       local id = val.id
       local cmd = val[self.bulk_cmd_field]
       if not self.accept_commands[cmd] then
@@ -119,35 +121,32 @@ function ESClient:bulk_docs( params )
       return resp, 200
   end
     -- log(ERR,"content.es_body" ..  cjson_safe.encode(es_body))
-  return self:bulk( es_body )
+  return self:bulk( es_body, configs)
 end
 
-function ESClient:bulk( params, batch )
+function ESClient:bulk( body, configs )
   local resp, status
   local es_body = {}
-  local batch_size = batch or 10
-  local sum = 0
-  for _,v in ipairs(params) do
-    sum = sum + 1
+  local batch_size =  10
+  if configs and tonumber(configs.batch) then
+     batch_size = 2 * tonumber(configs.batch)
+     configs.batch = nil
+  end
+  local sum = #body
+  local total = sum / 2
+  for _,v in ipairs(body) do
     es_body[#es_body + 1] = v
     if #es_body == batch_size then
-        resp, status = self.client:bulk{
-          index = self.index,
-          body = es_body
-        }
+        resp, status = self:dobulk(es_body, configs) 
         if not resp then
           local count = #es_body / 2
-          local total = sum / 2
           log(CRIT,"fail.batch.bulk,count:" .. count .. ",total:" .. total .. ",cause:", status)
         end
         es_body = {}
     end
   end
   if #es_body >= 1 then
-      resp, status = self.client:bulk{
-        index = self.index,
-        body = es_body
-      }
+     resp, status = self:dobulk(es_body,  configs )
       if not resp then
         local count = #es_body / 2
         local total = sum / 2
@@ -156,7 +155,15 @@ function ESClient:bulk( params, batch )
   end
 
   return resp, status
+end
 
+function ESClient:dobulk( body, configs )
+  local params = configs or {}
+  params.index = self.index
+  params.body = body
+  -- log(ERR,"dobulk.params" ..  cjson_safe.encode(params))
+  local resp, status = self.client:bulk(params)
+  return resp, status
 end
 
 function ESClient:search( body )

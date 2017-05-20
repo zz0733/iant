@@ -105,7 +105,7 @@ elseif 'nexts' == method then
       if status == 1 and task and data and data.nextTasks and not data.localize and data.handlers then
         local nextTasks = data.nextTasks
         local handlers = data.handlers
-        if contains(handlers, "CreateNextTask") then
+        if contains(handlers, "nexts") then
           local oParams = {}
           if task.params then
              oParams = cjson_safe.decode(task.params)

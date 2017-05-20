@@ -99,8 +99,34 @@ _M.link = function(id, source)
         end
          ensure_doc(v)
    end
-   log(ERR,"handleXXXXXXX[link],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   log(ERR,"handlelink],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
    return link_dao:bulk_docs(docs)
+end
+
+_M.channel = function(id, source)
+   if not source then
+       return nil, "source is nil"
+   elseif not source.data then
+       return nil, "source.data is nil"
+   end
+   local str_date = decode_base64(source.data)
+   local data = cjson_safe.decode(str_date)
+   if not data then
+       return nil, "es[source.data] is not json"
+   elseif not data.data then
+       return nil, "content[data] is nil"
+   elseif not data.data.docs  then
+    return nil, "content[data].docs is nil"
+   end
+   local docs = data.data.docs
+   local type = source.type
+   for _,v in ipairs(docs) do
+        if not v.id then
+         v.id = tostring(type) .. tostring(id)
+        end
+   end
+   log(ERR,"handle[channel],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   return channel_dao:save_docs(docs)
 end
 
 local commands = {}

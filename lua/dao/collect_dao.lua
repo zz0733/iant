@@ -22,7 +22,7 @@ local can_insert = function ( task , data, status )
 	if not handlers or #handlers < 1 then
       return false
 	end
-	if #handlers == 1 and handlers[1] == "CreateNextTask" then
+	if #handlers == 1 and handlers[1] == "nexts" then
 		return false
 	end
 	return true

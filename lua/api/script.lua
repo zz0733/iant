@@ -3,6 +3,8 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local script_dao = require "dao.script_dao"
 
+local load_handler = require("handler.load_handler")
+
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 local method = args.method
@@ -37,22 +39,41 @@ if 'insert' == method  then
 		script = string.sub(script,0, from)
 	end
 
-	local script_obj = {}
-	script_obj.type = type
-	script_obj.script = script
-	script_obj.delete = 0
-	local scripts = {}
-	scripts[#scripts + 1] = script_obj
-	local resp, status = script_dao.insert_scripts(scripts )
+	local script_doc = {}
+	script_doc.id = type
+	script_doc.type = type
+	script_doc.script = script
+	script_doc.delete = 0
+	local input_docs = {}
+	input_docs[#input_docs + 1] = script_doc
+	local resp, status = script_dao:insert_scripts(input_docs)
 	local message = {}
     message.data = resp
     message.code = 200
-    if status == 200 then
-		
+    if resp then
        shared_dict:delete(type)
+       load_handler.load_types()
 	else
 	   message.code = 500
 	   message.error = status
+	end
+	local body = cjson_safe.encode(message)
+    ngx.say(body)
+elseif "del" == method then
+	local input_docs = {}
+	local doc = {}
+	doc.id = type
+	doc.delete = 1
+	input_docs[1] = doc
+	local resp, status = script_dao:update_scripts(input_docs )
+	local message = {}
+    message.data = resp
+    message.code = 200
+    if not resp then
+	   message.code = 500
+	   message.error = status
+	else
+	 	load_handler.load_types()
 	end
 	local body = cjson_safe.encode(message)
     ngx.say(body)
@@ -64,7 +85,7 @@ elseif "get" == method then
     -- add lock
     -- log(ERR,"shared_dict_script get[" .. type .. "],value:".. tostring(value) ..",cause:",err)
     if not value then
-    	local resp, status = script_dao.search_by_type(type)
+    	local resp, status = script_dao:search_by_type(type)
     	if resp then
     		local hits  = resp.hits.hits
 
