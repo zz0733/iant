@@ -7,13 +7,40 @@ curl -X POST 'http://127.0.0.1:9200/script/table/douban-movie-link/_update?prett
 '
 exit 0
 
-curl -X POST 'http://127.0.0.1:9200/collect/_delete_by_query?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/channel/_delete_by_query?pretty' -d '
 {
-  "query": { 
+  "query": {
+      "match_all": {
+      }
+  }
+}
+'
+curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query?pretty' -d '
+{
+  "script": {
+    "inline": "ctx._source.ctime = ctx._source.utime;",
+    "lang": "painless"
+  },
+  "query": {
     "bool": {
-      "filter": {
-        "terms":{
-          "handlers":["nexts"]
+      "must_not": {
+        "exists": {
+          "field": "ctime"
+        }
+      }
+    }
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
+{
+  "size":10,
+  "query": {
+    "bool": {
+      "must_not": {
+        "exists": {
+          "field": "ctime"
         }
       }
     }

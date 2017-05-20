@@ -55,7 +55,7 @@ function _M:update_docs( docs)
 
 	      local new_doc = { 
 	        script = { 
-	          inline = "ctx._source.utime = params.utime; ctx._source.elements.addAll(params.elements); ctx._source.total = ctx._source.elements.size(); ", 
+	               inline = "ctx._source.utime = params.utime; if(ctx._source.elements != null) { def elements = ctx._source.elements; Map codeMap = new HashMap(); for (int i = 0; i < elements.length; ++i){ def ele = elements[i]; String key = ele.code; codeMap.put(key,ele); } def inputs = params.elements; for (int j = 0; j < inputs.length; ++j){ def ele = inputs[j]; String key = ele.code.toString(); codeMap.put(key,ele); } ctx._source.elements = codeMap.values(); } else { ctx._source.elements = params.elements; } ctx._source.total = ctx._source.elements.size(); ", 
 	          lang = "painless", 
 	          params = {
 	             total = val.total,
