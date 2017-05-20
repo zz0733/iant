@@ -43,15 +43,16 @@ function _M:update_docs( docs)
   local count = 0
   local cmd = 'update'
   for _, val in ipairs(docs) do
-      local id = val.id
       if val.elements then
       	  local cmd_doc = {}
 	      cmd_doc[cmd] = {
 	          ["_type"] = self.type,
-	          ["_id"] = id
+	          ["_id"] = val.id
 	      }
 	      es_body[#es_body + 1] = cmd_doc
-	      
+          val.id = nil
+	      val[self.bulk_cmd_field] = nil
+
 	      local new_doc = { 
 	        script = { 
 	          inline = "ctx._source.utime = params.utime; ctx._source.elements.addAll(params.elements); ctx._source.total = ctx._source.elements.size(); ", 
@@ -62,7 +63,7 @@ function _M:update_docs( docs)
 	             utime = ngx.time()
 	          }
 	        },
-	        upsert = {}
+	        upsert = val
 		  }
 	      es_body[#es_body + 1] = new_doc
 	      count = count + 1
