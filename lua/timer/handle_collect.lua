@@ -1,7 +1,9 @@
--- init_worker_by_lua
-local collect_dao = require "dao.collect_dao"
+local util_table = require "util.table"
 local handlers = require "handler.handlers"
 local cjson_safe = require("cjson.safe")
+
+local collect_dao = require "dao.collect_dao"
+
 local delay = 10  -- in seconds
 local new_timer = ngx.timer.at
 
@@ -31,19 +33,16 @@ local check
             if total > 0 then
                 local hits  = resp.hits.hits
                 for _,v in ipairs(hits) do
-                    local source = v._source
-                    -- log(ERR,"source.handlers:" .. cjson_safe.encode(source.handlers))
-                    local cur_handlers = source.handlers
-                    if cur_handlers then
-                       for _, cmd in ipairs(cur_handlers) do
-                            
+                   local source = v._source
+                   local cur_handlers = source.handlers
+                   for _, cmd in ipairs(cur_handlers) do
+                        if util_table.contains(cmd) then
                             local resp,status = handlers.execute(cmd, v._id, source)
                             if not resp then
                                 log(CRIT,"handlers[" .. cmd .."],id:" .. tostring(v._id) .. ",status:" .. tostring(status) )
                             end
-                            
-                       end
-                    end
+                        end
+                   end
                 end
             end
          else

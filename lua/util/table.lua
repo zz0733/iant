@@ -59,4 +59,16 @@ function _M.equals(left,rigth)
     return true
 end
 
+function _M.contains( table, value )
+  if not table or not value then
+      return false
+  end
+  for _,v in ipairs(table) do
+        if value == v then
+          return true
+        end
+  end
+  return false
+end
+
 return _M

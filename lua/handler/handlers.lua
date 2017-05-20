@@ -1,6 +1,6 @@
 local content_dao = require("dao.content_dao")
 local link_dao = require("dao.link_dao")
-local collect_dao = require "dao.collect_dao"
+local channel_dao = require "dao.channel_dao"
 
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
@@ -129,11 +129,11 @@ commands[#commands + 1] = "link"
 commands[#commands + 1] = "content"
 commands[#commands + 1] = "channel"
 _M.commands = commands
--- setmetatable(_M, {
---   __index = function(self, cmd)
---       local method = _M[cmd]
---       return method 
---   end
--- })
+setmetatable(_M, {
+  __index = function(self, cmd)
+      local method = _M[cmd]
+      return method 
+  end
+})
 
 return _M
