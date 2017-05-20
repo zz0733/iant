@@ -19,7 +19,7 @@ end
 local _M = new_tab(0, 6)
 _M._VERSION = '0.01'
 -- The index
-_M.active_cmds = { content=1, logger=1, link=1}
+_M.active_cmds = { content = 1, logger = 1, link = 1,channel = 1}
 
 local CHECK_FIELDS = {"evaluates","names","genres","actors","directors","images","tags","digests","contents","issueds"}
 
