@@ -28,7 +28,7 @@ local can_insert = function ( task , data, status )
 	return true
 end
 
-function _M.inserts( collects )
+function _M:inserts( collects )
 	if not collects then
 		return {}, 400
 	end
@@ -79,7 +79,7 @@ function _M.inserts( collects )
 	return _M:bulk( es_body )
 end
 
-function _M.load_by_handlers( from, size, handlers )
+function _M:load_by_handlers( from, size, handlers )
 	local body = {
 	    from = from,
 	    size = size,

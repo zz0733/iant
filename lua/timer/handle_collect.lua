@@ -20,7 +20,7 @@ local check
      if not premature then
          -- do the health check or other routine work
          local start = ngx.now()
-         local resp, status = collect_dao.load_by_handlers(from, size, commands)
+         local resp, status = collect_dao:load_by_handlers(from, size, commands)
          ngx.update_time()
          local cost = (ngx.now() - start)
          cost = tonumber(string.format("%.3f", cost))
