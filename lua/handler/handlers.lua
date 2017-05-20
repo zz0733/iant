@@ -1,5 +1,7 @@
 local content_dao = require("dao.content_dao")
 local link_dao = require("dao.link_dao")
+local collect_dao = require "dao.collect_dao"
+
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
@@ -11,12 +13,7 @@ local CRIT = ngx.CRIT
 local decode_base64 = ngx.decode_base64
 
 
-local ok, new_tab = pcall(require, "table.new")
-if not ok or type(new_tab) ~= "function" then
-    new_tab = function (narr, nrec) return {} end
-end
-
-local _M = new_tab(0, 6)
+local _M = util_table.new_table(0, 5)
 _M._VERSION = '0.01'
 -- The index
 
