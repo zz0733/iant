@@ -19,7 +19,7 @@ end
 local _M = new_tab(0, 6)
 _M._VERSION = '0.01'
 -- The index
-_M.active_cmds = { content = 1, logger = 1, link = 1,channel = 1}
+
 
 local CHECK_FIELDS = {"evaluates","names","genres","actors","directors","images","tags","digests","contents","issueds"}
 
@@ -36,14 +36,11 @@ local ensure_doc = function ( doc )
 end
 
 _M.execute = function (cmd, ... )
-   if not _M.active_cmds[cmd] then
+  local do_cmd = _M[cmd]
+   if not do_cmd then
    	 return
    end
-   if cmd == "content" then
-       return _M.content(...)
-   elseif cmd == "link" then
-   	 return _M.link(...)
-   end
+   return do_cmd( ... )
 end
 
 
@@ -55,7 +52,7 @@ _M.content = function(id, source)
    end
    local str_date = decode_base64(source.data)
    local data = cjson_safe.decode(str_date)
-   -- log(ERR,"handleXXXXXXX[content],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
+   log(ERR,"handle[content],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
    if not data then
    	 return nil, "es[source.data] is not json"
    elseif not data.data then
@@ -71,7 +68,7 @@ _M.content = function(id, source)
    	  end
       ensure_doc(v)
    end
-   -- log(ERR,"handleXXXXXXX[content],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   log(ERR,"handle[content],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
    return content_dao:bulk_docs(docs)
 end
 
@@ -83,7 +80,7 @@ _M.link = function(id, source)
    end
    local str_date = decode_base64(source.data)
    local data = cjson_safe.decode(str_date)
-   log(ERR,"handleXXXXXXX[content],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
+   log(ERR,"handle[link],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
    if not data then
        return nil, "es[source.data] is not json"
    elseif not data.data then
@@ -99,7 +96,7 @@ _M.link = function(id, source)
         end
          ensure_doc(v)
    end
-   log(ERR,"handlelink],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   log(ERR,"handle[link],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
    return link_dao:bulk_docs(docs)
 end
 
@@ -129,12 +126,4 @@ _M.channel = function(id, source)
    return channel_dao:save_docs(docs)
 end
 
-local commands = {}
-for cmd,_ in pairs(_M.active_cmds) do
-	commands[#commands + 1] = cmd
-	-- _M[cmd] = function ( self, ... )
-	-- 	return do_command(self,cmd, ...)
-	-- end
-end
-_M.commands = commands
 return _M
