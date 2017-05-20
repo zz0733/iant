@@ -28,7 +28,7 @@ local can_insert = function ( task , data, status )
 	return true
 end
 
-function _M:inserts( collects )
+function _M:insert_docs( collects )
 	if not collects then
 		return {}, 400
 	end

@@ -31,7 +31,7 @@ if not body_json then
 	return
 end
 if 'insert' == method  then
-	local resp, status = collect_dao.inserts(body_json )
+	local resp, status = collect_dao:insert_docs(body_json )
     -- message.data = resp
     if status == 200 then
     	message.code = 200
