@@ -127,14 +127,14 @@ _M.channel = function(id, source)
 end
 
 _M.commands = {
-  link = _M.link,
-  content = _M.content,
-  channel = _M.channel
+  link = 1,
+  content = 1,
+  channel = 1
 }
 
 setmetatable(_M, {
   __index = function(self, cmd)
-      local method = _M[cmd] or _M.commands[cmd]
+      local method = _M[cmd]
       return method 
   end
 })
