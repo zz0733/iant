@@ -36,7 +36,7 @@ local check
                    local source = v._source
                    local cur_handlers = source.handlers
                    for _, cmd in ipairs(cur_handlers) do
-                        if util_table.contains(cmd) then
+                        if util_table.contains(commands, cmd) then
                             local resp,status = handlers.execute(cmd, v._id, source)
                             if not resp then
                                 log(CRIT,"handlers[" .. cmd .."],id:" .. tostring(v._id) .. ",status:" .. tostring(status) )

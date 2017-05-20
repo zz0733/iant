@@ -129,11 +129,5 @@ commands[#commands + 1] = "link"
 commands[#commands + 1] = "content"
 commands[#commands + 1] = "channel"
 _M.commands = commands
-setmetatable(_M, {
-  __index = function(self, cmd)
-      local method = _M[cmd]
-      return method 
-  end
-})
 
 return _M
