@@ -77,4 +77,32 @@ function _M:update_docs( docs)
   return self:bulk( es_body )
 end
 
+function _M:query_by_channels(channels, from, size,fields )
+  if not channels or #channels < 1 then
+    return nil, "400,names is empty"
+  end
+  local shoulds = {}
+  for _,v in ipairs(channels) do
+    local should = {
+          match = {
+            channel = v
+          }
+      }
+    shoulds[#shoulds + 1] = should
+  end
+  local body = {
+    from = from,
+    size = size,
+    _source = fields,
+    sort = { timeby = { order = "desc"}},
+    query = {
+      bool = {
+        should = shoulds
+      }
+    }
+  }
+  local resp, status = _M:search(body)
+  return resp, status
+end
+
 return _M

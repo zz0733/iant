@@ -6,3 +6,6 @@ local CRIT = ngx.CRIT
 -- local handle_collect = require("timer.handle_collect")
 -- local match_by_content = require("timer.match_by_content")
 -- local load_handler = require("handler.load_handler").load_types()
+
+
+require("util.context").version(ngx.time())

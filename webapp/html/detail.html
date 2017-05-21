@@ -1,0 +1,159 @@
+{(decorator/header.html)}
+
+<link rel="canonical" href="{*context.header.canonical*}"/>
+<meta name="description" content="{*context.header.description*}"/>
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+
+</head>
+{# end of head #}
+
+<body>
+
+{(decorator/navbar.html)}
+{(decorator/blankbar.html)}
+
+<div class="main data-box">
+	<div class="act">
+		<div class="container">
+		<ol class="breadcrumb">
+		{% for index, oLink in ipairs(crumbs) do %}
+		    <li><a href="{{oLink.link}}">{{oLink.name}}</a></li>
+		{% end %}
+        <li class="active"><strong>{*_source.article.title*}</strong></li>
+      </ol>
+
+      <div class="container-fluid">
+					<div class="row top-margin">
+						  <div class="col-xs-12 col-sm-4 col-md-3 movie-left">
+						       <img src="{* _source.digests[1].content *}" 
+						       class="img-thumbnail movie-img" alt="{*_source.article.title*}"/>
+					      </div>
+					      <div class="col-xs-12 col-sm-8 col-md-9 movie-right">
+							      <ul class="list-group">
+								    <li class="list-group-item">
+										    <h1 class="movie-title-margin">
+											  {*_source.article.title*}
+										      <span class="badge movie-badge">{*_source.article.year*}</span>
+										    </h1>
+								    <li class="list-group-item tag-info">
+								       <strong>导演：</strong>
+								       {% local directors = _source.directors or {}; %}
+								       {* table.concat(directors,' ') *}
+								    </li>
+								    <li class="list-group-item tag-info">
+								       <strong>主演：</strong>
+								       {%local actors = _source.actors or {} %}
+								       {*  table.concat(actors,' ') *}
+								       
+								    </li>
+								    <li class="list-group-item tag-info">
+								      <strong>类型：</strong>
+								      {% local genres = _source.genres or {} %}
+								      {*   table.concat(genres,' ') *}
+								    </li>
+								    <li class="list-group-item tag-info">
+								    	<strong>上映：</strong>
+								        {%
+								          local issueds = _source.issueds or {};
+								          for i,v in ipairs(issueds) do
+											 if i > 1 then 
+											  %}  &nbsp  {%
+											 end 
+											 local issued = v.time;  
+											 if string.len(tostring(issued)) > 10 then 
+											    issued = math.modf( issued / 1000)  
+											 end 
+											 %} {{v.country}}( {* os.date("%Y-%m-%d",issued) *}) {%
+										   end 
+										%}
+								    </li>
+								  </ul>
+					       </div>
+				      </div>
+				</div>
+			</div>
+		</div>
+
+
+       <div class="container top-margin">
+		   <div class="story">
+				<div class="story-header">
+					  <h4 class="head-title">剧情介绍
+					    <span class="share-box">分享到 <a id="shareQQ" rel="nofollow" target="_blank" href="javascript:void(0)" ></a></span>
+					  </h4>
+				</div>
+				<div class="story-body">
+				  {% 
+				  for index, page in ipairs(context._source.contents) do 
+				     if page.sort == "img" then
+				      %} <img src="{{page.text}}" >  {%
+				     else 
+				      %} <p>{{page.text}}</p>  {%
+				     end 
+				  end 
+				  %}
+				 </div>
+			</div>
+		</div>
+
+		<div class="container" >
+			  <div class="row">
+			    <div class="col-md-8 link-group-left">
+				  <ul class="list-group">
+				    {%
+				      local total = link_hits.total or 0
+				      if total >= 1 then
+				          for i,v in ipairs(link_hits.hits) do
+				             local str_index = tostring(i)
+				             if i < 10 then
+				                str_index = "0" .. str_index
+				             end 
+				             local icon_cls = "icon10";
+				             local v_source = v._source;
+				             if string.match(v._id,"^b") then
+				                if v_source.space and (v_source.space ==0 or v_source.space == 1024) then
+				                  icon_cls = "icon61"
+				                end
+				             end
+				             %}
+				               <li class="list-group-item link-box">
+				                 <span class="badge">{{str_index}}</span>
+				                 <span class="link-icon {{icon_cls}}"></span>
+				                 <a href="/movie/target/{{v._id}}.html" class="link-title">{*v._source.title*}</a>
+				               </li> 
+				             {%
+						  end
+				      else 
+				        %} 暂无资源 {%
+				      end
+				    %}
+				  </ul>
+			    </div>
+			    <div class="col-md-4 link-group-right">
+		 		  <ul class="list-group">
+		 		    {%
+		 		      local count = 0
+		 		      for k,v in pairs(recmd_map) do
+		 		             count = count + 1
+							 %}  
+							 <li class="list-group-item">
+							  <a href="/{*v.media*}/detail/{{k}}.html" class="detail"></a> 
+							 </li>
+							 {%
+					  end
+					  if count < 1 then
+					    %} <li class="list-group-item">暂无推荐</li> {%
+					  end
+		 		    %}
+				   </ul>
+			    </div>
+
+		</div>
+
+</div>
+
+<script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/custom/detail.js?v={{version}}"></script>
+
+{(decorator/footer.html)}

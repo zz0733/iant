@@ -58,7 +58,7 @@ function _M:update_doc(id, doc)
 	return resp, status
 end
 
-function _M:query_by_titles( from, size, names,fields )
+function _M:query_by_titles(names, from, size,fields )
 	if not names or #names < 1 then
 		return nil, "400,names is empty"
 	end
@@ -119,13 +119,14 @@ function _M:count_by_target( target_id )
   end
 end
 
-function _M:query_by_target( target_id, from , size )
+function _M:query_by_target( target_id, from , size, fields )
   if not target_id then
   	return 0
   end
   local  body = {
     from = from,
     size = size,
+    _source = fields,
     query = {
       nested = {
         path = "targets",

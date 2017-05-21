@@ -1,0 +1,23 @@
+.article-body {
+	width: 100%;
+	margin: 20px auto 40px;
+	background-color: #fff;
+	border: 1px solid #dadde1;
+	border-radius: 5px;
+	box-shadow: 2px 2px 5px #d3d6da;
+}
+
+.article-header {
+	padding: 10px;
+}
+
+.form-group.row:last-child {
+	margin-bottom: 0px;
+}
+
+.stick-top {
+	border: 1px solid #dadde1;
+	border-radius: 0px 5px 5px 0px;
+	padding-top: 2%;
+	padding-bottom: 2%;
+}

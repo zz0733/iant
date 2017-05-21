@@ -32,6 +32,15 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query?pretty' -d '
   }
 }
 '
+curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+{
+  "query": {
+      "bool": {
+        "filter":{"range":{"lcount":{"gt":0}}}
+       }
+    }
+}
+'
 
 curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
 {
@@ -78,7 +87,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
 # }
 # '
 # exit 0
-curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
+curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   "query": {
     "match": {
@@ -303,6 +312,18 @@ curl -X GET 'http://127.0.0.1:9200/task/table/_search?pretty' -d '
         }
       }
     }
+  }
+}
+'
+
+curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "from": 0,
+  "size": 1,
+  "query": {
+      "match": {
+        "title":"不设限通缉"
+      }
   }
 }
 '

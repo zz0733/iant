@@ -201,11 +201,12 @@ function ESClient:delete_by_query(params, endpointParams)
   return response.body, response.statusCode
 end
 
-function ESClient:query_by_ids( ids )
+function ESClient:query_by_ids( ids, fields )
   if not ids then
     return nil, 400
   end
   local body = {
+      _source = fields,
       query = {
          terms = {
            _id = ids
@@ -274,7 +275,6 @@ function ESClient:count( body )
     }
     return resp, status
 end
-
 
 
 return ESClient
