@@ -16,30 +16,30 @@ curl -XPUT http://localhost:9200/link/_settings?pretty -d '
         "ik_smart_synonym": {
           "tokenizer": "ik_smart",
           "filter": [
-            "synonym"
+            "synmone"
           ]
         },
-        "ik_smart_standard": {
+        "ik_smart_synmgroup": {
           "tokenizer": "ik_smart",
           "filter": [
-            "synonym",
-            "standard"
+            "synmone",
+            "synmgroup"
           ]
         },
         "ik_max_word_synonym": {
           "tokenizer": "ik_max_word",
           "filter": [
-            "synonym"
+            "synmone"
           ]
         }
       },
       "filter": {
-        "synonym": {
+        "synmone": {
           "type": "synonym",
           "synonyms_path": "analysis/synonym.txt"
         },
-        "standard": {
-          "type": "standard",
+        "synmgroup": {
+          "type": "synonym",
           "synonyms_path": "analysis/standard.txt"
         }
       }
@@ -148,8 +148,8 @@ curl -XPUT 'http://localhost:9200/link/_mapping/table?pretty' -d '
       "properties": {
         "region": {
           "type": "text",
-          "analyzer": "ik_smart_standard",
-          "search_analyzer": "ik_smart_standard"
+          "analyzer": "ik_smart_synmgroup",
+          "search_analyzer": "ik_smart_synmgroup"
         },
         "country": {
           "type": "text",
