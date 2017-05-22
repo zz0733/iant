@@ -1,16 +1,16 @@
 #!/bin/bash
 #创建索引
-curl -XPUT http://localhost:9200/channel_v1
+curl -XPUT http://localhost:9200/channel_v2
 
 #取别名
-curl -XPUT http://localhost:9200/channel_v1/_alias/channel 
+# curl -XPUT http://localhost:9200/channel_v2/_alias/channel 
 # curl -XGET http://localhost:9200/content_v1/_alias/*
 # curl -XGET http://localhost:9200/*/_alias/content
 
 
-curl -XPOST 'localhost:9200/channel/_close'
+curl -XPOST 'localhost:9200/channel_v2/_close'
 
-curl -XPUT http://localhost:9200/channel/_settings?pretty -d '
+curl -XPUT http://localhost:9200/channel_v2/_settings?pretty -d '
 {
   "index": {
     "analysis": {
@@ -49,8 +49,8 @@ curl -XPUT http://localhost:9200/channel/_settings?pretty -d '
   }
 }
 '
-curl -XPOST 'localhost:9200/channel/_open'
-curl -XPUT http://localhost:9200/channel/_settings?pretty -d '
+curl -XPOST 'localhost:9200/channel_v2/_open'
+curl -XPUT http://localhost:9200/channel_v2/_settings?pretty -d '
 {
   "index": {
     "number_of_replicas": 0
@@ -58,7 +58,7 @@ curl -XPUT http://localhost:9200/channel/_settings?pretty -d '
 }
 '
 #电影、动漫、电视剧等内容资源
-curl -XPUT 'http://localhost:9200/channel/_mapping/table?pretty' -d '
+curl -XPUT 'http://localhost:9200/channel_v2/_mapping/table?pretty' -d '
 {
   "include_in_all": false,
   "properties": {

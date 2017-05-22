@@ -180,22 +180,22 @@ exit 0
 }
  '
 exit 0
-# curl -XPOST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
-# {
+curl -XPOST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+{
   
-#   "query": {
-#     "nested":{
-#       "path" : "issueds",
-#       "query":{
-#         "match": {"issueds.country":"北京"}
-#       }
-#     }
+  "query": {
+    "nested":{
+      "path" : "issueds",
+      "query":{
+        "match": {"issueds.region":"北京"}
+      }
+    }
     
-#   },
-#   "from": 0,
-#   "size": 2
-# }
-#  '
+  },
+  "from": 0,
+  "size": 2
+}
+ '
 #  exit 0
 
 #  curl -XGET 'http://127.0.0.1:9200/collect/table/_search?pretty' -d '

@@ -1,14 +1,14 @@
 #!/bin/bash
 #创建索引
-curl -XPUT http://localhost:9200/link_v1
+curl -XPUT http://localhost:9200/link_v2
 
 #取别名
-curl -XPUT http://localhost:9200/link_v1/_alias/link 
+# curl -XPUT http://localhost:9200/link_v2/_alias/link 
 
 
-curl -XPOST 'localhost:9200/link/_close'
+curl -XPOST 'localhost:9200/link_v2/_close'
 
-curl -XPUT http://localhost:9200/link/_settings?pretty -d '
+curl -XPUT http://localhost:9200/link_v2/_settings?pretty -d '
 {
   "index": {
     "analysis": {
@@ -47,8 +47,8 @@ curl -XPUT http://localhost:9200/link/_settings?pretty -d '
   }
 }
 '
-curl -XPOST 'localhost:9200/link/_open'
-curl -XPUT http://localhost:9200/link/_settings?pretty -d '
+curl -XPOST 'localhost:9200/link_v2/_open'
+curl -XPUT http://localhost:9200/link_v2/_settings?pretty -d '
 {
   "index": {
     "number_of_replicas": 0
@@ -57,7 +57,7 @@ curl -XPUT http://localhost:9200/link/_settings?pretty -d '
 '
 
 #下载地址、分享地址，匹配对应的内容targets
-curl -XPUT 'http://localhost:9200/link/_mapping/table?pretty' -d '
+curl -XPUT 'http://localhost:9200/link_v2/_mapping/table?pretty' -d '
 {
   "include_in_all": false,
   "dynamic_templates": [
