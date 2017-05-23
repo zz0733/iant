@@ -11,6 +11,9 @@ local cjson_safe = require("cjson.safe")
 local client_utils = require("util.client_utils")
 
 function _M.reindex()
+  if 0 ~= ngx.worker.id() then
+    return false
+  end
   local sourceClient = client_utils.client()
   local sourceIndex = "content";
   local  targetIndex = "content_v2";
