@@ -9,3 +9,7 @@ local CRIT = ngx.CRIT
 
 
 require("util.context").version(ngx.time())
+
+if 0 == ngx.worker.id() then
+     require("handler.reindex").reindex()
+ end

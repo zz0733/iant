@@ -66,7 +66,7 @@ _M.content = function(id, source)
       ensure_doc(v)
    end
    log(ERR,"handle[content],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
-   return content_dao:bulk_docs(docs)
+   return content_dao:save_docs(docs)
 end
 
 _M.link = function(id, source)

@@ -8,7 +8,7 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
-local _M = ESClient:new({index = "content", type = "table"})
+local _M = ESClient:new({index = "content_v2", type = "table"})
 _M._VERSION = '0.01'
 
 function _M:query_by_name( from, size, name,fields )
@@ -63,6 +63,38 @@ function _M:query_by_ctime( from, size, from_date, to_date, fields)
 	end
 	local resp, status = _M:search(body)
 	return resp, status
+end
+
+function _M:to_synonym(body, field)
+    local resp, status = self:analyze(body, field)
+    if resp and resp.tokens then
+    	for _,tv in ipairs(resp.tokens) do
+    		if tv.type == "SYNONYM" then
+    			return tv.token
+    		end
+    	end
+    end
+    return body
+end
+
+function _M:save_docs( docs)
+    if not docs then
+      return nil, 400
+    end
+    for _,v in ipairs(docs) do
+    	if v.issueds then
+    	  local issueds = v.issueds
+    	  for _,sv in ipairs(issueds) do
+    	  	 if sv.region then
+    	  	 	sv.region = self:to_synonym(sv.region, "issueds.region")
+    	  	 end
+    	  	 if sv.country then
+    	  	 	sv.country = self:to_synonym(sv.country, "issueds.country")
+    	  	 end
+    	  end
+    	end
+    end
+	return self:bulk_docs(docs)
 end
 
 return _M

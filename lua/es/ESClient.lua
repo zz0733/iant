@@ -167,14 +167,24 @@ function ESClient:dobulk( body, configs )
 end
 
 function ESClient:search( body )
-	-- local string_body = cjson_safe.encode(body)
-	-- log(ERR,"search,body:" .. string_body)
-	local resp, status = self.client:search{
-	  index = self.index,
-	  type = self.type,
-	  body = body
-	}
-	return resp, status
+  -- local string_body = cjson_safe.encode(body)
+  -- log(ERR,"search,body:" .. string_body)
+  local resp, status = self.client:search{
+    index = self.index,
+    type = self.type,
+    body = body
+  }
+  return resp, status
+end
+
+function ESClient:scroll( scroll_id, scroll , body )
+  local params = {}
+  -- params.index = self.index;
+  -- params.type = self.type;
+  params.scroll_id =  scroll_id;
+  params.scroll =  scroll;
+  params.body =  body;
+	return self.client:scroll(params)
 end
 
 function ESClient:delete_by_query(params, endpointParams)
@@ -271,6 +281,17 @@ function ESClient:count( body )
     local resp, status = self.client:count{
       index = self.index,
       type = self.type,
+      body = body
+    }
+    return resp, status
+end
+
+function ESClient:analyze(body, field, analyzer, tokenizer )
+    local resp, status = self.client.indices:analyze{
+      index = self.index,
+      analyzer = analyzer,
+      tokenizer = tokenizer,
+      field = field,
       body = body
     }
     return resp, status
