@@ -22,6 +22,7 @@ if not args.id then
 end
 
 local ids = {}
+local fields = {"link","md5","secret"}
 table.insert(ids, args.id)
 local resp, status = link_dao:query_by_ids( ids, fields )
  
@@ -29,12 +30,17 @@ if status == 200 then
   message.code = 200
   if resp then
     local hits= resp.hits.hits
-    local data_list = {}
-    message.data = data_list
     for _,v in ipairs(hits) do
         local doc = v._source
         doc.id = v._id
-        table.insert(data_list, doc)
+        if string.match(v._id,"^b") then
+          doc.jump = true
+          if doc.link and not string.match(doc.link,"^http") then
+             doc.link = "https://pan.baidu.com/s/" .. doc.link
+          end
+        end
+        message.data = doc
+        break
     end
   end
 else

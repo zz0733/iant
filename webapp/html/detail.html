@@ -120,18 +120,19 @@
 				             end
 				             %}
 				               <li class="list-group-item link-box">
-
 				                 <span class="badge left-badge">{{str_index}}</span>
-				                 
 				                 <span class="link-icon {{icon_cls}}"></span>
-		<!-- 		                 <a href="#" class="link-title" tid= "{{v._id}}">{*v._source.title*}
-
-				                 </a> -->
-				                 <span class="link-title" tid= "{{v._id}}">
+				                 <span class="link-title" >
 				                 	{*v._source.title*}
 				                 </span>
-
-								 <button type="button" class="btn target-btn">{{btn_txt}}</button>
+                                
+                                 {% if string.match(v._id,"^b") then %}
+                                     <a href="/movie/jumper/{{v._id}}.html" rel="nofollow" target="_blank" 
+                                     role="button" class="btn target-btn" >{{btn_txt}}</a>
+					             {% else %}
+					                <button type="button" class="btn target-btn" tid= "{{v._id}}">{{btn_txt}}</button>
+					             {% end %}
+			
 				               </li> 
 				             {%
 						  end

@@ -18,7 +18,7 @@ local to_target_id = function ( uri )
 	if not uri then
 		return
 	end
-	local m = ngx.re.match(uri, '/movie/target/([a-z][0-9]{3,})','ijo')
+	local m = ngx.re.match(uri, '/movie/jumper/([a-z][0-9]{3,})','ijo')
 	if m then
 		return m[1]
 	end
@@ -31,20 +31,18 @@ if not target_id then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local ids = {}
-ids[1] = target_id
-local fields = {"title","link"}
-local resp, status = link_dao:query_by_ids(ids, fields)
-
-if not resp or resp.hits.total < 1 then
-	return ngx.exit(ngx.HTTP_NOT_FOUND)
+local resp = ngx.location.capture("/movie/api/link.json?id=" .. target_id)
+if resp and resp.status ~= 200 then
+	return ngx.exit(resp.status)
 end
+local return_obj = cjson_safe.decode(resp.body)
+local link_doc = return_obj.data
+local content_doc = {}
+log(ERR,"cjson_safe:" .. cjson_safe.encode(link_doc))
+content_doc.header = {
+   title = "正在前往百度云"
+}
+content_doc.version = context.version()
+content_doc.data  = link_doc
 
-local link_doc = resp.hits.hits[1]
-link_doc.header = {}
-
-   -- header.canonical = "http://www.lezomao.com/"..tostring(media).."/detail/"..tostring(id) .. ".html"
-   -- header.keywords = keywords
-   -- header.description = description
-   -- header.title = head_title
-template.render("target.html", link_doc)
+template.render("jumper.html", content_doc)

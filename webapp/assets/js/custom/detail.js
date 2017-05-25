@@ -5,6 +5,27 @@ $(document).ready(function() {
 			console.log('oForm')
 			return false;
 		});
+		$("a.target-btn[tid]").one('click', function(e) {
+			var self = $(this);
+			self.attr('disabled',"disabled");
+			var tid = self.attr('tid');
+			var sBase = window.location.origin;
+			var sUrl = sBase+"/movie/api/link.json";
+			console.log('sUrl:'+sUrl+',tid:'+tid)
+			$.getJSON(sUrl, {
+				'id' : tid
+			}, function(result) {
+			   console.log('result:'+JSON.stringify(result))
+			   if(result && result.data ) {
+                   var oTarget = result.data
+                   if (oTarget.jump) {
+
+                   } else {
+
+                   }
+			   }
+			});
+		});
 		$("#searchMovie").one('click', function(e) {
 			var self = $(this);
 			self.attr('disabled',"disabled");

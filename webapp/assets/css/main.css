@@ -960,6 +960,29 @@ li.link-box >.left-badge {
 .icon70 { background-position: -448px 0; }
 .icon72 { background-position: -804px 0; }
 
+/*jumper*/
+.checking-box {
+	margin-right: 0;
+margin-left: 0;
+background-color: #fff;
+border-color: #ddd;
+border-width: 1px;
+border-radius: 4px 4px 0 0;
+box-shadow: none;
+position: relative;
+padding: 45px 15px 15px;
+border-style: solid;
+
+}
+
+.checking-highlight {
+	margin: -15px -15px 15px;
+	border-radius: 0;
+    padding: 9px 14px;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+}
+
 /**MovieEditList**/
 .attr-wp {
 	margin-top: 30px;
