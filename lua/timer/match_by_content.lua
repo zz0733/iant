@@ -230,6 +230,7 @@ local build_similar = function ( doc )
         else
             log(CRIT,"error.build_similar,title["..title .."],offset:" .. offset .. ",limit:" .. limit 
                 .. ",status:" .. tostring(status) .. ",cost:" .. cost)
+            break
         end
     end
     local cost = (ngx.now() - dstart)
