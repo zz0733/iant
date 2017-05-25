@@ -110,17 +110,28 @@
 				                str_index = "0" .. str_index
 				             end 
 				             local icon_cls = "icon10";
+				             local btn_txt = "迅雷下载";
 				             local v_source = v._source;
 				             if string.match(v._id,"^b") then
+				                btn_txt = "百度云盘";
 				                if v_source.space and (v_source.space ==0 or v_source.space == 1024) then
 				                  icon_cls = "icon61"
 				                end
 				             end
 				             %}
 				               <li class="list-group-item link-box">
-				                 <span class="badge">{{str_index}}</span>
+
+				                 <span class="badge left-badge">{{str_index}}</span>
+				                 
 				                 <span class="link-icon {{icon_cls}}"></span>
-				                 <a href="/movie/target/{{v._id}}.html" class="link-title">{*v._source.title*}</a>
+		<!-- 		                 <a href="#" class="link-title" tid= "{{v._id}}">{*v._source.title*}
+
+				                 </a> -->
+				                 <span class="link-title" tid= "{{v._id}}">
+				                 	{*v._source.title*}
+				                 </span>
+
+								 <button type="button" class="btn target-btn">{{btn_txt}}</button>
 				               </li> 
 				             {%
 						  end

@@ -916,9 +916,19 @@ span.cer-bd:before {
 	padding-left: 5px;
 }
 
-li.link-box >.badge {
+li.link-box >.left-badge {
     float: left;
     margin-right: 10px;
+}
+
+.target-btn {
+    background-color: #439CF3;
+    color: #FFF;
+    float: right;
+    padding: 6px 12px;
+    line-height: 1;
+    vertical-align: middle;
+    text-align: center;
 }
 .link-title {
     margin-left: 20px;
