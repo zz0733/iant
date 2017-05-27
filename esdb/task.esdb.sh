@@ -6,18 +6,15 @@ curl -XPUT http://localhost:9200/task_v1
 curl -XPUT http://localhost:9200/task_v1/_alias/task 
 
 
-curl -XPUT http://localhost:9200/task/_settings?pretty -d '
+curl -XPUT http://localhost:9200/task_v1/_settings?pretty -d '
 {
   "index": {
     "number_of_replicas": 0
-  },
-  "settings": {
-    "index.mapper.dynamic": false
   }
 }
 '
 
-curl -XPUT 'http://localhost:9200/task/_mapping/table?pretty' -d '
+curl -XPUT 'http://localhost:9200/task_v1/_mapping/table?pretty' -d '
 {
   "include_in_all": false,
   "properties": {

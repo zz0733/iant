@@ -61,61 +61,89 @@
   	var index = -1
   	var checkers = self.checkers = []
 
-  	checkers[++index] = function(doc){
+    var oRule = {}
+
+  	oRule.execute = function(oRule, doc){
   		var selfFunc = this
   		var html = ''
   		// delete doc.link
+      var count  = $('#checking > div.alert').length + 1
   		if (doc.link) {
-			html += '<div class="alert alert-success" role="alert">'
-  			html += '<strong>(1).</strong>获取资源，发现资源【' + doc.title +'】'
+			  html += '<div class="alert alert-success" role="alert">'
+  			html += '<strong>('+count+').</strong>获取资源，【' + doc.title +'】'
   			if (doc.secret) {
   				html += '(提取码：'+ doc.secret +')'
-	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)"  src="'+doc.link+'">复制提取码并跳转[?]</a> '
+	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)"  onclick="jumpTo(\''+doc.link+'\')">复制提取码并跳转[?]</a> '
   			} else {
-	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)" src="'+doc.link+'">直接跳转[?]</a> '
+	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)" onclick="jumpTo(\''+doc.link+'\')">直接跳转[?]</a> '
   			}
   			html += '</div>'
   		} else {
   			html += '<div class="alert alert-danger" role="alert">'
-  			html += '<strong>(1).</strong>获取资源， 资源失效或不存在！'
+  			html += '<strong>('+count+').</strong>获取资源， 资源失效或不存在！'
   			html += '</div>'
-  			// selfFunc.next = self.stop
-  			delete selfFunc.next
+  			selfFunc.next = self.stop
+  			// delete selfFunc.next
   		}
         $('#checking').append(html)
-        self.doNext(selfFunc, doc)
+        self.doNext(oRule, doc)
   	}
-  	for (var i = 0; i < checkers.length; i++) {
-  		checkers[i].next = checkers[i + 1]
-  	}
+    checkers[checkers.length] = oRule
 
+    oRule = {}
+    oRule.execute = function(oRule, doc){
+      var selfFunc = this
+      var html = ''
+      // delete doc.link
+      var count  = $('#checking > div.alert').length + 1
+      html += '<div class="alert alert-success" role="alert">'
+      html += '<strong>('+count+').</strong>链接校验，资源有效'
+      html += '</div>'
+      $('#checking').append(html)
+      self.doNext(oRule, doc)
+    }
+    checkers[checkers.length] = oRule
+
+    var incrArr = [30,50]
+  	for (var i = 0; i < checkers.length; i++) {
+      checkers[i].next = checkers[i + 1] || self.end
+  		checkers[i].incr = incrArr[i]
+  	}
   }
 
   Checker.prototype.start = function(doc){
   	var self = this
   	self.doProgress()
   	console.log('target:' + JSON.stringify(doc))
-  	self.checkers[0](doc)
+    var oRule = self.checkers[0];
+  	oRule.execute(oRule, doc)
   }
 
   Checker.prototype.stop = function(){
-	var self = this
+	  var self = this
   	self.tprogress && clearTimeout(self.tprogress)
   }
 
- Checker.prototype.doNext = function(checker,doc){
-	var self = this
-	self.doIncr(20)
-  	if(checker.next) {
-  		console.log('checker.next:' + JSON.stringify(checker.next))
-	  return checker.next(doc)
+ Checker.prototype.doNext = function(oRule, doc){
+	  var self = this
+    console.log('checker.next:' + JSON.stringify(oRule.next))
+
+	  self.doIncr(oRule.incr)
+  	if(oRule.next) {
+      oRule = oRule.next
+      if(oRule.execute) {
+          return oRule.execute(oRule,doc)
+      } else {
+         return oRule.next()
+      }
   	} else {
-  	  return self.stop()
+  	  // return self.stop()
   	}
   }
 
   Checker.prototype.end = function(){
 	 var self = this
+   self.progress = 100
 	 self.stop()
   }
 
@@ -130,7 +158,12 @@
   Checker.prototype.doProgress = function(){
   	 var self = this
   	 var num = self.progress;
-  	 // console.info("progrs:" + JSON.stringify(num));
+     if (self.checktimes) {
+        self.checktimes += 1
+     } else {
+        self.checktimes = 1
+     }
+  	 console.info("progrs:" + JSON.stringify(num) +",checktimes:" + self.checktimes);
   	 var pEle = $("#progress");
   	 pEle.attr('aria-valuenow', ""+ num);
   	 pEle.attr('style', "width: "+num+"%;");
@@ -157,18 +190,15 @@
     return data;
   }
 
-  $(document).ready(function() {
-		$("#jumpTo").one('click', function() {
-			var self = $(this);
-			self.attr('disabled',"disabled");
-			var tid = self.attr('src');
-			var url = tid
-			console.log('tid:' + tid)
-		    location.href = tid
-	
-			return false;
-		});
-   });
+  function jumpTo(tid){
+    var jumpEle = $("#jumpTo")
+    chekcer.stop()
+    jumpEle.attr('disabled',"disabled");
+    tid = 'https://pan.baidu.com/s/1kVyrYYj'
+    console.log('tid:' + tid)
+    location.href = tid
+    return false;
+  }
 
 </script>
 

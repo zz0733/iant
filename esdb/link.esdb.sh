@@ -3,7 +3,7 @@
 curl -XPUT http://localhost:9200/link_v2
 
 #取别名
-# curl -XPUT http://localhost:9200/link_v2/_alias/link 
+curl -XPUT http://localhost:9200/link_v2/_alias/link 
 
 
 curl -XPOST 'localhost:9200/link_v2/_close'
