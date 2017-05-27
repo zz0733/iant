@@ -17,12 +17,10 @@ $(document).ready(function() {
 			}, function(result) {
 			   console.log('result:'+JSON.stringify(result))
 			   if(result && result.data ) {
-                   var oTarget = result.data
-                   if (oTarget.jump) {
-
-                   } else {
-
-                   }
+			   	   var data = result.data
+                   var thunder = urlcodesc.encode(data.link, "thunder");
+                   console.log('thunder:' + thunder)
+                   window.location.href= thunder
 			   }
 			});
 		});

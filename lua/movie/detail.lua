@@ -81,9 +81,19 @@ end
 
 
 local crumbs = {}
-crumbs[#crumbs + 1] = {name = "电影", link = "http://lezomao.com"}
-crumbs[#crumbs + 1] = {name = "中国", link = "http://lezomao.com"}
-crumbs[#crumbs + 1] = {name = "2017", link = "http://lezomao.com"}
+local issueds = source.issueds[1]
+
+log(ERR,"link_hits:" .. cjson_safe.encode(source.issueds) ..",lcount:" .. lcount)
+
+local media_names = { 
+   tv = "电视剧",
+   movie = "电影"
+}
+local media = source.article.media
+local year = source.article.year
+crumbs[#crumbs + 1] = {name = media_names[media], link1 = "/media/" .. media}
+crumbs[#crumbs + 1] = {name = issueds.region, link1 = "/region/" .. issueds.region }
+crumbs[#crumbs + 1] = {name = year, link1 = "/year/" .. tostring(year)}
 content_doc.header = dochtml.detail_header(content_doc)
 content_doc.version = context.version()
 content_doc.crumbs   = crumbs

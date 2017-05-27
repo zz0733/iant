@@ -18,7 +18,12 @@
 		<div class="container">
 		<ol class="breadcrumb">
 		{% for index, oLink in ipairs(crumbs) do %}
+		   {% if oLink.link then %}
 		    <li><a href="{{oLink.link}}">{{oLink.name}}</a></li>
+		   {% else %}
+		    <li><span>{{oLink.name}}</span></li>
+		   {% end %}
+		    
 		{% end %}
         <li class="active"><strong>{*_source.article.title*}</strong></li>
       </ol>

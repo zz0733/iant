@@ -32,19 +32,6 @@
 			  </div>
 
 			<div class="checking-highlight" id="checking">
-				    <div class="alert alert-success" role="alert">
-				      <strong>(1).获取链接与提取码:</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.
-				    </div>
-				    <div class="alert alert-info" role="alert">
-				      <strong>Heads up!</strong> This <a href="#" class="alert-link">alert needs your attention</a>, but it's not super important.
-				    </div>
-				    <div class="alert alert-warning" role="alert">
-				      <strong>Warning!</strong> Better check yourself, you're <a href="#" class="alert-link">not looking too good</a>.
-				    </div>
-				    <div class="alert alert-danger" role="alert">
-				      <strong>Oh snap!</strong> <a href="#" class="alert-link">Change a few things up</a> and try submitting again.
-				    </div>
-				  </div>
 			</div>
 
 	   </div> 
@@ -55,24 +42,23 @@
 </div>
 <script language='javascript'>
 
-  function Checker() {
+  function Checker(target) {
   	var self = this
   	self.progress = 0
+  	self.target = target
+  	self.target.secret = 'target'
   	var index = -1
   	var checkers = self.checkers = []
 
-    var oRule = {}
-
-  	oRule.execute = function(oRule, doc){
-  		var selfFunc = this
+  	checkers[checkers.length] = function(doc){
   		var html = ''
-  		// delete doc.link
-      var count  = $('#checking > div.alert').length + 1
+  		var success = true
+	    var count  = $('#checking > div.alert').length + 1
   		if (doc.link) {
 			  html += '<div class="alert alert-success" role="alert">'
   			html += '<strong>('+count+').</strong>获取资源，【' + doc.title +'】'
   			if (doc.secret) {
-  				html += '(提取码：'+ doc.secret +')'
+  				html += '(提取码：'+ doc.secret +'&nbsp;)&nbsp;'
 	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)"  onclick="jumpTo(\''+doc.link+'\')">复制提取码并跳转[?]</a> '
   			} else {
 	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)" onclick="jumpTo(\''+doc.link+'\')">直接跳转[?]</a> '
@@ -82,69 +68,52 @@
   			html += '<div class="alert alert-danger" role="alert">'
   			html += '<strong>('+count+').</strong>获取资源， 资源失效或不存在！'
   			html += '</div>'
-  			selfFunc.next = self.stop
-  			// delete selfFunc.next
+  			success = false
   		}
         $('#checking').append(html)
-        self.doNext(oRule, doc)
+        return success
   	}
-    checkers[checkers.length] = oRule
 
-    oRule = {}
-    oRule.execute = function(oRule, doc){
-      var selfFunc = this
+    checkers[checkers.length] = function(doc){
       var html = ''
-      // delete doc.link
+      var success = true
       var count  = $('#checking > div.alert').length + 1
       html += '<div class="alert alert-success" role="alert">'
-      html += '<strong>('+count+').</strong>链接校验，资源有效'
+      html += '<strong>('+count+').</strong>检测完成，正在前往百度云...'
       html += '</div>'
       $('#checking').append(html)
-      self.doNext(oRule, doc)
+      return success
     }
-    checkers[checkers.length] = oRule
 
-    var incrArr = [30,50]
-  	for (var i = 0; i < checkers.length; i++) {
-      checkers[i].next = checkers[i + 1] || self.end
-  		checkers[i].incr = incrArr[i]
-  	}
   }
 
-  Checker.prototype.start = function(doc){
+  Checker.prototype.start = function(){
   	var self = this
   	self.doProgress()
-  	console.log('target:' + JSON.stringify(doc))
-    var oRule = self.checkers[0];
-  	oRule.execute(oRule, doc)
+  	// console.log('target:' + JSON.stringify(self.target))
+  	self.success = -1
+  	var incrArr = [30,40]
+    for (var i = 0; i < self.checkers.length; i++) {
+    	var func = self.checkers[i]
+    	if(!func(self.target)) {
+           self.success = 0
+           break;
+    	} else {
+    	   self.doIncr(incrArr[i] || 10)
+    	   self.success = 1
+    	}
+    }
+   
   }
 
   Checker.prototype.stop = function(){
 	  var self = this
-  	self.tprogress && clearTimeout(self.tprogress)
-  }
-
- Checker.prototype.doNext = function(oRule, doc){
-	  var self = this
-    console.log('checker.next:' + JSON.stringify(oRule.next))
-
-	  self.doIncr(oRule.incr)
-  	if(oRule.next) {
-      oRule = oRule.next
-      if(oRule.execute) {
-          return oRule.execute(oRule,doc)
-      } else {
-         return oRule.next()
-      }
-  	} else {
-  	  // return self.stop()
-  	}
+  	  self.tprogress && clearTimeout(self.tprogress)
   }
 
   Checker.prototype.end = function(){
-	 var self = this
-   self.progress = 100
-	 self.stop()
+	  var self = this
+  	  jumpTo(self.target.link)
   }
 
   Checker.prototype.doIncr = function(incr){
@@ -153,49 +122,42 @@
   	 	return
   	 }
   	 self.progress = self.progress + incr
+  	 self.progress = self.progress > 100 ? 100 : self.progress
   }  
 
   Checker.prototype.doProgress = function(){
   	 var self = this
   	 var num = self.progress;
-     if (self.checktimes) {
-        self.checktimes += 1
-     } else {
-        self.checktimes = 1
-     }
-  	 console.info("progrs:" + JSON.stringify(num) +",checktimes:" + self.checktimes);
   	 var pEle = $("#progress");
   	 pEle.attr('aria-valuenow', ""+ num);
   	 pEle.attr('style', "width: "+num+"%;");
   	 pEle.text( num + "%")
-  	 self.tprogress = setTimeout(function () {
-  		if(self.progress < 100) {
-	  		self.doProgress()
-  		} else {
-		    self.end()
-  		}
-  	},1000); 
+    
+	 self.tprogress = setTimeout(function () {
+	 	console.info("self.progress:" + self.progress);
+		if(self.progress < 100) {
+		   if(self.success > 0 && self.progress < 100 ) {
+		     self.doIncr(100 - self.progress)
+		   }
+  		   self.doProgress()
+		} else {
+	       self.end()
+		}
+	 },1000); 
+
+	
   }
   var target = {*link_doc*}
-  var chekcer = new Checker()
-  chekcer.start(target)
-
-  function filterData(data){
-    data = data.replace(/<?\/body[^>]*>/g,'');
-    data = data.replace(/[\r|\n]+/g,'');
-    data = data.replace(/<--[\S\s]*?-->/g,'');
-    data = data.replace(/<noscript[^>]*>[\S\s]*?<\/noscript>/g,'');
-    data = data.replace(/<script[^>]*>[\S\s]*?<\/script>/g,'');
-    data = data.replace(/<script.*\/>/,'');
-    return data;
-  }
+  var chekcer = new Checker(target)
+  chekcer.start()
 
   function jumpTo(tid){
+  	if(!tid) { 
+  		return false
+  	}
     var jumpEle = $("#jumpTo")
     chekcer.stop()
     jumpEle.attr('disabled',"disabled");
-    tid = 'https://pan.baidu.com/s/1kVyrYYj'
-    console.log('tid:' + tid)
     location.href = tid
     return false;
   }

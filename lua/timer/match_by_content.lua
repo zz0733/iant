@@ -271,7 +271,11 @@ local check
  check = function(premature)
      if not premature then
          if min_date < 1 then
-            min_date = query_min_ctime()     
+            min_date = query_min_ctime()
+            local last_time = ngx.time() - 30*24*60*60
+            if min_date > last_time then
+                min_date = last_time
+            end
          end
          if from == 0  and from_date > 0 then
              from_date = to_date - period_date
