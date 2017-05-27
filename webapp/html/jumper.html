@@ -4,7 +4,8 @@
 <meta name="description" content="{*context.header.description*}"/>
 <meta name="keywords" content="{*context.header.keywords*}" />
 <meta name="title" content="{*context.header.title*}" />
-
+<!-- <script type="text/javascript" src="{{static_host}}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
+ -->
 </head>
 {# end of head #}
 
@@ -30,21 +31,21 @@
 				  </div>
 			  </div>
 
-		<div class="checking-highlight">
-			    <div class="alert alert-success" role="alert">
-			      <strong>Well done!</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.
-			    </div>
-			    <div class="alert alert-info" role="alert">
-			      <strong>Heads up!</strong> This <a href="#" class="alert-link">alert needs your attention</a>, but it's not super important.
-			    </div>
-			    <div class="alert alert-warning" role="alert">
-			      <strong>Warning!</strong> Better check yourself, you're <a href="#" class="alert-link">not looking too good</a>.
-			    </div>
-			    <div class="alert alert-danger" role="alert">
-			      <strong>Oh snap!</strong> <a href="#" class="alert-link">Change a few things up</a> and try submitting again.
-			    </div>
-			  </div>
-		</div>
+			<div class="checking-highlight" id="checking">
+				    <div class="alert alert-success" role="alert">
+				      <strong>(1).获取链接与提取码:</strong> You successfully read <a href="#" class="alert-link">this important alert message</a>.
+				    </div>
+				    <div class="alert alert-info" role="alert">
+				      <strong>Heads up!</strong> This <a href="#" class="alert-link">alert needs your attention</a>, but it's not super important.
+				    </div>
+				    <div class="alert alert-warning" role="alert">
+				      <strong>Warning!</strong> Better check yourself, you're <a href="#" class="alert-link">not looking too good</a>.
+				    </div>
+				    <div class="alert alert-danger" role="alert">
+				      <strong>Oh snap!</strong> <a href="#" class="alert-link">Change a few things up</a> and try submitting again.
+				    </div>
+				  </div>
+			</div>
 
 	   </div> 
 	   <div class="col-md-4">
@@ -53,6 +54,121 @@
   </div>
 </div>
 <script language='javascript'>
+
+  function Checker() {
+  	var self = this
+  	self.progress = 0
+  	var index = -1
+  	var checkers = self.checkers = []
+
+  	checkers[++index] = function(doc){
+  		var selfFunc = this
+  		var html = ''
+  		// delete doc.link
+  		if (doc.link) {
+			html += '<div class="alert alert-success" role="alert">'
+  			html += '<strong>(1).</strong>获取资源，发现资源【' + doc.title +'】'
+  			if (doc.secret) {
+  				html += '(提取码：'+ doc.secret +')'
+	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)"  src="'+doc.link+'">复制提取码并跳转[?]</a> '
+  			} else {
+	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)" src="'+doc.link+'">直接跳转[?]</a> '
+  			}
+  			html += '</div>'
+  		} else {
+  			html += '<div class="alert alert-danger" role="alert">'
+  			html += '<strong>(1).</strong>获取资源， 资源失效或不存在！'
+  			html += '</div>'
+  			// selfFunc.next = self.stop
+  			delete selfFunc.next
+  		}
+        $('#checking').append(html)
+        self.doNext(selfFunc, doc)
+  	}
+  	for (var i = 0; i < checkers.length; i++) {
+  		checkers[i].next = checkers[i + 1]
+  	}
+
+  }
+
+  Checker.prototype.start = function(doc){
+  	var self = this
+  	self.doProgress()
+  	console.log('target:' + JSON.stringify(doc))
+  	self.checkers[0](doc)
+  }
+
+  Checker.prototype.stop = function(){
+	var self = this
+  	self.tprogress && clearTimeout(self.tprogress)
+  }
+
+ Checker.prototype.doNext = function(checker,doc){
+	var self = this
+	self.doIncr(20)
+  	if(checker.next) {
+  		console.log('checker.next:' + JSON.stringify(checker.next))
+	  return checker.next(doc)
+  	} else {
+  	  return self.stop()
+  	}
+  }
+
+  Checker.prototype.end = function(){
+	 var self = this
+	 self.stop()
+  }
+
+  Checker.prototype.doIncr = function(incr){
+  	 var self = this
+  	 if(!incr) {
+  	 	return
+  	 }
+  	 self.progress = self.progress + incr
+  }  
+
+  Checker.prototype.doProgress = function(){
+  	 var self = this
+  	 var num = self.progress;
+  	 // console.info("progrs:" + JSON.stringify(num));
+  	 var pEle = $("#progress");
+  	 pEle.attr('aria-valuenow', ""+ num);
+  	 pEle.attr('style', "width: "+num+"%;");
+  	 pEle.text( num + "%")
+  	 self.tprogress = setTimeout(function () {
+  		if(self.progress < 100) {
+	  		self.doProgress()
+  		} else {
+		    self.end()
+  		}
+  	},1000); 
+  }
+  var target = {*link_doc*}
+  var chekcer = new Checker()
+  chekcer.start(target)
+
+  function filterData(data){
+    data = data.replace(/<?\/body[^>]*>/g,'');
+    data = data.replace(/[\r|\n]+/g,'');
+    data = data.replace(/<--[\S\s]*?-->/g,'');
+    data = data.replace(/<noscript[^>]*>[\S\s]*?<\/noscript>/g,'');
+    data = data.replace(/<script[^>]*>[\S\s]*?<\/script>/g,'');
+    data = data.replace(/<script.*\/>/,'');
+    return data;
+  }
+
+  $(document).ready(function() {
+		$("#jumpTo").one('click', function() {
+			var self = $(this);
+			self.attr('disabled',"disabled");
+			var tid = self.attr('src');
+			var url = tid
+			console.log('tid:' + tid)
+		    location.href = tid
+	
+			return false;
+		});
+   });
 
 </script>
 

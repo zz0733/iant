@@ -43,6 +43,6 @@ content_doc.header = {
    title = "正在前往百度云"
 }
 content_doc.version = context.version()
-content_doc.data  = link_doc
+content_doc.link_doc  = cjson_safe.encode(link_doc)
 
 template.render("jumper.html", content_doc)

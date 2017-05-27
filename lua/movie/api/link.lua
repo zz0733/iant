@@ -22,7 +22,7 @@ if not args.id then
 end
 
 local ids = {}
-local fields = {"link","md5","secret"}
+local fields = {"link","md5","secret","title"}
 table.insert(ids, args.id)
 local resp, status = link_dao:query_by_ids( ids, fields )
  
