@@ -36,6 +36,31 @@ function _M:query_by_name( from, size, name,fields )
 	return resp, status
 end
 
+function _M:query_by_title( from, size, title,fields )
+	local body = {
+	  from = from,
+	  size = size,
+	  _source = fields,
+	  query = {
+	    match = {
+	      ["article.title"] = title
+	    }
+	  },
+	  highlight = {
+	    order = "score",
+	    fields = {
+	      ["article.title"] = {
+	        fragment_size = 50,
+	        number_of_fragments = 1,
+	        fragmenter = "span"
+	      }
+	    }
+	  }
+	}
+	local resp, status = _M:search(body)
+	return resp, status
+end
+
 function _M:query_by_genre( from, size, genre,fields )
 	local body = {
 	  from = from,

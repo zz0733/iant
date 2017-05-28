@@ -22,7 +22,7 @@ if qWord then
 	local  from = 0
 	local  size = 10
 	local  fields = {"article","digests","lcount","issueds","evaluates","genres"}
-	local resp, status = content_dao:query_by_name(from, size, qWord, fields);
+	local resp, status = content_dao:query_by_title(from, size, qWord, fields);
 	if resp and resp.hits then
 		hits = resp.hits
 	end

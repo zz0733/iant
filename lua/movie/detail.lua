@@ -35,7 +35,6 @@ end
 local ids = {}
 ids[1] = content_id
 local resp, status = content_dao:query_by_ids(ids)
-
 if not resp or resp.hits.total < 1 then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
