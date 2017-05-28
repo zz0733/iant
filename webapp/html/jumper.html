@@ -8,7 +8,9 @@
  -->
 </head>
 {# end of head #}
-
+<script >
+  var target = {* link_doc *}
+</script>
 <body>
 
 {(decorator/navbar.html)}
@@ -18,151 +20,27 @@
 <div class="container">
   <div class="row">
 	   <div class="col-md-8">
-
-		
-<div class="checking-box" data-example-id="alerts-with-links">
-
-              <img src="{{static_host}}/assets/img/checking.gif">
-			 <span>正在检测，</span>
-	  		  <div class="progress">
-				  <div id="progress" class="progress-bar" role="progressbar" 
-				     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
-				    60%
-				  </div>
-			  </div>
-
-			<div class="checking-highlight" id="checking">
-			</div>
-
+       <div class="checking-box" data-example-id="alerts-with-links">
+         <img src="{{static_host}}/assets/img/checking.gif">
+  			 <span>正在检测，</span>
+  	  		  <div class="progress">
+  				  <div id="progress" class="progress-bar" role="progressbar" 
+  				     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">
+  				    60%
+  				  </div>
+  			  </div>
+          <input type="hidden" id="idCopy" name="secret" data-clipboard-text=""> 
+    			<div class="checking-highlight" id="checking">
+    			</div>
 	   </div> 
 	   <div class="col-md-4">
-	  	
 	   </div>
+    </div>
   </div>
 </div>
-<script language='javascript'>
 
-  function Checker(target) {
-  	var self = this
-  	self.progress = 0
-  	self.target = target
-  	self.target.secret = 'target'
-  	var index = -1
-  	var checkers = self.checkers = []
-
-  	checkers[checkers.length] = function(doc){
-  		var html = ''
-  		var success = true
-	    var count  = $('#checking > div.alert').length + 1
-  		if (doc.link) {
-			  html += '<div class="alert alert-success" role="alert">'
-  			html += '<strong>('+count+').</strong>获取资源，【' + doc.title +'】'
-  			if (doc.secret) {
-  				html += '(提取码：'+ doc.secret +'&nbsp;)&nbsp;'
-	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)"  onclick="jumpTo(\''+doc.link+'\')">复制提取码并跳转[?]</a> '
-  			} else {
-	  			html += '<a id="jumpTo" class="jumpTo alert-link" href="javascript:void(0)" onclick="jumpTo(\''+doc.link+'\')">直接跳转[?]</a> '
-  			}
-  			html += '</div>'
-  		} else {
-  			html += '<div class="alert alert-danger" role="alert">'
-  			html += '<strong>('+count+').</strong>获取资源， 资源失效或不存在！'
-  			html += '</div>'
-  			success = false
-  		}
-        $('#checking').append(html)
-        return success
-  	}
-
-    checkers[checkers.length] = function(doc){
-      var html = ''
-      var success = true
-      var count  = $('#checking > div.alert').length + 1
-      html += '<div class="alert alert-success" role="alert">'
-      html += '<strong>('+count+').</strong>检测完成，正在前往百度云...'
-      html += '</div>'
-      $('#checking').append(html)
-      return success
-    }
-
-  }
-
-  Checker.prototype.start = function(){
-  	var self = this
-  	self.doProgress()
-  	// console.log('target:' + JSON.stringify(self.target))
-  	self.success = -1
-  	var incrArr = [30,40]
-    for (var i = 0; i < self.checkers.length; i++) {
-    	var func = self.checkers[i]
-    	if(!func(self.target)) {
-           self.success = 0
-           break;
-    	} else {
-    	   self.doIncr(incrArr[i] || 10)
-    	   self.success = 1
-    	}
-    }
-   
-  }
-
-  Checker.prototype.stop = function(){
-	  var self = this
-  	  self.tprogress && clearTimeout(self.tprogress)
-  }
-
-  Checker.prototype.end = function(){
-	  var self = this
-  	  jumpTo(self.target.link)
-  }
-
-  Checker.prototype.doIncr = function(incr){
-  	 var self = this
-  	 if(!incr) {
-  	 	return
-  	 }
-  	 self.progress = self.progress + incr
-  	 self.progress = self.progress > 100 ? 100 : self.progress
-  }  
-
-  Checker.prototype.doProgress = function(){
-  	 var self = this
-  	 var num = self.progress;
-  	 var pEle = $("#progress");
-  	 pEle.attr('aria-valuenow', ""+ num);
-  	 pEle.attr('style', "width: "+num+"%;");
-  	 pEle.text( num + "%")
-    
-	 self.tprogress = setTimeout(function () {
-	 	console.info("self.progress:" + self.progress);
-		if(self.progress < 100) {
-		   if(self.success > 0 && self.progress < 100 ) {
-		     self.doIncr(100 - self.progress)
-		   }
-  		   self.doProgress()
-		} else {
-	       self.end()
-		}
-	 },1000); 
-
-	
-  }
-  var target = {*link_doc*}
-  var chekcer = new Checker(target)
-  chekcer.start()
-
-  function jumpTo(tid){
-  	if(!tid) { 
-  		return false
-  	}
-    var jumpEle = $("#jumpTo")
-    chekcer.stop()
-    jumpEle.attr('disabled',"disabled");
-    location.href = tid
-    return false;
-  }
-
-</script>
+<script src="{{static_host}}/assets/js/clipboard.min.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/custom/jumper.js?v={{version}}"></script>
 
 
 {(decorator/footer.html)}

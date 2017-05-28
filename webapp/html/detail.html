@@ -123,13 +123,27 @@
 				                  icon_cls = "icon61"
 				                end
 				             end
+				             local update_time = v_source.ctime
+				             if v_source.issuseds and string.match(v._id,"^b") then
+				                 for _,ss in ipairs(v_source.issuseds) do
+				                   if ss.time then
+				                      update_time = ss.time
+				                   end
+				                 end
+				             end
+				             local str_time = os.date("%Y-%m-%d", update_time)
 				             %}
 				               <li class="list-group-item link-box">
 				                 <span class="badge left-badge">{{str_index}}</span>
 				                 <span class="link-icon {{icon_cls}}"></span>
-				                 <span class="link-title" >
+				                 <div>
+				                 	<a href="javascript:void(0)" class="link-title" >
 				                 	{*v._source.title*}
-				                 </span>
+				                 </a>
+				                 </div>
+								 {% if str_time then %}
+       				                <span>{{str_time}}</span>
+				                 {% end %}
                                 
                                  {% if string.match(v._id,"^b") then %}
                                      <a href="/movie/jumper/{{v._id}}.html" rel="nofollow" target="_blank" 

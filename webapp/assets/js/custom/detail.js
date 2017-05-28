@@ -5,6 +5,14 @@ $(document).ready(function() {
 			console.log('oForm')
 			return false;
 		});
+
+		$(".link-title[href]").on('click', function(e) {
+			var oTargets = $(this).parents('.link-box').find('.btn.target-btn')
+			if(oTargets && oTargets[0]) {
+				oTargets[0].click()
+			}
+			return false;
+		});
 		$("a.target-btn[tid]").one('click', function(e) {
 			var self = $(this);
 			self.attr('disabled',"disabled");

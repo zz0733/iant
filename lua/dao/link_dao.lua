@@ -127,6 +127,7 @@ function _M:query_by_target( target_id, from , size, fields )
     from = from,
     size = size,
     _source = fields,
+    sort = { ["issueds.time"] = { order = "desc" } },
     query = {
       nested = {
         path = "targets",

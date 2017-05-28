@@ -1,0 +1,93 @@
+{(decorator/header.html)}
+
+<link rel="canonical" href="{*context.header.canonical*}"/>
+<meta name="description" content="{*context.header.description*}"/>
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+<!-- <script type="text/javascript" src="{{static_host}}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
+ -->
+</head>
+{# end of head #}
+
+<body>
+
+{(decorator/navbar.html)}
+{(decorator/blankbar.html)}
+
+<div class="main data-box">
+  <div class="act">
+    <div class="container">
+      <div class="container-fluid">
+        <div class="row">
+              <div class="col-md-2"> </div>
+              <div class="col-md-6 feedBox"> 
+               <ul>
+                <div class="crumb">
+                 <ol class="breadcrumb">
+                  <li class="active"><strong>{*context.qWord*}</strong></li>
+                </ol>
+               </div>
+               {%
+                for i,v in ipairs(hits.hits) do
+                  local source = v._source;
+                  local article = source.article;
+                  local genres = source.genres;
+                  local digests = source.digests;
+                  local str_cost
+                  if article.cost then
+                     local lcost = article.cost / 60
+                     str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+                  end
+                  local str_img
+                  if digests then
+                     for _,v in ipairs(digests) do
+                        if v.sort == 'img' then
+                           str_img = v.content
+                           str_img = ngx.re.sub(str_img, "%.webp", ".jpg")
+                           break
+                        end
+                     end
+                  end
+                  %}
+                  <li class="item-box">
+                   <div class="item-inner">
+                      <div class="lbox">
+                        <a class="img-wrap" target="_blank" href="/new/movie/detail/{{v._id}}.html"> 
+                          <img alt="" src="{{str_img}}" /> 
+                          {%if str_cost then%}
+                          <i class="ftype video"> <span>{{str_cost}}</span> </i>
+                          {%end%}
+                        </a> 
+                      </div>
+                      <div class="rbox ">
+                            <div class="rbox-inner"> 
+                                <div class="title-box"> 
+                                    <a class="atitle" target="_blank" href="/new/movie/detail/{{v._id}}.html"> {{article.title}}
+                                    </a> 
+                                </div>
+                                <div class="tag-box">
+                                  {% if genres then %}
+                                    {% for _,v in ipairs(genres) do  %}
+                                      <a target="_blank" class="lbtn-tag tag-size" 
+                                      href="/movie/genre.html?q={*string.encodeURI(v)*}">{{v}}</a>
+                                    {% end  %}
+                                  {% end %}
+                                  <span class="tag-score tag-size">评分5.0</span>
+                                </div>  
+                            </div>
+                      </div>
+                   </div>
+                  </li>
+                  {%
+                end
+               %}
+                </ul>
+              </div>
+              <div class="col-md-4"> </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{(decorator/footer.html)}

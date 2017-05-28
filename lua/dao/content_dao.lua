@@ -36,6 +36,31 @@ function _M:query_by_name( from, size, name,fields )
 	return resp, status
 end
 
+function _M:query_by_genre( from, size, genre,fields )
+	local body = {
+	  from = from,
+	  size = size,
+	  _source = fields,
+	  query = {
+	    match = {
+	      genres = genre
+	    }
+	  },
+	  highlight = {
+	    order = "score",
+	    fields = {
+	      names = {
+	        fragment_size = 50,
+	        number_of_fragments = 1,
+	        fragmenter = "span"
+	      }
+	    }
+	  }
+	}
+	local resp, status = _M:search(body)
+	return resp, status
+end
+
 function _M:query_by_ctime( from, size, from_date, to_date, fields)
 	local body = {
 	  from = from,
