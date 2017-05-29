@@ -2,40 +2,98 @@ local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
 local channel_dao = require "dao.channel_dao"
+local content_dao = require "dao.content_dao"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
-local method = args.method
+local channel = args.channel
 
 local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
-
+local accepts = { 
+    latest = 1, 
+    hotest = 1, 
+    score = 1,
+    comment = 1,
+    classical = 1
+}
 
 local message = {}
 message.code = 200
-if not method then
+if not channel or not accepts[channel] then
 	message.status = 400
-	message.message = "empty method"
+	message.message = "bad channel[" .. channel .."]"
 	ngx.say(cjson_safe.encode(message))
 	return
 end
-local data = util_request.post_body(ngx.req)
-local body_json = cjson_safe.decode(data)
-if not body_json then
-	message.code = 400
-	message.error = "illegal params"
-	ngx.say(cjson_safe.encode(message))
-	return
+function toElements( hits, code_map)
+	if not hits or not code_map then
+		return
+	end
+	local elements = {}
+	for i,v in ipairs(hits) do
+		local code = v._source.article.code
+        local cele = code_map[code]
+        local ele = {}
+        ele.id = v._id
+        if cele then
+	       ele.index = cele.index
+        end
+        table.insert(elements, ele)
+	end
+    return elements
 end
-if 'insert' == method  then
-	local resp, status = collect_dao:insert_docs(body_json )
-    -- message.data = resp
-    if status == 200 then
-    	message.code = 200
-    else
-    	message.code = 500
-    	message.error = status
-    end
-    ngx.say(cjson_safe.encode(message))
+function build_channel(channel, code_set, code_map)
+	local fields = {"article.code"}
+	local resp, status = content_dao:query_by_codes(code_set,fields);
+	if not resp then
+		return
+	end
+	local elements = toElements(resp.hits.hits, code_map)
+	if elements and #elements > 0 then
+	        local channel_obj = {}
+	        channel_obj.id = channel
+	        channel_obj.source = "maker"
+	        channel_obj.elements = elements
+	        channel_obj.ctime = ngx.time()
+	        channel_obj.utime = channel_obj.ctime
+	        local docs = {}
+	        table.insert(docs, channel_obj)
+	        channel_dao:update_docs(docs)
+	end
+end
+if "hotest" == channel then
+	local params = {}
+	table.insert(params, { media = "movie", channel = "热门" })
+	table.insert(params, { media = "tv", channel = "热门" })
+	local hits_arr = {}
+	local fields = {"timeby","channel","media","total","elements"}
+	for _,v in ipairs(params) do
+		local resp, status = channel_dao:query_lastest_by_channel(v.media, v.channel, fields)
+		log(ERR,"hits_arr.resp:" .. cjson_safe.encode(resp))
+		if resp and resp.hits.hits[1] then
+			table.insert(hits_arr, resp.hits.hits[1])
+		end
+	end
+	local code_map = {}
+	local code_set = {}
+	local batch_size = 100
+	for _,doc in ipairs(hits_arr) do
+		if doc._source and doc._source.elements then
+			for _,v in ipairs(doc._source.elements) do
+				code_map[v.code] = v
+				table.insert(code_set, v.code)
+				if #code_set >= batch_size then
+					build_channel(channel, code_set, code_map)
+					code_set = {}
+				end
+			end
+		end
+	end
+	if code_set and #code_set > 0 then
+		build_channel(channel, code_set, code_map)
+	end
+	local str_resp = cjson_safe.encode(hits_arr)
+	log(ERR,"hits_arr:" .. str_resp)
 end

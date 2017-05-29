@@ -36,32 +36,32 @@ end
 --     self:log("save_docs.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
 -- end
 
-function tb:test_1update_docs()
-    local docs = {}
-    local doc = {
-      media = "movie",
-      source = "douban",
-      groupby = "recommend",
-      timeby = "201705",
-      channel = "热门",
-      id = "movie;douban;recommend;201705;热门",
-      url = "https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0",
-      total = 21,
-      _doc_cmd = "update",
-       elements = {}
-    }
-    local elements = doc.elements;
-    elements[1] = {
-          code = "899593587",
-          title = "2天才少女",
-          page = 2
-    }
-    docs[#docs + 1] = doc
+-- function tb:test_1update_docs()
+--     local docs = {}
+--     local doc = {
+--       media = "movie",
+--       source = "douban",
+--       groupby = "recommend",
+--       timeby = "201705",
+--       channel = "热门",
+--       id = "movie;douban;recommend;201705;热门",
+--       url = "https://movie.douban.com/j/search_subjects?type=movie&tag=%E7%83%AD%E9%97%A8&sort=recommend&page_limit=20&page_start=0",
+--       total = 21,
+--       _doc_cmd = "update",
+--        elements = {}
+--     }
+--     local elements = doc.elements;
+--     elements[1] = {
+--           code = "899593587",
+--           title = "2天才少女",
+--           page = 2
+--     }
+--     docs[#docs + 1] = doc
 
-    local sresp, sstatus = channel_dao:save_docs(docs)
-    local str_sresp = cjson_safe.encode(sresp)
-    self:log("save_docs.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
-end
+--     local sresp, sstatus = channel_dao:save_docs(docs)
+--     local str_sresp = cjson_safe.encode(sresp)
+--     self:log("save_docs.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
+-- end
 
 -- function tb:test_2save_docs()
 --     local docs = {}
@@ -110,6 +110,13 @@ end
 --     self:log("save_docs.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
 -- end
 
-
+function tb:test_3query_lastest_by_channel()
+    local media = "movie"
+    -- local media = "tv"
+    local channel = "热门"
+    local sresp, sstatus = channel_dao:query_lastest_by_channel(media, channel)
+    local str_sresp = cjson_safe.encode(sresp)
+    self:log("save_docs.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
+end
 
 tb:run()

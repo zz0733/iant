@@ -11,6 +11,21 @@ local CRIT = ngx.CRIT
 local _M = ESClient:new({index = "content_v2", type = "table"})
 _M._VERSION = '0.01'
 
+function _M:query_by_codes( codes, fields )
+  if not codes then
+    return nil, 400
+  end
+  local body = {
+      _source = fields,
+      query = {
+         terms = {
+           ["article.code"] = codes
+         }
+      }
+  }
+  return self:search(body)
+end
+
 function _M:query_by_name( from, size, name,fields )
 	local body = {
 	  from = from,

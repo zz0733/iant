@@ -44,7 +44,7 @@ function _M:update_docs( docs)
   local cmd = 'update'
   for _, val in ipairs(docs) do
       if val.elements then
-      	  local cmd_doc = {}
+      	local cmd_doc = {}
 	      cmd_doc[cmd] = {
 	          ["_type"] = self.type,
 	          ["_id"] = val.id
@@ -77,27 +77,24 @@ function _M:update_docs( docs)
   return self:bulk( es_body )
 end
 
-function _M:query_by_channels(channels, from, size,fields )
-  if not channels or #channels < 1 then
-    return nil, "400,names is empty"
+function _M:query_lastest_by_channel(media, channel, fields )
+  if not media and not channel then
+    return nil, "400,media and channel is empty"
   end
-  local shoulds = {}
-  for _,v in ipairs(channels) do
-    local should = {
-          match = {
-            channel = v
-          }
-      }
-    shoulds[#shoulds + 1] = should
+  local musts = {}
+  if media then
+      table.insert(musts, { match = { media = media } })
+  end
+  if channel then
+      table.insert(musts, { match = { channel = channel } })
   end
   local body = {
-    from = from,
-    size = size,
+    size = 1,
     _source = fields,
     sort = { timeby = { order = "desc"}},
     query = {
       bool = {
-        should = shoulds
+        must = musts
       }
     }
   }

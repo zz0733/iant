@@ -80,33 +80,33 @@ end
 -- end
 
 
-function tb:test_4save_docs()
-    local update_docs = {}
-    local new_doc = {}
-    update_docs[#update_docs + 1] = new_doc
-    new_doc.id = "12345233459"
-    new_doc.id = ngx.time() + 1
-    new_doc.issueds = {}
-    local issueds = new_doc.issueds
-    issueds[#issueds + 1] = {region = "越南3",country = "vietnam"}
-    issueds[#issueds + 1] = {region = "香港3",country = "中国大陆"}
-    new_doc.article = {}
-    new_doc.article.title = "save_docs"
-    new_doc.lcount = 1002
+-- function tb:test_4save_docs()
+--     local update_docs = {}
+--     local new_doc = {}
+--     update_docs[#update_docs + 1] = new_doc
+--     new_doc.id = "12345233459"
+--     new_doc.id = ngx.time() + 1
+--     new_doc.issueds = {}
+--     local issueds = new_doc.issueds
+--     issueds[#issueds + 1] = {region = "越南3",country = "vietnam"}
+--     issueds[#issueds + 1] = {region = "香港3",country = "中国大陆"}
+--     new_doc.article = {}
+--     new_doc.article.title = "save_docs"
+--     new_doc.lcount = 1002
 
-    local ids = {}
-    ids[#ids + 1] = new_doc.id
+--     local ids = {}
+--     ids[#ids + 1] = new_doc.id
 
-    local str_docs = cjson_safe.encode(update_docs)
-    local sresp, sstatus = content_dao:index_docs(update_docs)
-    local str_sresp = cjson_safe.encode(sresp)
-    self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus)..",str_docs:" .. str_docs)
+--     local str_docs = cjson_safe.encode(update_docs)
+--     local sresp, sstatus = content_dao:index_docs(update_docs)
+--     local str_sresp = cjson_safe.encode(sresp)
+--     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus)..",str_docs:" .. str_docs)
    
-    local str_ids = cjson_safe.encode(ids)
-    local qresp, qstatus = content_dao:query_by_ids(ids)
-    local str_sresp = cjson_safe.encode(qresp)
-    self:log("query_by_ids.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(qstatus) .. ",str_ids:" .. tostring(str_ids))
-end
+--     local str_ids = cjson_safe.encode(ids)
+--     local qresp, qstatus = content_dao:query_by_ids(ids)
+--     local str_sresp = cjson_safe.encode(qresp)
+--     self:log("query_by_ids.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(qstatus) .. ",str_ids:" .. tostring(str_ids))
+-- end
 
 -- function tb:test_5scroll()
 --     local scroll_id = 0
@@ -118,5 +118,12 @@ end
 --     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
    
 -- end
+function tb:test_6query_by_codes()
+    local codes = { "26984183","26590060"}
+    local sresp, sstatus = content_dao:query_by_codes(codes)
+    local str_sresp = cjson_safe.encode(sresp)
+    self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
+   
+end
 
 tb:run()
