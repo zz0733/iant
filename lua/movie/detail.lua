@@ -66,17 +66,17 @@ if resp then
 	local count = 0
 	for i,v in ipairs(channel_hist) do
 		local elements = v._source.elements
-		if elements then
+		if elements and #elements > 0 then
 			local add_count = max_count - count
 			local max_index = math.min(100,#elements)
 			add_count = math.min(add_count,#elements)
 			while(add_count > 0) {
-				local index = math.random(1,max_index)
+				local index = math.random(1, max_index)
 				local ele = elements[index]
 				if not recmd_map[ele.id] then
 					recmd_map[ele.id] = ele
 					count = count + 1
-					add_count = add_count - 0
+					add_count = add_count - 1
 				end
 			}
 		end
