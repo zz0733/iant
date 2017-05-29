@@ -31,7 +31,20 @@
       <div class="container-fluid">
 					<div class="row top-margin">
 						  <div class="col-xs-12 col-sm-4 col-md-3 movie-left">
-						       <img src="{* _source.digests[1].content *}" 
+						       {%
+						          local digests = _source.digests
+								  local str_img
+				                  if digests then
+				                     for _,v in ipairs(digests) do
+				                        if v.sort == 'img' then
+				                           str_img = v.content
+				                           str_img = ngx.re.sub(str_img, "%.webp", ".jpg")
+				                           break
+				                        end
+				                     end
+				                  end
+						       %}
+						       <img src="{{str_img}}" 
 						       class="img-thumbnail movie-img" alt="{*_source.article.title*}"/>
 					      </div>
 					      <div class="col-xs-12 col-sm-8 col-md-9 movie-right">
