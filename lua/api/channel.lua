@@ -37,6 +37,7 @@ function toElements( hits, code_map)
         local cele = code_map[code]
         local ele = {}
         ele.id = v._id
+        ele.title = v._source.article.title
         if cele then
 	       ele.index = cele.index
         end

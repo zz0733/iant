@@ -57,23 +57,32 @@ if resp and resp.hits then
 end
 -- log(ERR,"link_hits:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
 
-local channels = {"hottest"}
-local resp = channel_dao:query_by_channels(channels, from, size,fields )
+local ids = {"hottest"}
+local resp = channel_dao:query_by_ids(ids)
 local recmd_map = {}
 if resp then
 	local channel_hist = resp.hits.hits
+	local max_count = 10
 	local count = 0
 	for i,v in ipairs(channel_hist) do
 		local elements = v._source.elements
-		local max_count = 10 - count
-		local max_index = math.min(100,#recmds)
+		if elements then
+			local add_count = max_count - count
+			local max_index = math.min(100,#elements)
+			add_count = math.min(add_count,#elements)
+			while(add_count > 0) {
+				local index = math.random(1,max_index)
+				local ele = elements[index]
+				if not recmd_map[ele.id] then
+					recmd_map[ele.id] = ele
+					count = count + 1
+					add_count = add_count - 0
+				end
+			}
+		end
+		
 		for i=1,max_count do
-			local index = math.random(1,max_index)
-			local ele = elements[index]
-			if not recmd_map[ele.id] then
-				recmd_map[ele.id] = ele
-				count = count + 1
-			end
+			
 		end
 	end
 end
