@@ -70,7 +70,7 @@ if resp then
 			local add_count = max_count - count
 			local max_index = math.min(100,#elements)
 			add_count = math.min(add_count,#elements)
-			while(add_count > 0) {
+			while add_count > 0 do
 				local index = math.random(1, max_index)
 				local ele = elements[index]
 				if not recmd_map[ele.id] then
@@ -78,7 +78,8 @@ if resp then
 					count = count + 1
 					add_count = add_count - 1
 				end
-			}
+			end
+
 		end
 		
 		for i=1,max_count do

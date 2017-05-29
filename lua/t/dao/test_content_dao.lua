@@ -123,7 +123,8 @@ function tb:test_6query_by_codes()
     local sresp, sstatus = content_dao:query_by_codes(codes)
     local str_sresp = cjson_safe.encode(sresp)
     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus) )
-    self:log("search.str_resp:" .. math.random(1, 10))
+    local index = math.random(1, 10)
+    self:log("search.str_resp:" .. index)
    
 end
 
