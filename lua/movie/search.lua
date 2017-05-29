@@ -16,7 +16,7 @@ local CRIT = ngx.CRIT
 local args = ngx.req.get_uri_args()
 
 local qWord = args.q
-log(ERR,"qWord:" .. cjson_safe.encode(args))
+-- log(ERR,"qWord:" .. cjson_safe.encode(args))
 local hits = {}
 if qWord then
 	local  from = 0
@@ -27,7 +27,7 @@ if qWord then
 		hits = resp.hits
 	end
 end
-log(ERR,"hits:" .. cjson_safe.encode(hits))
+-- log(ERR,"hits:" .. cjson_safe.encode(hits))
 
 local header = {}
 header.canonical = "http://www.lezomao.com" .. ngx.var.uri

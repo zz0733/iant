@@ -15,7 +15,7 @@ local CRIT = ngx.CRIT
 local args = ngx.req.get_uri_args()
 
 local qWord = args.q
-log(ERR,"qWord:" .. cjson_safe.encode(args))
+-- log(ERR,"qWord:" .. cjson_safe.encode(args))
 local hits = {}
 if qWord then
 	local  from = 0

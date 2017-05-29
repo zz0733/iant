@@ -27,7 +27,7 @@ end
 
 local uri = ngx.var.uri
 local content_id = to_content_id(uri)
-log(ERR,"uri:" .. tostring(uri) .. ",content_id:" .. tostring(content_id))
+-- log(ERR,"uri:" .. tostring(uri) .. ",content_id:" .. tostring(content_id))
 if not content_id then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
@@ -55,7 +55,7 @@ local link_hits = {}
 if resp and resp.hits then
 	link_hits = resp.hits
 end
-log(ERR,"link_hits:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
+-- log(ERR,"link_hits:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
 
 local channels = {"hottest"}
 local resp = channel_dao:query_by_channels(channels, from, size,fields )
