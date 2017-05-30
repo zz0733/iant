@@ -84,7 +84,7 @@ if resp and resp.hits.hits[1] then
 	end
 end
 
-log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
+-- log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
 
 local crumbs = {}
 local issueds = source.issueds[1]

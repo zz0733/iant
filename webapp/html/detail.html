@@ -61,9 +61,20 @@
 								    </li>
 								    <li class="list-group-item tag-info">
 								       <strong>主演：</strong>
-								       {%local actors = _source.actors or {} %}
-								       {*  table.concat(actors,' ') *}
-								       
+								       {%
+								         local actors = _source.actors or {} 
+								         local suffix = ""
+										 if #actors > 10 then
+										   local inputs = actors
+										   actors = {}
+										   local max = 8
+										   for i=1, max do
+												table.insert(actors, inputs[i])
+										   end
+										   suffix = "..."
+										 end
+								       %}
+								       {*  table.concat(actors,'、') .. suffix *}
 								    </li>
 								    <li class="list-group-item tag-info">
 								      <strong>类型：</strong>

@@ -212,10 +212,11 @@ function ESClient:delete_by_query(params, endpointParams)
 end
 
 function ESClient:query_by_ids( ids, fields )
-  if not ids then
+  if not ids or #ids < 1 then
     return nil, 400
   end
   local body = {
+      size = #ids,
       _source = fields,
       query = {
          terms = {
