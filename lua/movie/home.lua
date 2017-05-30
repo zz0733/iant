@@ -62,6 +62,21 @@ function selectContents( hits )
 	end
 	return contents
 end
+function buildSearchWord( hits )
+	if not hits or #hits < 1 then
+		return
+	end
+	local channel_index = math.random(1, #hits)
+	if hits[channel_index] and hits[channel_index]._source.elements then
+		local channle_doc = hits[channel_index]
+		local elements = channle_doc._source.elements
+		if elements and #elements > 0 then
+			local index = math.random(1, #elements)
+			local content_obj = elements[index]
+			return content_obj.title
+		end
+	end
+end
 local channel_ids = {"hotest"}
 local resp, status = channel_dao:query_by_ids(channel_ids)
 local contents = selectContents(resp.hits.hits)
@@ -70,5 +85,6 @@ local content_doc = {}
 content_doc.header = buildHeader()
 content_doc.version = context.version()
 content_doc.hits  = contents
+content_doc.qWord  = buildSearchWord(resp.hits.hits)
 
 template.render("home.html", content_doc)
