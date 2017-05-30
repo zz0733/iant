@@ -1,0 +1,52 @@
+
+	<!--  navbar -->
+	<div id="top-navbar" class="navbar-fixed-top" role="navigation">
+      <form  action="{* qAction or '/m/movie/search.html' *}" role="search" class="form-search" id="qForm">
+	  <div class="form-group">
+        <div class="input-group input-group-bk">
+		  <span class="search-logo-box">
+		    <a class="logo" href="http://www.lezomao.com/">
+			    <img src="{{static_host}}/assets/img/cat-logo.png" alt="狸猫资讯" class="login-img" >
+			    <span class="site">狸猫资讯</span>
+		    </a>
+		  </span>
+		  <input type="text" name="q" value="{* qWord or '头脑特工队' *}" class="form-control search-word" id="qWord" style="border-top-left-radius: 6px;border-bottom-left-radius: 6px;">
+		  <a href="javascript:void(0)" rel="nofollow" class="box-btn search-btn" role="button" onclick="doQuery()">Go</a>
+		  <a href="javascript:void(0)" rel="nofollow" class="login-btn" role="button" onclick="toLogin()">
+		    <img src="{{static_host}}/assets/img/login-face.png" alt="登陆" class="login-img" width="36px" height="30px">
+		  </a>
+		</div>
+	  </div>
+	  </form>
+	</div>
+	<!-- /.navbar -->
+	
+	
+    <script>
+      function doQuery(){
+        $('#qForm').submit();
+      }
+      function toLogin(){
+        window.location.href='/login?retTo='+encodeURIComponent(window.location.href);
+      }
+      function toSignup(){
+      }
+      function toLogout(){
+        console.log('do logout...');
+        if (typeof(QC) != "undefined"){
+          QC.Login.signOut();
+        }else {
+          $.removeCookie('__wb__k');
+        }
+        $.removeCookie('user_nick');
+        
+        var $Login = $('#login-user');
+		$Login.attr('id','login');
+		$Login.attr('onclick','toLogin()');
+		$Login.text('登陆');
+		var $Signup = $('#logout');
+		$Signup.attr('id','signup');
+		$Signup.attr('onclick','toSignup()');
+		$Signup.text('注册');
+      }
+    </script>

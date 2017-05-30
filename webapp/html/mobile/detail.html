@@ -1,0 +1,142 @@
+{(mobile/decorator/header.html)}
+
+<link rel="canonical" href="{*context.header.canonical*}"/>
+<meta name="description" content="{*context.header.description*}"/>
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+
+</head>
+{# end of head #}
+
+<body class="home">
+    <input type="hidden" id="qqAppId" value="{{qq_connect_appid}}"/>
+	<input type="hidden" id="qqRedirectUrl" value="{{qq_redirect_url}}"/>
+    <input type="hidden" id="wbAppId" value="{{wb_app_key}}"/>
+    <input type="hidden" id="wbRedirectUrl" value="{{wb_redirect_url}}"/>
+	<script src="//cdn.bootcss.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+
+{(mobile/decorator/navbar.html)}
+
+<div class="main data-box">
+	<div class="container-fluid">
+		<div class="detail-box">
+			 <h1 class="detail-title">{*_source.article.title*}</h1>
+			 <div class="issued-share">
+			 	 <div class="issued">
+			 	  <div class="author">
+			 	  	{% local directors = _source.directors or {}; %}
+		            {* table.concat(directors,' ') *}
+			 	  </div>
+		           <div class="time">
+		           	 {%
+		           	      local time
+		           	      local time_gap
+						  local issueds = _source.issueds or {};
+						  local cur_time = ngx.time();
+				          for i,v in ipairs(issueds) do
+							 local issued = v.time;  
+							 if string.len(tostring(issued)) > 10 then 
+							    issued = math.modf( issued / 1000)  
+							 end
+							 local cur_gap = math.abs(cur_time - issued)
+							 if not time or cur_gap < time_gap then
+							    time = issued
+							    time_gap = cur_gap
+							 end
+						  end
+						  local str_time = os.date("%Y-%m-%d",time)
+						  if time then
+						     str_time = os.date("%Y-%m-%d",time)
+						  end
+		           	 %}
+		           	 {{str_time}}
+		           </div>
+			 	 </div>
+			 	 <div class="share-group">
+	                {%
+	                  local media_names = { 
+						   tv = "电视剧",
+						   movie = "电影"
+					  }
+	                  local directors = _source.directors or {}; 
+	                  local media = _source.article.media
+	                  local content = ""
+					  if directors and directors[1] then
+					     content = directors[1] .. "导演的"
+						 content = content .. media_names[media]
+					  end
+				      content = content .. "《" .. _source.article.title .."》"
+	                  local evaluates = _source.evaluates;
+	                  if evaluates and evaluates[1] then
+	                       local rate = evaluates[1].rate
+	                       content = content .. ",豆瓣评分" .. rate;
+	                  end
+	                  if _source.article.cost then
+		                   content = content .. ",约" .. _source.article.cost .."分钟";
+	                  end
+					  content = content .. "，免费资源为你所用."
+					  local encode_title = string.encodeURI(content)
+	                %}
+                    <a href="http://service.weibo.com/share/share.php?appkey={*config.weibo_app_key*}&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;ralateUid={*config.weibo_uid*}&amp;source=狸猫资讯&amp;sourceUrl=http%3A%2F%2Fwww.lezomao.com&amp;content=utf8&amp;searchPic=false&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_sina.png"></a>
+                    <a href="http://www.jiathis.com/send/?webid=tqq&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_tengwb.png"></a>
+                    <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_wx.png"></a>
+                    <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_friend.png"></a>
+                    <a href="http://www.jiathis.com/send/?webid=renren&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_renren.png"></a>
+	            </div>
+			 </div>
+			 <div class="article">
+			       <div class="digest">
+			       	{%
+				          local digests = _source.digests
+		                  if digests then
+		                     for _,v in ipairs(digests) do
+		                        if v.sort == "img" then
+		                          local str_img = ngx.re.sub(v.content, "[%.]webp", ".jpg")
+		                          local str_title = v.title
+							      %}  <img src="{{str_img}}" class="digest-img" alt="{{str_title}}" >  {%
+							     else 
+						          local str_title = v.title or v.content;
+							      %} <p>{{str_title}}</p>  {%
+							     end 
+		                     end
+		                  end
+			       %}
+			       </div>
+			       <div class="detail">
+				        {%
+				          local contents = _source.contents
+		                  if contents then
+		                     for _,v in ipairs(contents) do
+		                        if v.sort == "img" then
+		                          local str_img = ngx.re.sub(v.content, "[%.]webp", ".jpg")
+		                          local str_title = v.text or ""
+							      %}  <img src="{{str_img}}" class="content-img" alt="{{str_title}}" > {%
+							     else 
+						          local str_content = v.text or v.content;
+							      %} <p>{{str_content}}</p>  {%
+							     end 
+		                     end
+		                  end
+		                %}
+			       </div>
+			 </div>
+			 <div class="tag-box">
+			    {% 
+			        local genres = _source.genres or {} 
+					for _,v in ipairs(genres) do
+						%}<span class="tag-name">{{v}}</span>{%
+					end
+			    %}
+			 </div>
+			  
+			 <div class="link-box">
+			 	1232
+			 </div>
+		</div>
+	</div>
+</div>
+
+<script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/custom/detail.js?v={{version}}"></script>
+
+{(mobile/decorator/footer.html)}
