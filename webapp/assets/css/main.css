@@ -921,6 +921,11 @@ li.link-box >.left-badge {
     margin-right: 10px;
 }
 
+.recmd-box .recmd-badge {
+	float: left;
+    margin-right: 10px;
+}
+
 .target-btn {
     background-color: #439CF3;
     color: #FFF;

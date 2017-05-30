@@ -175,14 +175,19 @@
 				  </ul>
 			    </div>
 			    <div class="col-md-4 link-group-right">
-		 		  <ul class="list-group">
+		 		  <ul class="list-group recmd-box">
 		 		    {%
 		 		      local count = 0
 		 		      for k,v in pairs(recmd_map) do
 		 		             count = count + 1
+		 		             local str_index = tostring(count)
+				             if count < 10 then
+				                str_index = "0" .. str_index
+				             end 
 							 %}  
 							 <li class="list-group-item">
-							  <a href="/{*v.media*}/detail/{{k}}.html" class="detail">{{v.title}}</a> 
+							  <span class="badge recmd-badge">{{str_index}}</span>
+							  <a href="/movie/detail/{{k}}.html" class="detail">{{v.title}}</a> 
 							 </li>
 							 {%
 					  end

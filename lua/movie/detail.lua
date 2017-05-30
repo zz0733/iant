@@ -57,8 +57,10 @@ if resp and resp.hits then
 end
 -- log(ERR,"link_hits:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
 
-local ids = {"hottest"}
-local resp = channel_dao:query_by_ids(ids)
+local ids = {}
+table.insert(ids,"hotest")
+local resp,status = channel_dao:query_by_ids(ids)
+log(ERR,"query_by_ids:" .. cjson_safe.encode(resp) )
 local recmd_map = {}
 if resp and resp.hits.hits[1] then
 	local channel_doc = resp.hits.hits[1]
@@ -82,6 +84,7 @@ if resp and resp.hits.hits[1] then
 	end
 end
 
+log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
 
 local crumbs = {}
 local issueds = source.issueds[1]
