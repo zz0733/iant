@@ -36,7 +36,7 @@ function toElements( hits, code_map)
 		local code = v._source.article.code
         local cele = code_map[code]
         local ele = {}
-        ele.id = v._id
+        ele.code = v._id
         ele.title = v._source.article.title
         if cele then
 	       ele.index = cele.index
@@ -46,14 +46,18 @@ function toElements( hits, code_map)
     return elements
 end
 function build_channel(channel, code_set, code_map)
-	local fields = {"article.code"}
+	local fields = {"article"}
 	local from = 0
     local size = #code_set
-	local resp, status = content_dao:query_by_codes(code_set,fields);
+	local resp, status = content_dao:query_by_codes(from,size,code_set,fields);
+	local str_resp = cjson_safe.encode(hits_arr)
 	if not resp then
 		return
 	end
 	local elements = toElements(resp.hits.hits, code_map)
+	local str_resp = cjson_safe.encode(elements)
+	-- log(ERR,"elements:" .. str_resp )
+
 	if elements and #elements > 0 then
 	        local channel_obj = {}
 	        channel_obj.id = channel
@@ -62,6 +66,8 @@ function build_channel(channel, code_set, code_map)
 	        channel_obj.total = #elements
 	        channel_obj.ctime = ngx.time()
 	        channel_obj.utime = channel_obj.ctime
+			local str_resp = cjson_safe.encode(channel_obj)
+			log(ERR,"channel_obj:" .. str_resp )
 	        local docs = {}
 	        table.insert(docs, channel_obj)
 	        channel_dao:update_docs(docs)
@@ -98,6 +104,4 @@ if "hotest" == channel then
 	if code_set and #code_set > 0 then
 		build_channel(channel, code_set, code_map)
 	end
-	local str_resp = cjson_safe.encode(hits_arr)
-	log(ERR,"hits_arr:" .. str_resp)
 end
