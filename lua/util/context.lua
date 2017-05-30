@@ -5,7 +5,9 @@ _M._VERSION = '0.01'
 
 local shared_dict = ngx.shared.shared_dict
 local key_version = "app_verion"
-
+_M.jiathis_uid = "2129651"
+_M.weibo_app_key = "942886765"
+_M.weibo_uid = "1766676277"
 function _M.version(new_ver)
     if new_ver then
         shared_dict:set(key_version,new_ver) 

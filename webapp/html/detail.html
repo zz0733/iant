@@ -107,9 +107,40 @@
 
        <div class="container top-margin">
 		   <div class="story">
+
 				<div class="story-header">
+				<div class="share-group">
+				                {%
+				                  local media_names = { 
+									   tv = "电视剧",
+									   movie = "电影"
+								  }
+				                  local directors = _source.directors or {}; 
+				                  local media = _source.article.media
+				                  local content = ""
+								  if directors and directors[1] then
+								     content = directors[1] .. "导演的"
+									 content = content .. media_names[media]
+								  end
+							      content = content .. "《" .. _source.article.title .."》"
+				                  local evaluates = _source.evaluates;
+				                  if evaluates and evaluates[1] then
+				                       local rate = evaluates[1].rate
+				                       content = content .. ",豆瓣评分" .. rate;
+				                  end
+				                  if _source.article.cost then
+					                   content = content .. ",约" .. _source.article.cost .."分钟";
+				                  end
+								  content = content .. "，免费资源为你所用."
+								  local encode_title = string.encodeURI(content)
+				                %}
+                                <a href="http://service.weibo.com/share/share.php?appkey={*config.weibo_app_key*}&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;ralateUid={*config.weibo_uid*}&amp;source=狸猫资讯&amp;sourceUrl=http%3A%2F%2Fwww.lezomao.com&amp;content=utf8&amp;searchPic=false&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_sina.png"></a>
+                                <a href="http://www.jiathis.com/send/?webid=tqq&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_tengwb.png"></a>
+                                <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_wx.png"></a>
+                                <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_friend.png"></a>
+                                <a href="http://www.jiathis.com/send/?webid=renren&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_renren.png"></a>
+                        </div>
 					  <h4 class="head-title">剧情介绍
-					    <span class="share-box">分享到 <a id="shareQQ" rel="nofollow" target="_blank" href="javascript:void(0)" ></a></span>
 					  </h4>
 				</div>
 				<div class="story-body">

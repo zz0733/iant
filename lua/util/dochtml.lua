@@ -40,7 +40,7 @@ function _M.detail_header(doc)
    keywords = keywords ..",种子下载,迅雷下载,高清下载"
    description = description ..",免费获取资源：" .. title .. ""
    head_title = head_title ..",种子下载,迅雷下载,高清下载,高清百度云 - 狸猫资讯(LezoMao.com)"
-   header.canonical = "http://www.lezomao.com/"..tostring(media).."/detail/"..tostring(id) .. ".html"
+   header.canonical = "http://www.lezomao.com/movie/detail/"..tostring(id) .. ".html"
    header.keywords = keywords
    header.description = description
    header.title = head_title

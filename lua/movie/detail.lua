@@ -9,6 +9,7 @@ local template = require "resty.template"
 local content_dao = require "dao.content_dao"
 local link_dao = require "dao.link_dao"
 local channel_dao = require "dao.channel_dao"
+local util_string = require "util.string"
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -107,6 +108,11 @@ content_doc.version = context.version()
 content_doc.crumbs   = crumbs
 content_doc.link_hits  = link_hits
 content_doc.recmd_map  = recmd_map
+content_doc.config  = {
+	jiathis_uid = context.jiathis_uid,
+	weibo_uid = context.weibo_uid,
+	weibo_app_key = context.weibo_app_key
+}
 
 template.render("detail.html", content_doc)
 
