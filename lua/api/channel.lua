@@ -47,6 +47,8 @@ function toElements( hits, code_map)
 end
 function build_channel(channel, code_set, code_map)
 	local fields = {"article.code"}
+	local from = 0
+    local size = #code_set
 	local resp, status = content_dao:query_by_codes(code_set,fields);
 	if not resp then
 		return
@@ -57,6 +59,7 @@ function build_channel(channel, code_set, code_map)
 	        channel_obj.id = channel
 	        channel_obj.source = "maker"
 	        channel_obj.elements = elements
+	        channel_obj.total = #elements
 	        channel_obj.ctime = ngx.time()
 	        channel_obj.utime = channel_obj.ctime
 	        local docs = {}
