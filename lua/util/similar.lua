@@ -21,6 +21,7 @@ local ERR = ngx.ERR
 
 local cjson_safe = require "cjson.safe"
 local intact = require("util.intact")
+local extract = require("util.extract")
 
 local remove_highlight_tags = function ( hl_title )
    if not hl_title then
@@ -152,7 +153,14 @@ _M.getSegmentDistance = function ( title, hl_title)
     local str_intacts = cjson_safe.encode(intacts)
     local intact_count = 0
     for _,v in ipairs(intacts) do
-        if v.intact and (v.to - v.from >= 1) and not tonumber(v.seg) then
+        -- 1.至少2个字
+        -- 2.不能是数字
+        ---3.不是第几部第几集
+        if v.intact and (v.to - v.from >= 1) 
+            and not tonumber(v.seg) 
+            and not extract.find_episode(v.seg)
+            and not extract.find_season(v.seg)
+        then
             intact_count = intact_count + 1
         end
     end
