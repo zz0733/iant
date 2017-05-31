@@ -5,7 +5,11 @@ local uri = ngx.var.uri
 if string.match(uri, "^/assets/") then
 	return
 end
-local user_agent = string.lower(ngx.req.get_headers().user_agent)
+local user_agent = ngx.req.get_headers().user_agent
+if not user_agent then
+	return
+end
+user_agent = string.lower(user_agent)
 
 function is_mobile_user_agent( ua )
 	if not ua then
