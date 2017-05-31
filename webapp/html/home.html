@@ -25,32 +25,35 @@
                
                <ul>
  
-               {%
-                for i,v in ipairs(hits.hits) do
-                  local source = v._source;
-                  local article = source.article;
-                  local genres = source.genres;
-                  local digests = source.digests;
-                  local evaluates = source.evaluates;
-                  local rate
-                  if evaluates and evaluates[1] then
-                       rate = evaluates[1].rate
-                  end
-                  local str_cost
-                  if article.cost then
-                     local lcost = article.cost / 60
-                     str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
-                  end
-                  local str_img
-                  if digests then
-                     for _,v in ipairs(digests) do
-                        if v.sort == 'img' then
-                           str_img = v.content
-                           str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                           break
-                        end
-                     end
-                  end
+               {% if not hits or not hits.total or hits.total < 1 then %}
+                  <li class="item-box">暂无内容推荐</li>
+
+               {% else
+                    for i,v in ipairs(hits.hits) do
+                      local source = v._source;
+                      local article = source.article;
+                      local genres = source.genres;
+                      local digests = source.digests;
+                      local evaluates = source.evaluates;
+                      local rate
+                      if evaluates and evaluates[1] then
+                           rate = evaluates[1].rate
+                      end
+                      local str_cost
+                      if article.cost then
+                         local lcost = article.cost / 60
+                         str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+                      end
+                      local str_img
+                      if digests then
+                         for _,v in ipairs(digests) do
+                            if v.sort == 'img' then
+                               str_img = v.content
+                               str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                               break
+                            end
+                         end
+                      end
                   %}
                   <li class="item-box">
                    <div class="item-inner">
@@ -87,6 +90,7 @@
                    </div>
                   </li>
                   {%
+                    end
                 end
                %}
                 </ul>
