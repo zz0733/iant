@@ -53,6 +53,9 @@ $(document).ready(function() {
 		});
 		(function() {
 		    var oImgEle = $('img.movie-img[alt]').first();
+		    if(!oImgEle.attr('src')) {
+		    	return
+		    }
 		    var pic = oImgEle.attr('src').trim();
 		    var title = oImgEle.attr('alt').trim();
 		    title += '('+$('span.movie-badge').first().text().trim()+')';

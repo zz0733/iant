@@ -41,5 +41,4 @@ content_doc.version = context.version()
 content_doc.hits  = hits
 content_doc.qWord  = qWord
 
-template.render("search.html", content_doc)
-
+template.render("mobile/search.html", content_doc)
