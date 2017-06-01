@@ -5,7 +5,7 @@ local uri = ngx.var.uri
 if string.match(uri, "^/assets/") then
 	return
 end
-if string.match(uri, "^/api/") then
+if string.match(uri, "^/movie/api/") then
 	return
 end
 if string.match(uri, "^/snap/") then

@@ -9,7 +9,7 @@ $(document).ready(function() {
 			$.getJSON(sUrl, {
 				'id' : tid
 			}, function(result) {
-			   // console.log('result:'+JSON.stringify(result))
+			   console.log('result:'+JSON.stringify(result))
 			   if(result && result.data ) {
 			   	   var data = result.data
 			   	   var link = data.link;
