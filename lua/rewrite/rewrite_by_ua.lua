@@ -5,6 +5,12 @@ local uri = ngx.var.uri
 if string.match(uri, "^/assets/") then
 	return
 end
+if string.match(uri, "^/api/") then
+	return
+end
+if string.match(uri, "^/snap/") then
+	return
+end
 local user_agent = ngx.req.get_headers().user_agent
 if not user_agent then
 	return
