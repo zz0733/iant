@@ -31,7 +31,7 @@ if not target_id then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local resp = ngx.location.capture("/movie/api/link.json?id=" .. target_id)
+local resp = ngx.location.capture("/api/movie//link.json?id=" .. target_id)
 if resp and resp.status ~= 200 then
 	return ngx.exit(resp.status)
 end

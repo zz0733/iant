@@ -632,16 +632,6 @@ a.lbtn-tag:hover {
     margin-right: 4px;
 }
 
-.link-box2 {
-    margin-bottom: 10px;
-    margin-top: 10px;
-	padding: 45px 15px 15px;
-	border-color: #e5e5e5 #eee;
-	border-style: solid;
-	border-width: 1px;
-	-webkit-box-shadow: inset 0 3px 6px rgba(0,0,0,.05);
-	box-shadow: inset 0 3px 6px rgba(0,0,0,.05);
-}
 
 .link-box {
     margin-bottom: 10px;
@@ -649,18 +639,24 @@ a.lbtn-tag:hover {
     border: 1px solid #e1e1e8;
     border-radius: 4px;
     padding: 5px;
-    min-height: 50px;
+    min-height: 72px;
+    display: table;
+    width: 100%;
 }
 
 .link-box .link-left {
-	float: right;
-	display: inline-block;
+	max-width: 85%;
+	display: table-cell;
 }
 
 .link-box .link-right {
-	float: right;
-	display: inline-block;
+    display: table-cell;
+    height: 100%;
 }
+.link-right div.up {
+	height: 100%;
+}
+
 .link-index {
     float: left;
     position: relative;
@@ -680,7 +676,7 @@ a.lbtn-tag:hover {
 	float: right;
     position: relative;
     color: rgba(0, 0, 0, 0.47);
-    font-size: 15px;
+    font-size: 16px;
     font-style: normal;
 	font-weight: 400;
 	line-height: 1;
@@ -711,17 +707,19 @@ a.lbtn-tag:hover {
     position: relative;
     color: rgba(0, 0, 0, 0.47);
 	display: inline-block;
-    top: 6px;
+    font-size: 16px;
+    top: -16px;
 }
 .link-title {
-    padding: 5px;
+    padding: 1px;
     font-size: 15px;
-    line-height: 1;
+    line-height: 1.5em;
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     max-height: 72px;
-    width: 290px;
+    width: 100%;
+    text-align: left;
 }
