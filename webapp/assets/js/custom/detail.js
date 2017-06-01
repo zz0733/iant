@@ -18,7 +18,7 @@ $(document).ready(function() {
 			self.attr('disabled',"disabled");
 			var tid = self.attr('tid');
 			var sBase = window.location.origin;
-			var sUrl = sBase+"/movie/api/link.json";
+			var sUrl = sBase+"/api/movie/link.json";
 			console.log('sUrl:'+sUrl+',tid:'+tid)
 			$.getJSON(sUrl, {
 				'id' : tid

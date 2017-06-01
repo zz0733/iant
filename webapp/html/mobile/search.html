@@ -57,30 +57,29 @@
                   %}
                   <li class="item-box">
                    <div class="item-inner">
-                      <div class="lbox">
-                        <a class="img-wrap" target="_blank" href="/m/movie/detail/{{v._id}}.html"> 
-                          <img alt="" src="{{str_img}}" /> 
-                          {%if str_cost then%}
-                          <i class="ftype video"> <span>{{str_cost}}</span> </i>
-                          {%end%}
-                        </a> 
-                      </div>
-                      <div class="rbox ">
-                            <div class="rbox-inner"> 
-                                <div class="title-box"> 
-                                    <a class="atitle" target="_blank" href="/m/movie/detail/{{v._id}}.html"> {{article.title}}
-                                    </a> 
-                                </div>
-                            </div>
-                      </div>
-                      <div class="tag-box">
-                      {%if meida_name then %}
-                      <span class="tag-txt tag-size">{{meida_name}}</span>
-                      {%end%}
-                      {%if rate then %}
-                      <span class="tag-txt tag-size">评分<strong class="tag-score">{{rate}}</strong></span>
-                      {%end%}
-                    </div>  
+                      <a  href="/m/movie/detail/{{v._id}}.html"> 
+                        <div class="lbox">
+                            <img class="img-wrap" alt="{{article.title}}" src="{{str_img}}" /> 
+                            {%if str_cost then%}
+                            <i class="ftype video"> <span>{{str_cost}}</span> </i>
+                            {%end%}
+                        </div>
+                        <div class="rbox ">
+                              <div class="rbox-inner"> 
+                                  <div class="title-box"> 
+                                      {{article.title}}
+                                  </div>
+                              </div>
+                        </div>
+                      </a> 
+                      <span class="item-tag-box">
+                        {%if meida_name then %}
+                        <span class="tag-txt tag-size">{{meida_name}}</span>
+                        {%end%}
+                        {%if rate then %}
+                        <span class="tag-txt tag-size">评分<strong class="tag-score">{{rate}}</strong></span>
+                        {%end%}
+                    </span>  
                    </div>
                   </li>
                   {%
