@@ -1,0 +1,100 @@
+{(mobile/decorator/header.html)}
+
+<link rel="canonical" href="{*context.header.canonical*}"/>
+<meta name="description" content="{*context.header.description*}"/>
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+<!-- <script type="text/javascript" src="{{static_host}}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
+ -->
+</head>
+{# end of head #}
+
+<body>
+
+{(mobile/decorator/navbar.html)}
+
+<div class="main data-box">
+  <div class="act">
+    <div class="container">
+
+      <div class="container-fluid">
+        <div class="row">
+              <div class="feedBox"> 
+               
+               <ul class="feed-ul">
+                 <div class="crumb">
+                   <ol class="breadcrumb">
+                    <li class="active"><strong>{*context.qWord*}</strong></li>
+                  </ol>
+                 </div>
+               {%
+                for i,v in ipairs(hits.hits) do
+                  local source = v._source;
+                  local article = source.article;
+                  local genres = source.genres;
+                  local digests = source.digests;
+                  local evaluates = source.evaluates;
+                  local rate
+                  if evaluates and evaluates[1] then
+                       rate = evaluates[1].rate
+                  end
+                  local str_cost
+                  if article.cost then
+                     local lcost = article.cost / 60
+                     str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+                  end
+                  local str_img
+                  if digests then
+                     for _,v in ipairs(digests) do
+                        if v.sort == 'img' then
+                           str_img = v.content
+                           str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                           break
+                        end
+                     end
+                  end
+                  local media_names = { 
+                     tv = "电视剧",
+                     movie = "电影"
+                  }
+                  local meida_name = media_names[article.media]
+                  %}
+                  <li class="item-box">
+                   <div class="item-inner">
+                      <a  href="/m/movie/detail/{{v._id}}.html"> 
+                        <div class="lbox">
+                            <img class="img-wrap" alt="{{article.title}}" src="{{str_img}}" /> 
+                            {%if str_cost then%}
+                            <i class="ftype video"> <span>{{str_cost}}</span> </i>
+                            {%end%}
+                        </div>
+                        <div class="rbox ">
+                              <div class="rbox-inner"> 
+                                  <div class="title-box"> 
+                                      {{article.title}}
+                                  </div>
+                              </div>
+                        </div>
+                      </a> 
+                      <span class="item-tag-box">
+                        {%if meida_name then %}
+                        <span class="tag-txt tag-size">{{meida_name}}</span>
+                        {%end%}
+                        {%if rate then %}
+                        <span class="tag-txt tag-size">评分<strong class="tag-score">{{rate}}</strong></span>
+                        {%end%}
+                    </span>  
+                   </div>
+                  </li>
+                  {%
+                end
+               %}
+                </ul>
+              </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{(mobile/decorator/footer.html)}

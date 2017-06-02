@@ -39,4 +39,4 @@ content_doc.version = context.version()
 content_doc.hits  = hits
 content_doc.qWord  = qWord
 
-template.render("genre.html", content_doc)
+template.render("mobile/genre.html", content_doc)
