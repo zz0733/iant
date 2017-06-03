@@ -27,4 +27,16 @@ $(document).ready(function() {
 			});
 		});
 
+		$("div.up:has(.link-digg)").on('click', function(e) {
+			var self = $(this);
+			console.log('clik,link-digg')
+		});
+
+		$("div.down:has(.link-bury)").on('click', function(e) {
+			var self = $(this);
+			console.log('clik,link-bury')
+			var boxEls = self.parents('div.link-box');
+			boxEls.remove();
+		});
+
 });

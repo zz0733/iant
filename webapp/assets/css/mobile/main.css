@@ -669,7 +669,12 @@ a.lbtn-tag:hover {
 }
 .link-right div.down {
 }
-.link-left a {
+.link-left a.link-href {
+    text-decoration: none;
+    color: #555;
+    font-weight: bold;
+}
+.link-left a.link-href:hover {
     text-decoration: none;
 }
 
@@ -714,7 +719,7 @@ a.lbtn-tag:hover {
     color: #999;
     margin-left: 25%;
 }
-.link-dislike {
+.link-bury {
     float: right;
     position: relative;
     color: rgba(0, 0, 0, 0.47);
