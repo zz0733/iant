@@ -639,7 +639,7 @@ a.lbtn-tag:hover {
     border: 1px solid #e1e1e8;
     border-radius: 4px;
     padding: 5px;
-    min-height: 72px;
+    min-height: 82px;
     display: table;
     width: 100%;
 }
@@ -729,5 +729,5 @@ a.lbtn-tag:hover {
     -webkit-box-orient: vertical;
     max-height: 72px;
     width: 100%;
-    text-align: left;
+    text-align: center;
 }
