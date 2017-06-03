@@ -77,7 +77,10 @@ function _M:query_by_titles(names, from, size,fields )
 		_source = fields,
 		query = {
 		  bool = {
-		    should = shoulds
+		    should = shoulds,
+		    must_not = {
+	            match = { status = -1 }
+	        }
 		  }
 		},
 		highlight = {
@@ -127,16 +130,23 @@ function _M:query_by_target( target_id, from , size, fields )
     from = from,
     size = size,
     _source = fields,
-    sort = { ["issueds.time"] = { order = "desc" } },
+    sort = { _score = { order = "desc"}},
     query = {
-      nested = {
-        path = "targets",
-         query ={
-           match = { 
-              ["targets.id"] = target_id
-           }
-         }
-      }
+      bool = {
+        must = {
+		   nested = {
+		        path = "targets",
+		         query ={
+		           match = { 
+		              ["targets.id"] = target_id
+		           }
+		         }
+		      }
+	    },
+	    must_not = {
+            match = { status = -1 }
+        }
+	  }
     }
   }
   return _M:search(body)
@@ -158,7 +168,7 @@ function _M:incr_bury_digg( id, target_id, bury, digg )
   local up_doc = { tid = target_id, bury = bury, digg = digg, utime = ngx.time() }
   local new_doc = { 
 	    script = { 
-	      inline = "def targets = ctx._source.targets; for(int i = 0; i < targets.length; i++){ def target = targets[i]; if(target == null || target.id == null) { continue; } if(target.id == params.tid) { if(params.bury != null) { def bury = target.bury; if (bury == null) { bury = 0 ; } target.bury = bury + params.bury } if(params.digg != null) { def digg = target.digg; if (digg == null) { digg = 0 ; } target.digg = digg + params.digg; } break; } }", 
+	      inline = "def targets = ctx._source.targets; for(int i = 0; i < targets.length; i++){ def target = targets[i]; if(target == null || target.id == null) { continue; } if(target.id == params.tid) { if(params.bury != null) { def bury = target.bury; if (bury == null) { bury = 0 ; } target.bury = bury + params.bury; if(target.bury >= 10) { ctx._source.status=-1; } } if(params.digg != null) { def digg = target.digg; if (digg == null) { digg = 0 ; } target.digg = digg + params.digg; } break; } }", 
 	      lang = "painless", 
 	      params = up_doc
 	    },
