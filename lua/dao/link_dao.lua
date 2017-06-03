@@ -168,7 +168,7 @@ function _M:incr_bury_digg( id, target_id, bury, digg )
   local up_doc = { tid = target_id, bury = bury, digg = digg, utime = ngx.time() }
   local new_doc = { 
 	    script = { 
-	      inline = "def targets = ctx._source.targets; for(int i = 0; i < targets.length; i++){ def target = targets[i]; if(target == null || target.id == null) { continue; } if(target.id == params.tid) { if(params.bury != null) { def bury = target.bury; if (bury == null) { bury = 0 ; } target.bury = bury + params.bury; if(target.bury >= 10 and targets.length == 1) { ctx._source.status=-1; } } if(params.digg != null) { def digg = target.digg; if (digg == null) { digg = 0 ; } target.digg = digg + params.digg; } break; } }", 
+	      inline = "def targets = ctx._source.targets; for(int i = 0; i < targets.length; i++){ def target = targets[i]; if(target == null || target.id == null) { continue; } if(target.id == params.tid) { if(params.bury != null) { def bury = target.bury; if (bury == null) { bury = 0 ; } target.bury = bury + params.bury; if(target.bury >= 10 && targets.length == 1) { ctx._source.status=-1; } } if(params.digg != null) { def digg = target.digg; if (digg == null) { digg = 0 ; } target.digg = digg + params.digg; } break; } }", 
 	      lang = "painless", 
 	      params = up_doc
 	    },
