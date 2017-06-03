@@ -144,7 +144,7 @@ end
 
 function _M:incr_bury_digg( id, target_id, bury, digg )
   if not id or not bury or not digg then
-  	return nil, 200
+  	return nil, 400
   end
 
   local es_body = {}

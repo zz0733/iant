@@ -27,9 +27,16 @@ if method == "incr_bury_digg" then
   local id = args.id
   local data = util_request.post_body(ngx.req)
   local inputs = cjson_safe.decode(data)
+  if not inputs then
+    message.status = 400
+    message.message = "json param is miss"
+    ngx.say(cjson_safe.encode(message))
+    return
+  end
   local tid = inputs.tid
-  local bury = inputs.bury
-  local digg = inputs.digg
+  local bury = inputs.bury or 0
+  local digg = inputs.digg or 0
+  -- log(ERR,"inputs:".. cjson_safe.encode(inputs))
   resp, status = link_dao:incr_bury_digg( id, tid, bury, digg )
 elseif method == "query_by_ids" then
   local ids = {}
