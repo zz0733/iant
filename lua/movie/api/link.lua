@@ -20,15 +20,23 @@ if not args.id then
   ngx.say(cjson_safe.encode(message))
   return
 end
+local method = args.method or "query_by_ids"
 
-local ids = {}
-local fields = {"link","md5","secret","title"}
-table.insert(ids, args.id)
-local resp, status = link_dao:query_by_ids( ids, fields )
- 
-if status == 200 then
-  message.code = 200
-  if resp then
+local resp, status;
+if method == "incr_bury_digg" then
+  local id = args.id
+  local data = util_request.post_body(ngx.req)
+  local inputs = cjson_safe.decode(data)
+  local tid = inputs.tid
+  local bury = inputs.bury
+  local digg = inputs.digg
+  resp, status = link_dao:incr_bury_digg( id, tid, bury, digg )
+elseif method == "query_by_ids" then
+  local ids = {}
+  local fields = {"link","md5","secret","title"}
+  table.insert(ids, args.id)
+  resp, status = link_dao:query_by_ids( ids, fields )
+  if resp and resp.hits and resp.hits.hits then
     local hits= resp.hits.hits
     for _,v in ipairs(hits) do
         local doc = v._source
@@ -43,7 +51,9 @@ if status == 200 then
         break
     end
   end
-else
+end
+ 
+if status ~= 200 then
   message.code = 500
   message.error = status
 end
