@@ -1,5 +1,5 @@
 $(document).ready(function() {
-		$(".link-left > a[tid]").on('click', function(e) {
+		$(".link-left > a.link-href[tid]").on('click', function(e) {
 			var self = $(this);
 			// self.attr('disabled',"disabled");
 			var tid = self.attr('tid');
