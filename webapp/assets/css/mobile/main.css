@@ -640,26 +640,38 @@ a.lbtn-tag:hover {
     border-radius: 4px;
     padding: 5px;
     min-height: 82px;
-    display: table;
     width: 100%;
+    display: table;
+    position: relative;
+    height: 100%;
 }
 
 .link-box .link-left {
-	max-width: 85%;
+	width: 90%;
 	display: table-cell;
+	position: relative;
 }
 
 .link-box .link-right {
+    min-width: 16px;
+    width: 10%;
     display: table-cell;
+	position: relative;
+    min-height: 62px;
+    max-height: 103px;
+    padding: 2px;
     height: 100%;
 }
 .link-right div.up {
-	height: 50%;
+}
+.link-right div.mid {
+	height: 100%;
 }
 .link-right div.down {
-	height: 50%;
 }
-
+.link-left a {
+    text-decoration: none;
+}
 
 .link-index {
     float: left;
@@ -688,22 +700,17 @@ a.lbtn-tag:hover {
 	top: 0px; 
 }
 .link-down {
-	  font-size: 15px;
+	font-size: 15px;
     font-style: normal;
 	font-weight: 400;
 	line-height: 1;
-	height: 20px;
+	height:20px;
+    padding-top: 5px;
 }
 .link-time {
-    float: left;
-    position: relative;
-    top: 6px;
     color: #999;
 }
 .link-source {
-    float: left;
-    position: relative;
-    top: 6px;
     color: #999;
     margin-left: 25%;
 }
@@ -716,7 +723,7 @@ a.lbtn-tag:hover {
 	font-weight: 400;
 	line-height: 1;
 	display: inline-block;
-	top: 50%;
+    top: -16px;
 }
 .link-title {
     padding: 1px;
@@ -729,5 +736,5 @@ a.lbtn-tag:hover {
     -webkit-box-orient: vertical;
     max-height: 72px;
     width: 100%;
-    text-align: center;
+    text-align: left;
 }
