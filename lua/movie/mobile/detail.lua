@@ -45,7 +45,7 @@ local source = content_doc._source
 local lcount = source.lcount or 0
 local  from = 0
 local  size = 10
-local  fields = {"title","space","ctime","issueds"}
+local  fields = {"title","space","ctime","issueds","targets"}
 local resp
 if lcount > 0 then
 	resp  = link_dao:query_by_target(content_doc._id, from, size, fields)
@@ -55,6 +55,20 @@ end
 local link_hits = {}
 if resp and resp.hits then
 	link_hits = resp.hits
+	for _,v in ipairs(link_hits.hits) do
+		local targets = v._source.targets;
+		if targets then
+			local id = content_doc._id
+			local new_targets = {}
+			for _,tv in ipairs(targets) do
+				if tv.id and tv.id == id then
+					table.insert(new_targets, tv);
+					break;
+				end
+			end
+			v._source.targets = new_targets
+		end
+	end
 end
 -- log(ERR,"link_hits:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
 

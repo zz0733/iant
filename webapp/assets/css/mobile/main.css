@@ -678,6 +678,15 @@ a.lbtn-tag:hover {
     text-decoration: none;
 }
 
+.link-left a.link-miss {
+    text-decoration: line-through;
+    color: #ccc;
+}
+.link-left a.link-miss:hover {
+    text-decoration: line-through;
+    color: #ccc;
+}
+
 .link-index {
     float: left;
     position: relative;

@@ -167,10 +167,18 @@
 				                 end
 				             end
 				             local str_time = os.date("%m-%d", update_time)
+				             local link_class = "link-href"
+				             if v_source.targets and v_source.targets[1] then
+    				             local target = v_source.targets[1]
+		                         if target.bury and target.bury >= 10 then
+					                 link_class = "link-miss"
+					             end
+				             end 
+				 
 				             %}
 							<div class="link-box">
 							   <div class="link-left">
-							    <a href="javascript:void(0)" class="link-href" tid="{{v._id}}">
+							    <a href="javascript:void(0)" class="{{link_class}}" tid="{{v._id}}">
 								   	<div class="link-tip">
 									    <span class="badge link-index">{{str_index}}</span>
 									    {%if str_space then%}
@@ -180,8 +188,10 @@
 							 	    </div>
 							 	  	 <div class="link-title">
 							 	  			{*v._source.title*}
+							 	  			{%if link_class == "link-miss" then%}
+							 	  			  (已失效)
+							 	  			{%end%}
 							 	  	</div>
-							 	  	 
 								 	  <div class="link-down">
 									 	   	  <sapn class="link-time">{{str_time}}</sapn>
 									 	   	  <sapn class="link-source">{{btn_txt}}</sapn>
