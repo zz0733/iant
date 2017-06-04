@@ -2,8 +2,8 @@
 local link_dao = require "dao.link_dao"
 local content_dao = require "dao.content_dao"
 local cjson_safe = require("cjson.safe")
-local delay = 5  -- in seconds
-local done_wait = 6  -- in seconds
+local delay = 1  -- in seconds
+local done_wait = 600  -- in seconds
 local new_timer = ngx.timer.at
 
 local log = ngx.log
