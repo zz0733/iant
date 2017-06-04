@@ -17,7 +17,8 @@ local key_match_to_date = "match_to_date"
 local from = 0
 local size = 10
 local from_date = 0
-local to_date = shared_dict:get(key_match_to_date) or ngx.time()
+-- local to_date = shared_dict:get(key_match_to_date) or ngx.time()
+local to_date =  ngx.time()
 local min_date = 0
 local scan_count = 0
 local period_date = 60*60
@@ -149,9 +150,9 @@ local update_match_doc = function ( doc, hits )
                          score = tonumber(string.format("%.3f", score))
                          local old_targets = link_source.targets or {}
                          local target_map =  {}
-                         for _,v in ipairs(old_targets) do
-                             target_map[v.id] = v
-                         end
+                         -- for _,v in ipairs(old_targets) do
+                         --     target_map[v.id] = v
+                         -- end
                          local old_target = target_map[doc._id]
                          local new_target = {id = doc._id, score = score, status=0 }
                          if not util_table.equals(nil, new_target) then
@@ -272,10 +273,10 @@ local check
      if not premature then
          if min_date < 1 then
             min_date = query_min_ctime()
-            local last_time = ngx.time() - 30*24*60*60
-            if min_date > last_time then
-                min_date = last_time
-            end
+            -- local last_time = ngx.time() - 30*24*60*60
+            -- if min_date > last_time then
+            --     min_date = last_time
+            -- end
          end
          if from == 0  and from_date > 0 then
              from_date = to_date - period_date
