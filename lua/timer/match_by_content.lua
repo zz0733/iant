@@ -151,7 +151,7 @@ local update_match_doc = function ( doc, hits )
                          local old_targets = link_source.targets or {}
                          local target_map =  {}
                          for _,v in ipairs(old_targets) do
-                             if v.time then
+                             if v.digg then
                                  target_map[v.id] = v
                              end
                          end
@@ -168,7 +168,7 @@ local update_match_doc = function ( doc, hits )
                              update_doc.id = v._id
                              update_doc.targets = dest_targets
                              update_doc.status = 1
-                             update_doc.time = ngx.time()
+                             update_doc.digg = 0
                              update_doc.episode = extract.find_episode(link_title)
                              update_doc.season = extract.find_season(link_title)
                              dest_update_docs[#dest_update_docs + 1] = update_doc
