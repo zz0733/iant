@@ -47,11 +47,12 @@ local  from = 0
 local  size = 10
 local  fields = {"title","space","ctime","issueds","targets"}
 local resp
-if lcount > 0 then
-	resp  = link_dao:query_by_target(content_doc._id, from, size, fields)
-else
-	resp  = link_dao:query_by_titles(source.names, from, size, fields)
-end
+-- if lcount > 0 then
+-- 	resp  = link_dao:query_by_target(content_doc._id, from, size, fields)
+-- else
+-- 	resp  = link_dao:query_by_titles(source.names, from, size, fields)
+-- end
+resp  = link_dao:query_by_target_title(content_doc._id,source.title, from, size, fields)
 local link_hits = {}
 if resp and resp.hits then
 	link_hits = resp.hits
@@ -70,7 +71,7 @@ if resp and resp.hits then
 		end
 	end
 end
--- log(ERR,"link_hits:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
+log(ERR,"query_by_target_title:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
 
 local ids = {}
 table.insert(ids,"hotest")

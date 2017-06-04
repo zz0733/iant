@@ -152,6 +152,50 @@ function _M:query_by_target( target_id, from , size, fields )
   return _M:search(body)
 end
 
+function _M:query_by_target_title( target_id,title , from , size, fields )
+  local shoulds = {}
+  if target_id then
+  	  table.insert(shoulds,{
+		   nested = {
+		        path = "targets",
+		         query ={
+		           match = { 
+		              ["targets.id"] = target_id
+		           }
+		         }
+		      }
+	  })
+  end
+  if title then
+  	  table.insert(shoulds,{
+			match = { 
+			  title = title
+			}
+	  })
+  end
+  if #shoulds < 1 then
+  	return nil, 400
+  end
+
+
+  local  body = {
+    from = from,
+    size = size,
+    _source = fields,
+    sort = { _score = { order = "desc"}},
+    query = {
+      bool = {
+        should = shoulds,
+	    must_not = {
+            match = { status = -1 }
+        }
+	  }
+    }
+  }
+  return _M:search(body)
+end
+
+
 function _M:incr_bury_digg( id, target_id, bury, digg )
   if not id or not bury or not digg then
   	return nil, 400
