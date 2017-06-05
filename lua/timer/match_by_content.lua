@@ -328,9 +328,9 @@ local check
                    if from_date > 1  then
                        from = from + hit_count
                    else 
-                       from_date = last_date
                        from = 0
                    end
+                   from_date = last_date
                 end
   
             end
