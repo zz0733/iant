@@ -51,5 +51,30 @@ function tb:test_0to_intact_words()
     end
 end
 
+function tb:test_1contains_chinese()
+    local case_arr = { 
+        {
+          title = "23号公寓的坏女孩 第一季 Don't Trust the B---- in Apartment 23 Season 1‎ (2012",
+          ret = true
+       },
+       {
+          title = "23 Dont Trust the B in Apartment 23 Season",
+          ret = false
+       }
+    }
+    for t,v in ipairs(case_arr) do
+        local e = util_intact.contains_chinese(v.title)
+        local str_v = cjson_safe.encode(v)
+        local str_e = cjson_safe.encode(e)
+        self:log(t .. ",contains_chinese["..str_v.."], ret["..str_e.."]")
+        -- if e ~= v.ret then
+        --     local str_e = cjson_safe.encode(e)
+        --     self:log(t .. ",contains_chinese["..str_v.."], expect["..tostring(v.ret).."],but[" .. tostring(str_e) .. "]")
+        -- else
+        --     error(t .. ",exisods expect["..str_v.."],but[ nil]")
+        -- end
+    end
+end
+
 
 tb:run()

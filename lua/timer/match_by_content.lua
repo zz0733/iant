@@ -17,8 +17,8 @@ local key_match_to_date = "match_to_date"
 local from = 0
 local size = 10
 local from_date = 0
-local to_date = shared_dict:get(key_match_to_date) or ngx.time()
--- local to_date =  ngx.time()
+-- local to_date = shared_dict:get(key_match_to_date) or ngx.time()
+local to_date =  ngx.time()
 local min_date = 0
 local scan_count = 0
 local period_date = 60*60
@@ -325,12 +325,12 @@ local check
                 else 
                    local last = hits[hit_count]
                    local last_date = last._source.ctime
-                   if from_date == last_date  then
+                   if from_date > 1  then
                        from = from + hit_count
                    else 
                        from = 0
-                       from_date = last_date
                    end
+                   from_date = last_date
                 end
   
             end

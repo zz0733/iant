@@ -154,12 +154,9 @@ _M.getSegmentDistance = function ( title, hl_title)
     local intact_count = 0
     for _,v in ipairs(intacts) do
         -- 1.至少2个字
-        -- 2.不能是数字
-        ---3.不是第几部第几集
+        -- 2.包含中文
         if v.intact and (v.to - v.from >= 1) 
-            and not tonumber(v.seg) 
-            and not extract.find_episode(v.seg)
-            and not extract.find_season(v.seg)
+            and intact.contains_chinese(v.seg)
         then
             intact_count = intact_count + 1
         end

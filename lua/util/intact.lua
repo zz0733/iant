@@ -26,6 +26,15 @@ local find = function (content, regex, ...)
     return utf8.find(content,str_escape, ...)
 end
 
+_M.contains_chinese = function ( source )
+   if not source then
+       return false
+   end
+   local ulen = utf8len(source)
+   local slen = string.len(source)
+   return ulen ~= slen
+end
+
 _M.is_word_char = function ( char )
     char = tonumber(char)
 	if not char then
