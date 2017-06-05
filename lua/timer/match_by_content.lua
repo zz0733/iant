@@ -325,12 +325,12 @@ local check
                 else 
                    local last = hits[hit_count]
                    local last_date = last._source.ctime
-                   if from_date > 1  then
+                   if from_date == last_date  then
                        from = from + hit_count
                    else 
                        from = 0
+                       from_date = last_date
                    end
-                   from_date = last_date
                 end
   
             end
