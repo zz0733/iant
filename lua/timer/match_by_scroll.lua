@@ -33,7 +33,7 @@ scanParams.index = sourceIndex
 -- scanParams.search_type = "scan"
 scanParams.scroll = scroll
 -- scanParams.sort = {"_doc"}
-scanParams.size = 100
+scanParams.size = 10
 scanParams.body = query
 
 local scan_count = 0
