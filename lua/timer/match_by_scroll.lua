@@ -18,12 +18,13 @@ local key_match_to_date = "match_to_date"
 shared_dict:delete(key_match_to_date)
 
 local key_match_scroll_id = "match_scroll_id"
+shared_dict:delete(key_match_scroll_id)
 
 
 local sourceClient = client_utils.client()
 local sourceIndex = "content";
 local query = {};
-local scrollId = shared_dict:get(key_match_scroll_id)
+-- local scrollId = shared_dict:get(key_match_scroll_id)
 local scroll = "1m";
 local scanParams = {};
 local bulkParams = {};
@@ -276,51 +277,46 @@ local check
 
  check = function(premature)
      if not premature then
-         local data,err;
-         local start = ngx.now()
-         if not scrollId then
-             data, err = sourceClient:search(scanParams)
-         else
-            data, err = sourceClient:scroll{
-              scroll_id = scrollId,
-              scroll = scroll
-            }
-         end
-         if data == nil or #data["hits"]["hits"] == 0 then
-            local ok, err = new_timer(done_wait, check)
-            if not ok then
-                 log(CRIT, "done.failed to create timer: ", err)
-                 return
-            else
-                log(ERR, "done.wait["..done_wait.."],scan:"..scan_count..",create timer: ")
-            end
-            scrollId = nil
-            scan_count = 0
-         else
-             local total = data.hits.total
-             local hits = data.hits.hits
-             local shits = cjson_safe.encode(hits)
-             log(ERR,"hits:" .. shits)
-             scan_count = scan_count + #hits
-             ngx.update_time()
-             local cost = (ngx.now() - start)
-             cost = tonumber(string.format("%.3f", cost))
-             log(ERR,"scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
-                    .. ",scan:" .. tostring(scan_count)..",cost:" .. cost)
-             build_similars(hits)
-             scrollId = data["_scroll_id"]
-         end
-         local ok, err = shared_dict:set(key_match_scroll_id, scrollId )
-         if ok then
-             log(ERR,"shared_dict.set[" .. key_match_scroll_id .. "=" .. tostring(scrollId) .. "]" )
-         else
-            log(CRIT,"error.shared_dict.set[" .. key_match_scroll_id .. "=" .. tostring(scrollId) .. "],cause:", err)
-         end
-         local ok, err = new_timer(delay, check)
-         if not ok then
-             log(ERR, "failed to create timer: ", err)
-             return
-         end
+         local scrollId = nil
+         local index = 0
+         while true do
+             index = index + 1;
+             local data,err;
+             local start = ngx.now()
+             if not scrollId then
+                 data, err = sourceClient:search(scanParams)
+             else
+                data, err = sourceClient:scroll{
+                  scroll_id = scrollId,
+                  scroll = scroll
+                }
+             end
+             if data == nil or not data["_scroll_id"] or #data["hits"]["hits"] == 0 then
+                local ok, err = new_timer(done_wait, check)
+                if not ok then
+                     log(CRIT, "done.failed to create timer: ", err)
+                     return
+                else
+                    log(ERR, "done.wait["..done_wait.."],index:"..index..",scan:"..scan_count..",create timer: ")
+                end
+                scrollId = nil
+                scan_count = 0
+                break
+             else
+                 local total = data.hits.total
+                 local hits = data.hits.hits
+                 local shits = cjson_safe.encode(hits)
+                 log(ERR,"hits:" .. shits)
+                 scan_count = scan_count + #hits
+                 ngx.update_time()
+                 local cost = (ngx.now() - start)
+                 cost = tonumber(string.format("%.3f", cost))
+                 log(ERR,"scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
+                        .. ",scan:" .. tostring(scan_count)..",index:"..index..",cost:" .. cost)
+                 build_similars(hits)
+                 scrollId = data["_scroll_id"]
+             end
+        end
      end
  end
 
