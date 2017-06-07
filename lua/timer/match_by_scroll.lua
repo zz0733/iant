@@ -306,7 +306,7 @@ local check
                  local total = data.hits.total
                  local hits = data.hits.hits
                  local shits = cjson_safe.encode(hits)
-                 log(ERR,"hits:" .. shits)
+                 -- log(ERR,"hits:" .. shits)
                  scan_count = scan_count + #hits
                  ngx.update_time()
                  local cost = (ngx.now() - start)

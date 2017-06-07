@@ -58,6 +58,7 @@ function _M:query_by_title( from, size, title,fields )
 	  from = from,
 	  size = size,
 	  _source = fields,
+	  sort = {_score = { order = "desc"}, },
 	  query = {
 	    match = {
 	      ["article.title"] = title
@@ -97,6 +98,30 @@ function _M:query_by_genre( from, size, genre,fields )
 	        fragmenter = "span"
 	      }
 	    }
+	  }
+	}
+	local resp, status = _M:search(body)
+	return resp, status
+end
+
+function _M:query_by_region( from, size, region,fields )
+	if not region then
+		return nil, 400
+	end
+	local body = {
+	  from = from,
+	  size = size,
+	  sort = {_score = { order = "desc"}, "article.year" = { order = "desc"}}
+	  _source = fields,
+	  query = {
+	    nested = {
+		     path = "issueds",
+		     query = {
+                match = {
+                   ["issueds.region"] = region
+	            }
+			 }
+		}
 	  }
 	}
 	local resp, status = _M:search(body)
