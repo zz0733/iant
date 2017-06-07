@@ -111,7 +111,6 @@ function _M:query_by_region( from, size, region,fields )
 	local body = {
 	  from = from,
 	  size = size,
-	  sort = {_score = { order = "desc"}, "article.year" = { order = "desc"}}
 	  _source = fields,
 	  query = {
 	    nested = {
