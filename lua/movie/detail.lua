@@ -99,11 +99,11 @@ local media_names = {
 }
 local media = source.article.media
 local year = source.article.year
-crumbs[#crumbs + 1] = {name = media_names[media], link1 = "/media/" .. media}
+crumbs[#crumbs + 1] = {name = media_names[media], link1 = "/media/" .. media  ..".html"}
 if issueds then
-	crumbs[#crumbs + 1] = {name = issueds.region, link = "/movie/region/" .. issueds.region }
+	crumbs[#crumbs + 1] = {name = issueds.region, link = "/movie/region/" .. issueds.region  ..".html"}
 end
-crumbs[#crumbs + 1] = {name = year, link1 = "/movie/year/" .. tostring(year)}
+crumbs[#crumbs + 1] = {name = year, link1 = "/movie/year/" .. tostring(year)  ..".html"}
 content_doc.header = dochtml.detail_header(content_doc)
 content_doc.version = context.version()
 content_doc.crumbs   = crumbs

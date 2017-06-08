@@ -19,32 +19,47 @@ local to_region = function ( uri )
 	if not uri then
 		return
 	end
-	local m = ngx.re.match(uri, '/movie/region/([\w]{2,})','ijo')
+	local m = ngx.re.match(uri, '/movie/region/([^/.]{2,})','ijo')
 	if m then
 		return m[1]
 	end
 end
+local select_title = function (hits )
+	if not hits or not hits.hits then
+	   return 
+	end
+	local doc_arr = hits.hits
+	if #doc_arr < 1 then
+		return
+	end
+	local index = math.random(1, #doc_arr)
+	local doc = doc_arr[index]
+	return doc._source.article.title;
+end
 
 local uri = ngx.var.uri
-local region = to_region(uri)
-if not region then
+local qWord = to_region(uri)
+if not qWord then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
--- log(ERR,"qWord:" .. cjson_safe.encode(args))
+log(ERR,"region:" .. tostring(qWord))
 local hits = {}
 if qWord then
 	local  from = 0
 	local  size = 10
 	local  fields = {"article","digests","lcount","issueds","evaluates","genres"}
-	local resp, status = content_dao:query_by_title(from, size, qWord, fields);
+	local resp, status = content_dao:query_by_region(from, size, qWord, fields);
 	if resp and resp.hits then
 		hits = resp.hits
 	end
 end
--- log(ERR,"hits:" .. cjson_safe.encode(hits))
+log(ERR,"hits:" .. cjson_safe.encode(hits))
 
 local header = {}
-header.canonical = "http://www.lezomao.com" .. ngx.var.uri .. "?" .. ngx.var.QUERY_STRING
+header.canonical = "http://www.lezomao.com" .. ngx.var.uri
+if ngx.var.QUERY_STRING then
+	header.canonical = header.canonical  .. "?" .. ngx.var.QUERY_STRING
+end
 header.keywords = "狸猫资讯,为你所用,迅雷下载,种子下载,免费下载"
 header.description = "《狸猫资讯》(LezoMao.com)是一款智能的资讯软件,已为你寻找关注的内容："..qWord..",为你所用，才是资讯！"
 header.title = qWord .. "-搜索结果,为你所用，才是资讯 - 狸猫资讯(LezoMao.com)"
@@ -53,6 +68,6 @@ local content_doc = {}
 content_doc.header = header
 content_doc.version = context.version()
 content_doc.hits  = hits
-content_doc.qWord  = qWord
-
-template.render("search.html", content_doc)
+content_doc.qWord  = select_title(hits)
+content_doc.region  = qWord
+template.render("region.html", content_doc)

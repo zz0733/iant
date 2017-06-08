@@ -40,7 +40,7 @@ function is_mobile_user_agent( ua )
 end
 -- local reg = "iphone"
 local is_mobile = is_mobile_user_agent(user_agent)
-log(ERR,"uri:" .. uri .. "ua:"..user_agent..",is_mobile:" .. tostring(is_mobile))
+log(ERR,"uri:" .. uri .. ",ua:"..user_agent..",is_mobile:" .. tostring(is_mobile))
 local target = uri
 if is_mobile and not string.match(uri,"^/m/") then
 	target = "/m" .. uri
