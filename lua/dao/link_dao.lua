@@ -192,6 +192,7 @@ function _M:query_by_target_title( target_id,title , from , size, fields )
 	  }
     }
   }
+  log(ERR,"query_by_target_title.resp:" ..  cjson_safe.encode(body) )
   return _M:search(body)
 end
 

@@ -14,14 +14,7 @@ local CRIT = ngx.CRIT
 
 local message = {}
 message.code = 200
-if not args.id then
-  message.status = 400
-  message.message = "empty id"
-  ngx.say(cjson_safe.encode(message))
-  return
-end
 local method = args.method or "query_by_ids"
-
 local resp, status;
 if method == "incr_bury_digg" then
   local id = args.id
@@ -57,6 +50,29 @@ elseif method == "query_by_ids" then
         message.data = doc
         break
     end
+  end
+elseif method == "next_links" then
+  local data = util_request.post_body(ngx.req)
+  local inputs = cjson_safe.decode(data)
+  if not inputs then
+    message.status = 400
+    message.message = "json param is miss"
+    ngx.say(cjson_safe.encode(message))
+    return
+  end
+  if not inputs.did or not inputs.title then
+    message.status = 400
+    message.message = "did or title is empty"
+    ngx.say(cjson_safe.encode(message))
+    return
+  end
+  local page = inputs.page or 1
+  local  size = 10
+  local  from = (page - 1) * size
+  local  fields = {"title","space","ctime","issueds"}
+  resp, status = link_dao:query_by_target_title(inputs.did, inputs.title1, from, size, fields)
+  if resp and resp.hits then
+    message.data = resp.hits
   end
 end
  
