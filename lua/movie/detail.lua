@@ -44,7 +44,7 @@ local content_doc = resp.hits.hits[1]
 local source = content_doc._source
 local lcount = source.lcount or 0
 local  from = 0
-local  size = 10
+local  size = 1
 local  fields = {"title","space","ctime","issueds"}
 local resp
 -- if lcount > 0 then
