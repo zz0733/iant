@@ -30,7 +30,10 @@ end
 -- log(ERR,"hits:" .. cjson_safe.encode(hits))
 
 local header = {}
-header.canonical = "http://www.lezomao.com" .. ngx.var.uri .. "?" .. ngx.var.QUERY_STRING
+header.canonical = "http://www.lezomao.com" .. ngx.var.uri
+if ngx.var.QUERY_STRING then
+	header.canonical = header.canonical  .. "?" .. ngx.var.QUERY_STRING
+end
 header.keywords = "狸猫资讯,为你所用,迅雷下载,种子下载,免费下载"
 header.description = "《狸猫资讯》(LezoMao.com)是一款智能的资讯软件,已为你寻找关注的内容："..qWord..",为你所用，才是资讯！"
 header.title = qWord .. "-搜索结果,为你所用，才是资讯 - 狸猫资讯(LezoMao.com)"

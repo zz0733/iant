@@ -124,7 +124,10 @@
 			    {% 
 			        local genres = _source.genres or {} 
 					for _,v in ipairs(genres) do
-						%}<span class="tag-name">{{v}}</span>{%
+						%}
+						<a href="/m/movie/genre/{*string.encodeURI(v)*}.html" 
+						class="tag-name">{{v}}</a>
+						{%
 					end
 			    %}
 			 </div>

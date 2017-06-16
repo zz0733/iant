@@ -12,10 +12,23 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
-local args = ngx.req.get_uri_args()
+-- local args = ngx.req.get_uri_args()
+local to_genre = function ( uri )
+	if not uri then
+		return
+	end
+	local m = ngx.re.match(uri, '/movie/genre/([^/.]{2,})','ijo')
+	if m then
+		return m[1]
+	end
+end
+local uri = ngx.var.uri
+local qWord = to_genre(uri)
+-- log(ERR,"qWord:" .. cjson_safe.encode(qWord))
+if not qWord then
+	return ngx.exit(ngx.HTTP_NOT_FOUND)
+end
 
-local qWord = args.q
--- log(ERR,"qWord:" .. cjson_safe.encode(args))
 local hits = {}
 if qWord then
 	local  from = 0
@@ -28,7 +41,10 @@ if qWord then
 end
 
 local header = {}
-header.canonical = "http://www.lezomao.com" .. ngx.var.uri .. "?" .. ngx.var.QUERY_STRING
+header.canonical = "http://www.lezomao.com" .. ngx.var.uri
+if ngx.var.QUERY_STRING then
+	header.canonical = header.canonical  .. "?" .. ngx.var.QUERY_STRING
+end
 header.keywords = "狸猫资讯,为你所用,迅雷下载,种子下载,免费下载"
 header.description = "《狸猫资讯》(LezoMao.com)是一款智能的资讯软件,已为你寻找关注的内容："..qWord..",为你所用，才是资讯！"
 header.title =  "类型:"..qWord..",为你所用，才是资讯 - 狸猫资讯(LezoMao.com)"

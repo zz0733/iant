@@ -80,26 +80,34 @@ function _M:query_by_title( from, size, title,fields )
 end
 
 function _M:query_by_genre( from, size, genre,fields )
+	local str_today = ngx.today()
+	local m = ngx.re.match(str_today, "([0-9]{4})")
+	local year = 2016
+    if m and m[1] then
+    	year = tonumber(m[1])
+    end
 	local body = {
 	  from = from,
 	  size = size,
 	  _source = fields,
+  	  sort = {_score = { order = "desc"}, ["article.year"] = { order = "desc"}},
 	  query = {
-	    match = {
-	      genres = genre
-	    }
-	  },
-	  highlight = {
-	    order = "score",
-	    fields = {
-	      names = {
-	        fragment_size = 50,
-	        number_of_fragments = 1,
-	        fragmenter = "span"
-	      }
+	   bool = {
+		  filter = {
+		      range = {
+		        ["article.year"] = {
+		          lte = year
+		        }
+		      }
+		   },
+		   must = {
+		       match = {
+			      genres = genre
+			   }
+		   }
 	    }
 	  }
-	}
+   }
 	local resp, status = _M:search(body)
 	return resp, status
 end
@@ -108,20 +116,39 @@ function _M:query_by_region( from, size, region,fields )
 	if not region then
 		return nil, 400
 	end
+	local str_today = ngx.today()
+	local m = ngx.re.match(str_today, "([0-9]{4})")
+	local year = 2016
+    if m and m[1] then
+    	year = tonumber(m[1])
+    end
+
 	local body = {
 	  from = from,
 	  size = size,
 	  sort = {_score = { order = "desc"}, ["article.year"] = { order = "desc"}},
 	  _source = fields,
 	  query = {
-	    nested = {
-		     path = "issueds",
-		     query = {
-                match = {
-                   ["issueds.region"] = region
-	            }
-			 }
-		}
+	   bool = {
+		  filter = {
+		      range = {
+		        ["article.year"] = {
+		          lte = year
+		        }
+		      }
+		   },
+		   must = {
+			 nested = {
+			     path = "issueds",
+			     query = {
+	                match = {
+	                   ["issueds.region"] = region
+		            }
+				 }
+			  }
+		   }
+	    }
+		
 	  }
 	}
 	local resp, status = _M:search(body)
