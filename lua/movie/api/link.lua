@@ -79,7 +79,7 @@ elseif method == "next_links" then
   elseif page > 100 then
      page = 100
   end
-  local  size = 4
+  local  size = 10
   local  from = (page - 1) * size
   local  fields = {"title","space","ctime","issueds"}
   resp, status = link_dao:query_by_target_title(inputs.did, inputs.title1, from, size, fields)
