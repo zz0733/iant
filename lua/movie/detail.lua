@@ -42,22 +42,6 @@ end
 
 local content_doc = resp.hits.hits[1]
 local source = content_doc._source
-local lcount = source.lcount or 0
-local  from = 0
-local  size = 1
-local  fields = {"title","space","ctime","issueds"}
-local resp
--- if lcount > 0 then
--- 	resp  = link_dao:query_by_target(content_doc._id, from, size, fields)
--- else
--- 	resp  = link_dao:query_by_titles(source.names, from, size, fields)
--- end
-resp  = link_dao:query_by_target_title(content_doc._id,source.title, from, size, fields)
-local link_hits = {}
-if resp and resp.hits then
-	link_hits = resp.hits
-end
--- log(ERR,"link_hits:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
 
 local ids = {}
 table.insert(ids,"hotest")
@@ -91,8 +75,6 @@ end
 local crumbs = {}
 local issueds = source.issueds[1]
 
-log(ERR,"link_hits:" .. cjson_safe.encode(source.issueds) ..",lcount:" .. lcount)
-
 local media_names = { 
    tv = "电视剧",
    movie = "电影"
@@ -107,7 +89,7 @@ crumbs[#crumbs + 1] = {name = year, link1 = "/movie/year/" .. tostring(year)  ..
 content_doc.header = dochtml.detail_header(content_doc)
 content_doc.version = context.version()
 content_doc.crumbs   = crumbs
-content_doc.link_hits  = link_hits
+-- content_doc.link_hits  = link_hits
 content_doc.recmd_map  = recmd_map
 content_doc.config  = {
 	jiathis_uid = context.jiathis_uid,

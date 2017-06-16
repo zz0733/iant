@@ -52,8 +52,15 @@ elseif method == "query_by_ids" then
     end
   end
 elseif method == "next_links" then
-  local data = util_request.post_body(ngx.req)
-  local inputs = cjson_safe.decode(data)
+  local inputs = nil
+  if args.did and args.title then
+     inputs = {}
+     inputs.did = args.did;
+     inputs.title = args.title;
+     inputs.page = tonumber(args.page);
+  end
+  -- local data = util_request.post_body(ngx.req)
+  -- local inputs = cjson_safe.decode(data)
   if not inputs then
     message.status = 400
     message.message = "json param is miss"
@@ -72,12 +79,18 @@ elseif method == "next_links" then
   elseif page > 100 then
      page = 100
   end
-  local  size = 1
+  local  size = 4
   local  from = (page - 1) * size
   local  fields = {"title","space","ctime","issueds"}
   resp, status = link_dao:query_by_target_title(inputs.did, inputs.title1, from, size, fields)
   if resp and resp.hits then
-    message.data = resp.hits
+    local hits = resp.hits
+    message.data = hits
+    message.data.curPage = page
+    message.data.hasMore = false
+    if hits.total > from + #hits.hits then
+      message.data.hasMore = true
+    end
   end
 end
  

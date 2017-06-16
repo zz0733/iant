@@ -929,6 +929,22 @@ li.link-box >.left-badge {
     margin-right: 10px;
 }
 
+.link-no-more {
+	text-align: center;
+}
+.link-no-more > li {
+	background-color: #eee;
+}
+
+.link-more {
+	text-align: center;
+	cursor: pointer;
+    color: #428bca;
+}
+.link-more:hover {
+      cursor: pointer;
+}
+
 .recmd-box .recmd-badge {
 	float: left;
     margin-right: 10px;
@@ -1180,3 +1196,4 @@ a.lbtn-tag:hover {
 body.home>div.main {
 	min-height: 300px;
 }
+

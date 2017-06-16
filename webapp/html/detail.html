@@ -104,7 +104,8 @@
 			</div>
 		</div>
 
-
+       <input type="hidden" id="did" name="did" value="{{context._id}}">
+       <input type="hidden" id="title" name="title" value="{{context._source.article.title}}">
        <div class="container top-margin">
 		   <div class="story">
 
@@ -161,59 +162,12 @@
 			  <div class="row">
 			    <div class="col-md-8 link-group-left">
 				  <ul class="list-group">
-				    {%
-				      local total = link_hits.total or 0
-				      if total >= 1 then
-				          for i,v in ipairs(link_hits.hits) do
-				             local str_index = tostring(i)
-				             if i < 10 then
-				                str_index = "0" .. str_index
-				             end 
-				             local icon_cls = "icon10";
-				             local btn_txt = "迅雷下载";
-				             local v_source = v._source;
-				             if string.match(v._id,"^b") then
-				                btn_txt = "百度云盘";
-				                if v_source.space and (v_source.space ==0 or v_source.space == 1024) then
-				                  icon_cls = "icon61"
-				                end
-				             end
-				             local update_time = v_source.ctime
-				             if v_source.issuseds and string.match(v._id,"^b") then
-				                 for _,ss in ipairs(v_source.issuseds) do
-				                   if ss.time then
-				                      update_time = ss.time
-				                   end
-				                 end
-				             end
-				             local str_time = os.date("%Y-%m-%d", update_time)
-				             %}
-				               <li class="list-group-item link-box">
-				                 <span class="badge left-badge">{{str_index}}</span>
-				                 <span class="link-icon {{icon_cls}}"></span>
-				                 <div>
-				                 	<a href="javascript:void(0)" class="link-title" >
-				                 	{*v._source.title*}
-				                 </a>
-				                 </div>
-								 {% if str_time then %}
-       				                <span>{{str_time}}</span>
-				                 {% end %}
-                                
-                                 {% if string.match(v._id,"^b") then %}
-                                     <a href="/movie/jumper/{{v._id}}.html" rel="nofollow" target="_blank" 
-                                     role="button" class="btn target-btn" >{{btn_txt}}</a>
-					             {% else %}
-					                <button type="button" class="btn target-btn" tid= "{{v._id}}">{{btn_txt}}</button>
-					             {% end %}
-			
-				               </li> 
-				             {%
-						  end
-				      else 
-				        %} 暂无资源 {%
-				      end
-				    %}
+						  <span class="link-no-more">
+	 				          <input type="hidden" id="curPage" name="curPage" value="0">
+							  <li class="list-group-item" >
+							    暂无资源
+							  </li> 
+						 </span>
 				  </ul>
 			    </div>
 			    <div class="col-md-4 link-group-right">
