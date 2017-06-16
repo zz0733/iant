@@ -13,7 +13,7 @@ $(document).ready(function() {
 			}
 			return false;
 		});
-		$(".target-btn[tid]").one('click', function(e) {
+		$('.link-group-left').delegate(".target-btn[tid]",'click', function(e) {
 			var self = $(this);
 			self.attr('disabled',"disabled");
 			var tid = self.attr('tid');
