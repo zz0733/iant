@@ -134,7 +134,7 @@ while true do
             local channel_docs = {}
             table.insert(channel_docs, doc)
             save = save + 1
-            local resp, status = channel_dao.save_docs(channel_docs)
+            local resp, status = channel_dao:save_docs(channel_docs)
             local msg = cjson_safe.encode(channel_docs)
             local str_resp = cjson_safe.encode(resp)
             log(ERR,"saveChannel:" .. msg..",resp:" .. str_resp .. ",status:" ..  tostring(status))
