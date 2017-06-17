@@ -16,7 +16,7 @@ local message = {}
 message.code = 200
 
 local to_date = ngx.time()
-local from_date = to_date - 1*60*60
+local from_date = to_date - 5*60*60
 local from_issued = to_date - 30*24*60*60
 
 local timeby = os.date("%Y%m%d%H", from_date)
@@ -134,9 +134,10 @@ while true do
             local channel_docs = {}
             table.insert(channel_docs, doc)
             save = save + 1
-            channel_dao.save_docs(channel_docs)
+            local resp, status = channel_dao.save_docs(channel_docs)
             local msg = cjson_safe.encode(channel_docs)
-            log(ERR,"saveChannel:" .. msg)
+            local str_resp = cjson_safe.encode(resp)
+            log(ERR,"saveChannel:" .. msg..",resp:" .. str_resp .. ",status:" ..  tostring(status))
         end
         scrollId = data["_scroll_id"]
      end
