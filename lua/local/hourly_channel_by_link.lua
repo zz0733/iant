@@ -3,7 +3,7 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
-local content_dao = require "dao.content_dao"
+local channel_dao = require "dao.channel_dao"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -84,8 +84,8 @@ while true do
           scroll = scroll
         }
      end
-     local shits = cjson_safe.encode(data)
-     log(ERR,"data:" .. shits .. ",err:" .. tostring(err))
+     -- local shits = cjson_safe.encode(data)
+     -- log(ERR,"data:" .. shits .. ",err:" .. tostring(err))
      if data == nil or not data["_scroll_id"] or #data["hits"]["hits"] == 0 then
         local cost = (ngx.now() - begin)
          cost = tonumber(string.format("%.3f", cost))
@@ -103,12 +103,38 @@ while true do
          cost = tonumber(string.format("%.3f", cost))
          log(ERR,"scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
                 .. ",scan:" .. tostring(scan_count)..",index:"..index..",cost:" .. cost)
-         -- match_handler.build_similars(hits)
-        
-
-        log(ERR,"doc_id:" .. doc_id)
-
-         scrollId = data["_scroll_id"]
+        local elements = {}
+     
+        local did_map = {}
+        for _,v in ipairs(hits) do
+            local targets = v._source.targets
+            if targets then
+                for _,tv in ipairs(targets) do
+                    if (not tv.bury or tv.bury < 10) and not did_map[tv.id] then
+                        local ele = {}
+                        ele.code = tv.id
+                        ele.title = v._source.title
+                        table.insert(elements,ele)
+                        did_map[ele.code] = 1
+                    end
+                end
+            end
+        end
+        if #elements > 0 then
+            local doc = {}
+            doc.id = doc_id
+            doc.timeby = timeby
+            doc.media = media
+            doc.groupby = groupby
+            doc.source = source
+            doc.channel = channel
+            doc.elements = elements
+            doc._doc_cmd = 'update'
+            local channel_docs = {}
+            table.insert(channel_docs, doc)
+            channel_dao.save_docs(channel_docs)
+        end
+        scrollId = data["_scroll_id"]
      end
 end
 local body = cjson_safe.encode(message)
