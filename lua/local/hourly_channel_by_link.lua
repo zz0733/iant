@@ -16,7 +16,7 @@ local message = {}
 message.code = 200
 
 local to_date = ngx.time()
-local from_date = to_date - 5*60*60
+local from_date = to_date - 1*60*60
 local from_issued = to_date - 30*24*60*60
 
 local timeby = os.date("%Y%m%d%H", from_date)
