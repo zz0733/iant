@@ -1,0 +1,111 @@
+<div class="page">
+  <nav aria-label="page indexer">
+    <ul class="pager">
+      {%
+        local cur_page = context.cur_page or 1;
+        local total = hits.total;
+        local page_total = total / page_size;
+        page_total = math.ceil(page_total)
+        if page_total > max_page then
+           page_total = max_page
+        end
+        local page_array = {}
+        local element = {}
+        element.text = '上一页'
+        if cur_page == 1 then
+           element.class = 'class="disabled"'
+        end
+        table.insert(page_array,element)
+        local page_map = {}
+
+        local from_page = cur_page - 1;
+        local to_page = cur_page + 1;
+
+        element = {}
+        element.text = "1"
+        table.insert(page_array,element)
+        page_map["1"] = 1
+        if from_page > 2 then
+            element = {}
+            element.text = "..."
+            table.insert(page_array,element)
+        end
+        if from_page <= 1 then
+           to_page = 3
+        end 
+        if to_page >= page_total then
+           from_page = page_total - 2
+        end 
+        for pi = from_page, to_page do
+           local str_pi = tostring(pi)
+           if pi >= 1 and pi <= page_total and not page_map[str_pi] then
+              element = {}
+              element.text = str_pi
+              table.insert(page_array,element)
+              page_map[str_pi] = 1
+           end
+        end
+        if to_page < page_total -1 then
+            element = {}
+            element.text = "..."
+            table.insert(page_array,element)
+        end
+        if not page_map[tostring(page_total)] then
+            element = {}
+            element.text = tostring(page_total)
+            table.insert(page_array,element)
+        end
+        element = {}
+        element.text = '下一页'
+        if cur_page == page_total then
+           element.class = 'class="disabled"'
+        end
+        table.insert(page_array,element)
+        local str_cur_page = tostring(cur_page)
+        local page_tag = "a"
+        local is_mobile = false
+        local page_url = base_uri
+        if string.endsWith(base_uri,".html") then
+           page_url = page_url .. "?"
+        else
+           page_url = page_url .. "&"
+        end
+        if string.match(base_uri,"^/m/") then
+           is_mobile = true
+        end
+        for i,v in ipairs(page_array) do
+            if str_cur_page == v.text then
+              v.class = 'class="active"'
+            end
+            if not v.class and v.text ~= "..." then
+               local toPage = nil
+               if v.text == "上一页" then
+                  toPage = cur_page - 1
+               elseif v.text == "下一页" then
+                  toPage = cur_page + 1
+               else 
+                  toPage = tonumber(v.text)
+               end
+               if is_mobile then
+                 v.tag_start = '<a href="'..page_url..'page='..toPage .. '">'
+               else
+                 v.tag_start = '<a target="_blank" href="'..page_url..'page='..toPage .. '">'
+               end
+               v.tag_end = '</a>'
+            else
+               v.tag_start = '<span>'
+               v.tag_end = '</span>'
+            end
+            
+          %}
+          <li {*v.class*}>
+              {*v.tag_start*}
+              <span aria-hidden="true">{{v.text}}</span>
+              {*v.tag_end*}
+          </li>
+          {%
+        end
+      %}
+    </ul>
+  </nav>
+</div>

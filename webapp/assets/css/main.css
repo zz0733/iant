@@ -1197,3 +1197,12 @@ body.home>div.main {
 	min-height: 300px;
 }
 
+/*pager.html*/
+.pager > .active > a, .pager > .active > a:focus, .pager > .active > a:hover,
+ .pager > .active > span, .pager > .active > span:focus, .pager > .active > span:hover {
+ 	z-index: 3;
+	color: #fff;
+	cursor: default;
+	background-color: #337ab7;
+	border-color: #337ab7;
+}
