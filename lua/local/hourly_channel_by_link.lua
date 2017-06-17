@@ -70,6 +70,7 @@ scanParams.body = body
 local scan_count = 0
 local scrollId = nil
 local index = 0
+local save = 0
 local total = nil
 local begin = ngx.now()
 while true do
@@ -90,7 +91,7 @@ while true do
         local cost = (ngx.now() - begin)
          cost = tonumber(string.format("%.3f", cost))
         log(ERR, "done.match,index:"..index..",scan:"..scan_count..",total:" .. tostring(total) .. ",cost:" .. cost)
-        message.data = {cost = cost,index = index, scan = scan_count, total = total}
+        message.data = {cost = cost,index = index, scan = scan_count, total = total,save = save}
         break
      else
          total = data.hits.total
@@ -132,7 +133,10 @@ while true do
             doc._doc_cmd = 'update'
             local channel_docs = {}
             table.insert(channel_docs, doc)
+            save = save + 1
             channel_dao.save_docs(channel_docs)
+            local msg = cjson_safe.encode(channel_docs)
+            log(ERR,"saveChannel:" .. msg)
         end
         scrollId = data["_scroll_id"]
      end
