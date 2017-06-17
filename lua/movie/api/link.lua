@@ -2,6 +2,7 @@ local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
 local link_dao = require "dao.link_dao"
+local context = require "util.context"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -57,7 +58,6 @@ elseif method == "next_links" then
      inputs = {}
      inputs.did = args.did;
      inputs.title = args.title;
-     inputs.page = tonumber(args.page);
   end
   -- local data = util_request.post_body(ngx.req)
   -- local inputs = cjson_safe.decode(data)
@@ -67,26 +67,27 @@ elseif method == "next_links" then
     ngx.say(cjson_safe.encode(message))
     return
   end
+
   if not inputs.did or not inputs.title then
     message.status = 400
     message.message = "did or title is empty"
     ngx.say(cjson_safe.encode(message))
     return
   end
-  local page = inputs.page or 1
-  if page < 1 then
-     page = 1
-  elseif page > 100 then
-     page = 100
+  local cur_page = tonumber(args.page) or 1
+  if cur_page > context.link_max_page then
+     cur_page = context.link_max_page
+  elseif cur_page < 1 then
+     cur_page = 1
   end
-  local  size = 10
-  local  from = (page - 1) * size
+  local  size = context.link_page_size
+  local  from = (cur_page - 1) * size
   local  fields = {"title","space","ctime","issueds"}
   resp, status = link_dao:query_by_target_title(inputs.did, inputs.title1, from, size, fields)
   if resp and resp.hits then
     local hits = resp.hits
     message.data = hits
-    message.data.curPage = page
+    message.data.curPage = cur_page
     message.data.hasMore = false
     if hits.total > from + #hits.hits then
       message.data.hasMore = true

@@ -132,8 +132,8 @@ $(document).ready(function() {
                       self.find('li').text(tip);
                       self.attr('class','link-no-more')
                       self.unbind()
-		   	       } else {
-		   	       	  self.find('li:contains(暂无资源)').text("获取更多资源");
+		   	       } else if(curPage == 0){
+		   	       	  self.find('li').text("获取更多资源");
 		   	       }
                    // console.log('data:' + JSON.stringify(data))
 			   }
