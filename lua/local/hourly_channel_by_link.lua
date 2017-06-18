@@ -91,7 +91,7 @@ while true do
         local cost = (ngx.now() - begin)
          cost = tonumber(string.format("%.3f", cost))
         log(ERR, "done.match,index:"..index..",scan:"..scan_count..",total:" .. tostring(total) .. ",cost:" .. cost)
-        message.data = {cost = cost,index = index, scan = scan_count, total = total,save = save}
+        message.data = {cost = cost,index = index, scan = scan_count, total = total,save = save,id = doc_id}
         break
      else
          total = data.hits.total
@@ -102,7 +102,7 @@ while true do
          ngx.update_time()
          local cost = (ngx.now() - start)
          cost = tonumber(string.format("%.3f", cost))
-         log(ERR,"scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
+         log(ERR,"timeby:"..timeby..",scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
                 .. ",scan:" .. tostring(scan_count)..",index:"..index..",cost:" .. cost)
         local elements = {}
      
@@ -141,7 +141,7 @@ while true do
             local resp, status = channel_dao:save_docs(channel_docs)
             local msg = cjson_safe.encode(channel_docs)
             local str_resp = cjson_safe.encode(resp)
-            log(ERR,"saveChannel:" .. msg..",resp:" .. str_resp .. ",status:" ..  tostring(status))
+            log(ERR,"timeby:"..timeby..",saveChannel.:" .. msg..",resp:" .. str_resp .. ",status:" ..  tostring(status))
         end
         scrollId = data["_scroll_id"]
      end
