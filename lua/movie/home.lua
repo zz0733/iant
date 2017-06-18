@@ -22,12 +22,9 @@ function buildHeader( )
 	return header;
 end
 
-function selectContents( hits )
-	local contents = {}
+function selectCodes( hits )
 	if not hits then
-		contents.hits = {}
-		contents.total = 0
-		return contents
+		return nil
 	end
 	function comp( left, right )
 		if not left.index then
@@ -55,12 +52,7 @@ function selectContents( hits )
 			end
 		end
 	end
-	local  fields = {"article","digests","lcount","issueds","evaluates","genres"}
-	local resp =  content_dao:query_by_ids(select_ids,fields);
-	if resp then
-		contents = resp.hits
-	end
-	return contents
+	return select_ids
 end
 function buildSearchWord( hits )
 	if not hits or #hits < 1 then
@@ -79,12 +71,32 @@ function buildSearchWord( hits )
 end
 local channel_ids = {"hotest"}
 local resp = channel_dao:query_by_ids(channel_ids)
-local contents = selectContents(resp.hits.hits)
+local select_ids = selectCodes(resp.hits.hits)
+local fields = {"article","digests","lcount","issueds","evaluates","genres"}
+local resp =  content_dao:query_by_ids(select_ids,fields);
+local contents = {}
+if resp then
+	contents = resp.hits
+else
+	contents.hits = {}
+	contents.total = 0
+end
 
 local movie_ids = {"movie;douban;recommend;201705;热门"}
 resp = channel_dao:query_by_ids(movie_ids)
-local playing_movie = selectContents(resp.hits.hits)
-log(ERR,"playing_movie.elements:" .. cjson_safe.encode(resp) )
+local movie_codes = selectCodes(resp.hits.hits)
+local from = 0
+local size = #movie_codes
+local resp  = content_dao:query_by_codes(from,size,movie_codes,fields);
+local playing_movie = {}
+if resp then
+	playing_movie = resp.hits
+else
+	playing_movie.hits = {}
+	playing_movie.total = 0
+end
+log(ERR,"playing_movie.elements:" .. cjson_safe.encode(playing_movie) )
+
 local content_doc = {}
 content_doc.header = buildHeader()
 content_doc.version = context.version()
