@@ -81,10 +81,15 @@ else
 	contents.hits = {}
 	contents.total = 0
 end
+local randomWord = buildSearchWord(resp.hits.hits)
 
-local movie_ids = {"movie;douban;recommend;201705;热门"}
-resp = channel_dao:query_by_ids(movie_ids)
-local movie_codes = selectCodes(resp.hits.hits)
+local v = { media = "movie", channel = "豆瓣高分" }
+local channel_fields = {"timeby","channel","media","total","elements"}
+local resp = channel_dao:query_lastest_by_channel(v.media, v.channel, channel_fields)
+local movie_codes = {}
+if resp and resp.hits then
+	movie_codes = selectCodes(resp.hits.hits)
+end
 local from = 0
 local size = #movie_codes
 local resp  = content_dao:query_by_codes(from,size,movie_codes,fields);
@@ -102,6 +107,6 @@ content_doc.header = buildHeader()
 content_doc.version = context.version()
 content_doc.hits  = contents
 content_doc.playing_movie = playing_movie
-content_doc.qWord  = buildSearchWord(resp.hits.hits)
+content_doc.qWord  = randomWord
 
 template.render("home.html", content_doc)
