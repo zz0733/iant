@@ -81,10 +81,10 @@ local channel_ids = {"hotest"}
 local resp = channel_dao:query_by_ids(channel_ids)
 local contents = selectContents(resp.hits.hits)
 
-channel_ids = {"movie;douban;recommend;201705;热门"}
-resp = channel_dao:query_by_ids(channel_ids)
+local movie_ids = {"movie;douban;recommend;201705;热门"}
+resp = channel_dao:query_by_ids(movie_ids)
 local playing_movie = selectContents(resp.hits.hits)
-
+log(ERR,"playing_movie.elements:" .. cjson_safe.encode(resp) )
 local content_doc = {}
 content_doc.header = buildHeader()
 content_doc.version = context.version()
