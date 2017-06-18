@@ -78,13 +78,18 @@ function buildSearchWord( hits )
 	end
 end
 local channel_ids = {"hotest"}
-local resp, status = channel_dao:query_by_ids(channel_ids)
+local resp = channel_dao:query_by_ids(channel_ids)
 local contents = selectContents(resp.hits.hits)
+
+channel_ids = {"movie;douban;recommend;201705;热门"}
+resp = channel_dao:query_by_ids(channel_ids)
+local playing_movie = selectContents(resp.hits.hits)
 
 local content_doc = {}
 content_doc.header = buildHeader()
 content_doc.version = context.version()
 content_doc.hits  = contents
+content_doc.playing_movie = playing_movie
 content_doc.qWord  = buildSearchWord(resp.hits.hits)
 
 template.render("home.html", content_doc)

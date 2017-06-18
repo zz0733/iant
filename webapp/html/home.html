@@ -59,7 +59,7 @@
                    <div class="item-inner">
                       <div class="lbox">
                         <a class="img-wrap" target="_blank" href="/movie/detail/{{v._id}}.html"> 
-                          <img alt="" src="{{str_img}}" /> 
+                          <img alt="{{article.title}}" src="{{str_img}}" /> 
                           {%if str_cost then%}
                           <i class="ftype video"> <span>{{str_cost}}</span> </i>
                           {%end%}
@@ -95,7 +95,65 @@
                %}
                 </ul>
               </div>
-              <div class="col-md-4"> </div>
+              <div class="col-md-4 msgbox"> 
+                <div class="playing-head"> 热播电影 </div>
+                <ul class="playing-list">
+                  {%
+                    local playing_movie = context.playing_movie.hits;
+                    for _,v in ipairs(playing_movie) do
+                        local source = v._source;
+                        local article = source.article;
+                        local genres = source.genres;
+                        local digests = source.digests;
+                        local evaluates = source.evaluates;
+                        local rate = 0
+                        local comment = 0
+                        if evaluates and evaluates[1] then
+                             rate = evaluates[1].rate
+                             comment = evaluates[1].comment
+                        end
+                        local str_cost
+                        if article.cost then
+                           local lcost = article.cost / 60
+                           str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+                        end
+                        local str_img
+                        if digests then
+                           for _,v in ipairs(digests) do
+                              if v.sort == 'img' then
+                                 str_img = v.content
+                                 str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                                 break
+                              end
+                           end
+                        end
+                        local lcount = source.lcount or 0
+                    %}
+                      <li>
+                      <div class="video-item">
+                        <a href="/movie/detail/{{v._id}}.html" target="_blank">
+                          <div class="video-pic">
+                            <img alt="{{article.title}}" src="{{str_img}}">
+                            <i class="ftype video"> <span>{{str_cost}}</span> </i>
+                          </div>
+                          
+                          <div class="video-txt"> 
+                              <h4>{{article.title}}</h4> 
+                              <p> 
+                               <span>{{lcount}}资源</span>
+                               <span>⋅{{comment}}评论</span> 
+                               <span>⋅{{rate}}评分</span>
+                              </p> 
+                          </div>
+                        </a>
+                      </div>
+                    </li>
+                    {%
+                    end
+                  %}
+                
+                </ul>
+              </div>
         </div>
       </div>
     </div>

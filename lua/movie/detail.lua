@@ -96,6 +96,5 @@ content_doc.config  = {
 	weibo_uid = context.weibo_uid,
 	weibo_app_key = context.weibo_app_key
 }
-
 template.render("detail.html", content_doc)
 
