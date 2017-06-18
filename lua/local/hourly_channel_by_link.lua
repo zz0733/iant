@@ -114,6 +114,10 @@ while true do
                     if (not tv.bury or tv.bury < 10) and not did_map[tv.id] then
                         local ele = {}
                         ele.code = tv.id
+                        ele.lid = v._id
+                        ele.score = tv.score
+                        ele.tscore = tv.tscore
+                        ele.dcount = #targets
                         ele.title = v._source.title
                         table.insert(elements,ele)
                         did_map[ele.code] = 1
