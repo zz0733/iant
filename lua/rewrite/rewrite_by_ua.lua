@@ -44,10 +44,16 @@ log(ERR,"uri:" .. uri .. ",ua:"..user_agent..",is_mobile:" .. tostring(is_mobile
 local target = uri
 if is_mobile and not string.match(uri,"^/m/") then
 	target = "/m" .. uri
+	if conditions then
+		
+	end
 elseif not is_mobile and string.match(uri,"^/m/") then
 	target = ngx.re.sub(uri,"^/m/","/")
 end
 if uri ~= target then
+	if ngx.var.QUERY_STRING then
+		target = target  .. "?" .. ngx.var.QUERY_STRING
+	end
 	-- log(ERR,"uri:" .. uri .. ",redirect:" .. target)
 	ngx.redirect(target,ngx.HTTP_MOVED_TEMPORARILY)
 end

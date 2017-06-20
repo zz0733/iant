@@ -134,6 +134,7 @@ while true do
             doc.source = source
             doc.channel = channel
             doc.elements = elements
+            doc.total = #elements
             doc._doc_cmd = 'update'
             local channel_docs = {}
             table.insert(channel_docs, doc)

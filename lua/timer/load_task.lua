@@ -13,7 +13,7 @@ local scrip_type_key = "scrip_types"
 local max_count = 20
 local task_index = "task"
 local task_type = "table"
-local task_level_size = {2,5,10}
+local task_level_size = {5,10,20}
 local check
 
 local importVersions = function ( task )
