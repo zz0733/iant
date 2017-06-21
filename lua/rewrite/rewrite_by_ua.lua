@@ -1,3 +1,4 @@
+local util_table = require "util.table"
 local log = ngx.log
 local ERR = ngx.ERR
 
@@ -17,6 +18,9 @@ end
 local user_agent = ngx.req.get_headers().user_agent
 if not user_agent then
 	return
+end
+if util_table.is_table(user_agent) then
+	user_agent = tostring(user_agent[1])
 end
 user_agent = string.lower(user_agent)
 
