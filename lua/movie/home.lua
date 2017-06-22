@@ -27,13 +27,9 @@ function selectCodes( hits )
 		return nil
 	end
 	function comp( left, right )
-		if not left.index then
-			return true
-		end
-		if not right.index then
-			return false
-		end
-		return left.index < right.index
+		local lnum = left.index or left.ticket_rate_tf or 0
+		local rnum = right.index or right.ticket_rate_tf or 0
+		return lnum < rnum
 	end
 	local select_ids = {}
 	local max_select = 30
