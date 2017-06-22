@@ -16,6 +16,9 @@ local CRIT = ngx.CRIT
 local args = ngx.req.get_uri_args()
 
 local qWord = args.q
+if not qWord then
+	return ngx.exit(ngx.HTTP_NOT_FOUND)
+end
 -- log(ERR,"qWord:" .. cjson_safe.encode(args))
 local hits = {}
 if qWord then

@@ -58,7 +58,7 @@ function _M:query_by_title( from, size, title,fields )
 	  from = from,
 	  size = size,
 	  _source = fields,
-	  sort = {_score = { order = "desc"}, },
+	  sort = {_score = { order = "desc"}, ["article.year"] = { order = "desc"}},
 	  query = {
 	    match = {
 	      ["article.title"] = title
