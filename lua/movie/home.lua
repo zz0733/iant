@@ -83,7 +83,7 @@ else
 end
 local randomWord = buildSearchWord(resp.hits.hits)
 
-local v = { media = "movie", channel = "豆瓣高分" }
+local v = { media = "movie", channel = "正在热播" }
 local channel_fields = {"timeby","channel","media","total","elements"}
 local resp = channel_dao:query_lastest_by_channel(v.media, v.channel, channel_fields)
 local movie_codes = {}
