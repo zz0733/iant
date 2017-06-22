@@ -27,13 +27,9 @@ function selectCodes( hits )
 		return nil
 	end
 	function comp( left, right )
-		if not left.index then
-			return true
-		end
-		if not right.index then
-			return false
-		end
-		return left.index < right.index
+		local lnum = left.index or left.ticket_rate_tf or 0
+		local rnum = right.index or right.ticket_rate_tf or 0
+		return lnum < rnum
 	end
 	local select_ids = {}
 	local max_select = 30
@@ -83,7 +79,7 @@ else
 end
 local randomWord = buildSearchWord(resp.hits.hits)
 
-local v = { media = "movie", channel = "豆瓣高分" }
+local v = { media = "movie", channel = "正在热播" }
 local channel_fields = {"timeby","channel","media","total","elements"}
 local resp = channel_dao:query_lastest_by_channel(v.media, v.channel, channel_fields)
 local movie_codes = {}
