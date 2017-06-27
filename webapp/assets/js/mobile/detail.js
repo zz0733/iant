@@ -116,15 +116,14 @@ $document.ready(function() {
 		// });
 		
 		var $curPage = $("#curPage");
+		var did = $('#did').val()
+		var title = $('#title').val()
 		function loadLinkPage() {
 			var moreCls = $linkmore.attr("class")
-		    console.info("moreCls:"+moreCls);
 		    if ("link-more" != moreCls) {
 			    return false;
 		    }
-			var did = $('#did').val()
-			var title = $('#title').val()
-			var curPage = $('#curPage').val();
+			var curPage = $curPage.val();
 			if (curPage) {
 				curPage = parseInt(curPage)
 			} else {
@@ -134,13 +133,13 @@ $document.ready(function() {
 			title = encodeURI(title)
 			var sBase = window.location.origin;
 			var sUrl = sBase+"/api/movie/link.json?method=next_links";
-			console.log('sUrl:'+sUrl)
+			console.log('sUrl:'+sUrl+",page:"+nextPage)
 			return $.getJSON(sUrl, {
 				'did' : did,
 				'title' : title,
 				'page' : nextPage
 			}, function(result) {
-			   console.log('result:'+JSON.stringify(result))
+			   // console.log('result:'+JSON.stringify(result))
 			   if(result && result.data ) {
 			   	   var data = result.data;
 			   	   var hits = data.hits;
@@ -246,19 +245,19 @@ $document.ready(function() {
 						}
 		   	       }
 		   	       if(!data.hasMore) {
-                      // $linkmore.attr('class','link-no-more')
+                      $linkmore.attr('class','link-no-more')
 		   	       }
                    return data.hasMore;
 			   }
 			});
 		}
 	    $(window).scroll(function(){
-	    　　var $this = $(this),
-	            scrollTop = $this.scrollTop(),
-	            scrollHeight = $document.height(),
-	            windowHeight = $this.height();
-	    　　if(scrollTop + windowHeight >= scrollHeight){
-			    console.info("jquery实现滚动条到底部判断了");
+	    　　var $this = $(this);
+		   var scrollHeight = $document.height()
+	       var scrollTop = $this.scrollTop();
+	       var windowHeight = $this.height();
+	       var per = (scrollTop + windowHeight) / scrollHeight
+	    　　if(per >= 0.9){
 			    loadLinkPage();
 	    　　}
 	    });
