@@ -91,229 +91,6 @@ a.login-btn {
 	}
 }
 
-/* MovieDetail */
-.alert.share-copyright {
-	padding: 10px 10px;
-}
-.movie-title-margin {
-	margin-top: 0px;
-	margin-bottom: 0px;
-}
-
-.tag-info {
-	overflow: hidden;
-	white-space: nowrap;
-}
-
-.movie-img {
-	width: 210px;
-	height: 270px;
-}
-
-div.detail-img-box {
-	padding-right: 0px;
-}
-
-@media ( max-width : 375px) {
-	div.detail-img-box {
-		padding-right: 15px;
-		padding-left: 15px;
-		width: 100%;
-		float: left;
-	}
-	div.detail-tag-box {
-		padding-right: 15px;
-		padding-left: 15px;
-		width: 100%;
-		float: left;
-	}
-	.movie-img {
-		width: 100%;
-		height: 100%;
-	}
-}
-/* MovieDetail-story */
-.story-header {
-	padding-left: 10px;
-}
-
-.story {
-	border-radius: 4px 4px 4px 4px;
-	border: 1px solid #CCC;
-}
-
-.story-body {
-	padding: 8px 6px;
-	border-radius: 0px 0px 4px 4px;
-	border-top: 1px solid #CCC;
-	color: #333;
-	background-color: #f5f5f5;
-	text-indent: 2em;
-}
-/* MovieDetail-share */
-.top-margin {
-	margin-top: 10px;
-}
-
-
-.cer-box {
-	white-space: nowrap;
-	text-align: center;
-	background-color: #f1e0ac;
-	padding: 2%;
-	padding-left: 0px;
-	border-radius: 6px;
-	background-color: #f1e0ac;
-}
-
-.cer-normal {
-	padding-left: 10px;
-}
-
-a.noline {
-	text-decoration: none;
-}
-
-span.cer-uhd:before {
-	content: "超清";
-	display: inline-block;
-	min-width: 10px;
-	padding: 3px 7px;
-	font-size: 12px;
-	font-weight: bold;
-	line-height: 1;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: baseline;
-	border-radius: 10px;
-	float: right;
-	color: #fbf6c0;
-	background-color: #eb260f;
-}
-
-span.cer-hd:before {
-	content: "高清";
-	display: inline-block;
-	min-width: 10px;
-	padding: 3px 7px;
-	font-size: 12px;
-	font-weight: bold;
-	line-height: 1;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: baseline;
-	border-radius: 10px;
-	float: right;
-	color: #fbf6c0;
-	background-color: #e0741a;
-}
-
-span.cer-sd:before {
-	content: "标清";
-	display: inline-block;
-	min-width: 10px;
-	padding: 3px 7px;
-	font-size: 12px;
-	font-weight: bold;
-	line-height: 1;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: baseline;
-	border-radius: 10px;
-	float: right;
-	color: #fbf6c0;
-	background-color: #4caf50;
-}
-
-span.cer-bd:before {
-	content: "枪版";
-	display: inline-block;
-	min-width: 10px;
-	padding: 3px 7px;
-	font-size: 12px;
-	font-weight: bold;
-	line-height: 1;
-	text-align: center;
-	white-space: nowrap;
-	vertical-align: baseline;
-	border-radius: 10px;
-	float: right;
-	color: #fbf6c0;
-	background-color: #9E9E9E;
-}
-
-.find-btn {
-	padding-left: 12px;
-	padding-right: 12px;
-	border-radius: 10px;
-}
-/* MovieHome */
-.feedBox > .feed-ul {
-	padding-left: 10px;
-	padding-right: 10px;
-}
-/* MovieHot */
-.newly-title {
-	margin-top: 0px;
-	margin-bottom: 0px;
-	text-align: center;
-	padding: 5px;
-}
-
-.newly-title h4 {
-	color: #06A8E9;
-	font-weight: bold;
-}
-
-.time-right {
-	float: right;
-}
-
-.newly-group {
-	line-height: 25px;
-}
-
-.newly-group .badge {
-	float: none;
-}
-
-.newly-group .list-group-item {
-	padding: 8px 5px;
-}
-
-.movie-list-box {
-	float: left;
-	padding-left: 2px;
-	padding-right: 2px;
-}
-
-.list-img {
-	width: 128px;
-	height: 180px;
-}
-
-@media ( max-width : 320px) {
-	.list-img {
-		width: 140px;
-		height: 200px;
-	}
-}
-
-@media ( min-width : 321px) and ( max-width : 400px) {
-	.list-img {
-		width: 165px;
-		height: 210px;
-	}
-}
-
-.name-box {
-	padding-bottom: 6px;
-	padding-top: 4px;
-	text-align: center;
-	text-overflow: ellipsis;
-	overflow: hidden;
-	white-space: nowrap;
-}
 /* footer */
 .footer-box {
 	padding: 5px;
@@ -333,78 +110,9 @@ span.cer-bd:before {
 	color: #999999;
 	font-size: 9px;
 }
-/* MovieGenre */
-div.list-img-box {
-	padding-right: 0px;
-}
 
-div.list-tag-box {
-	padding-right: 0px;
-}
+/*detail**/
 
-@media ( max-width : 375px) {
-	div.list-img-box {
-		padding-right: 15px;
-		padding-left: 15px;
-		width: 100%;
-		float: left;
-	}
-	div.list-tag-box {
-		padding-right: 15px;
-		padding-left: 15px;
-		width: 100%;
-		float: left;
-	}
-}
-
-/*MovieSearch**/
-.suggest-text {
-	color: red;
-	font-weight: bold;
-}
-
-.link-group-left {
-	padding-right: 5px;
-}
-
-.link-group-right {
-	padding-left: 5px;
-}
-
-li.link-box >.left-badge {
-    float: left;
-    margin-right: 10px;
-}
-
-.recmd-box .recmd-badge {
-	float: left;
-    margin-right: 10px;
-}
-.recmd-box .recmd-title {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    display: block;
-}
-
-.target-btn {
-    background-color: #439CF3;
-    color: #FFF;
-    float: right;
-    padding: 6px 12px;
-    line-height: 1;
-    vertical-align: middle;
-    text-align: center;
-}
-a.link-title {
-    margin-left: 20px;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    width: 70%;
-    display: block;
-    float: left;
-}
 .icon,.icon01, .icon10, .icon12, .icon20, .icon22, .icon30, .icon32, .icon40, .icon42, .icon50, .icon52, .icon60, .icon61, .icon62, .icon70, .icon72, .x6{ 
 	background-image: url(../../img/file-icon.gif); 
 	background-repeat: no-repeat;  
@@ -748,7 +456,19 @@ a.lbtn-tag:hover {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+    word-break:break-all;
+    word-wrap: break-word;
     max-height: 72px;
     width: 100%;
     text-align: left;
+}
+
+.link-title:hover {
+    color: #406599;
+    text-decoration: none;
+}
+
+.link-title:visited {
+    color: #999;
+    text-decoration: none;
 }

@@ -104,4 +104,15 @@ function tb:test_4incr_bury()
   end
 end
 
+function tb:test_5bulk_docs()
+  local str_doc = '[{"link":"1nuAjYy9","source":"bdp-link-convert","id":"b1151853711","status":0,"_doc_cmd":"update"}]'
+  local docs = cjson_safe.decode(str_doc)
+  local resp,status = link_dao:bulk_docs(docs)
+  local str_resp = cjson_safe.encode(resp)
+  self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
+  if not resp then
+    error("error:" .. tostring(status))
+  end
+end
+
 tb:run()
