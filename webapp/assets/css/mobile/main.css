@@ -91,6 +91,12 @@ a.login-btn {
 	}
 }
 
+/*home*/
+.feedBox > .feed-ul {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 /* footer */
 .footer-box {
 	padding: 5px;
@@ -110,8 +116,6 @@ a.login-btn {
 	color: #999999;
 	font-size: 9px;
 }
-
-/*detail**/
 
 .icon,.icon01, .icon10, .icon12, .icon20, .icon22, .icon30, .icon32, .icon40, .icon42, .icon50, .icon52, .icon60, .icon61, .icon62, .icon70, .icon72, .x6{ 
 	background-image: url(../../img/file-icon.gif); 
@@ -326,20 +330,25 @@ a.lbtn-tag:hover {
 	padding-top: 10px; 
     padding-bottom: 10px;
 }
-.tag-name {
+a.tag-name {
     display: inline;
     padding: .3em .6em .3em;
     font-size: 14px;
     line-height: 1;
-    color: #555;
+    color: #4588c1;
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
     border-radius: .25em;
     background-color: #ddd;
     margin-right: 4px;
+    text-decoration: none;
 }
 
+a.tag-name:hover {
+	text-decoration: none;
+	cursor:pointer
+}
 
 .link-box {
     margin-bottom: 10px;
@@ -465,10 +474,5 @@ a.lbtn-tag:hover {
 
 .link-title:hover {
     color: #406599;
-    text-decoration: none;
-}
-
-.link-title:visited {
-    color: #999;
     text-decoration: none;
 }
