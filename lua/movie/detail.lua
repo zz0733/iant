@@ -46,7 +46,7 @@ local source = content_doc._source
 local ids = {}
 table.insert(ids,"hotest")
 local resp,status = channel_dao:query_by_ids(ids)
-log(ERR,"query_by_ids:" .. cjson_safe.encode(resp) )
+-- log(ERR,"query_by_ids:" .. cjson_safe.encode(resp) )
 local recmd_map = {}
 if resp and resp.hits.hits[1] then
 	local channel_doc = resp.hits.hits[1]

@@ -71,12 +71,12 @@ if resp and resp.hits then
 		end
 	end
 end
-log(ERR,"query_by_target_title:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
+-- log(ERR,"query_by_target_title:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
 
 local ids = {}
 table.insert(ids,"hotest")
 local resp,status = channel_dao:query_by_ids(ids)
-log(ERR,"query_by_ids:" .. cjson_safe.encode(resp) )
+-- log(ERR,"query_by_ids:" .. cjson_safe.encode(resp) )
 local recmd_map = {}
 if resp and resp.hits.hits[1] then
 	local channel_doc = resp.hits.hits[1]

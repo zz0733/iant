@@ -37,7 +37,7 @@ function selectCodes( hits )
 		local elements = hv._source.elements
 		if elements then
 			table.sort(elements, comp)
-			log(ERR,"sort.elements:" .. cjson_safe.encode(elements) )
+			-- log(ERR,"sort.elements:" .. cjson_safe.encode(elements) )
 			for _,v in ipairs(elements) do
 				if v.code then
 					table.insert(select_ids, v.code)
@@ -96,7 +96,7 @@ else
 	playing_movie.hits = {}
 	playing_movie.total = 0
 end
-log(ERR,"playing_movie.elements:" .. cjson_safe.encode(playing_movie) )
+-- log(ERR,"playing_movie.elements:" .. cjson_safe.encode(playing_movie) )
 
 local content_doc = {}
 content_doc.header = buildHeader()

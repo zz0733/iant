@@ -44,7 +44,7 @@ function selectContents( hits )
 		local elements = hv._source.elements
 		if elements then
 			table.sort(elements, comp)
-			log(ERR,"sort.elements:" .. cjson_safe.encode(elements) )
+			-- log(ERR,"sort.elements:" .. cjson_safe.encode(elements) )
 			for _,v in ipairs(elements) do
 				if v.code then
 					table.insert(select_ids, v.code)
