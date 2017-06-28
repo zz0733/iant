@@ -117,7 +117,7 @@ end
 
 function tb:test_5query_by_targetid_source()
   local target_id = "026167904";
-  local source =  "bdp-*"
+  local source =  "bdp-.*"
   local fields =  {"link"}
   local resp,status = link_dao:query_by_targetid_source(target_id,source,0,100,fields)
   local str_resp = cjson_safe.encode(resp)
