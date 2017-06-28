@@ -200,13 +200,8 @@ function _M:query_by_targetid_source(target_id, source_reg, from , size, fields 
   if not target_id or not source_reg then
   	return nil,400
   end
-  local  body = {
-    from = from,
-    size = size,
-    _source = fields,
-    query = {
-      bool = {
-        must = {
+  local must_arr = {}
+    table.insert(must_arr,{
 		   nested = {
 		        path = "targets",
 		         query ={
@@ -215,13 +210,25 @@ function _M:query_by_targetid_source(target_id, source_reg, from , size, fields 
 		           }
 		         }
 		      }
-	    },
-	    must = {
-            match = { status = 1 }
-        },
-        must = {
-            regexp = { source = source_reg }
-        }
+	})
+    table.insert(must_arr,{
+	           match = { 
+	              status = 1
+	           }
+    })
+    table.insert(must_arr,{
+	           regexp = { 
+	              source = { value = source_reg}
+	           }
+    })
+  log(ERR,"query_by_targetid_source.resp:" ..  tostring(target_id) ..",source_reg:"..source_reg..",from:"..from..",size:"..size..cjson_safe.encode(fields))
+  local  body = {
+    from = from,
+    size = size,
+    _source = fields,
+    query = {
+      bool = {
+        must = must_arr
 	  }
     }
   }

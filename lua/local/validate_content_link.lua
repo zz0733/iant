@@ -84,7 +84,9 @@ while true do
              local target_id = v._id
              local from = 0
              local size = 10000
-             local data = link_dao:query_by_targetid_source(target_id,source_reg,from, size, name,content_fields)
+             local data = link_dao:query_by_targetid_source(target_id,source_reg,from, size,content_fields)
+              local shits = cjson_safe.encode(data)
+                 log(ERR,"datalink-hits:" .. shits)
              if data and data.hits and data.hits.total > 0 then
                  local hits = data.hits.hits;
                  local shits = cjson_safe.encode(hits)
