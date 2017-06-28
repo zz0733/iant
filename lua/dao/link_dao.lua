@@ -192,7 +192,39 @@ function _M:query_by_target_title( target_id,title , from , size, fields )
 	  }
     }
   }
-  log(ERR,"query_by_target_title.resp:" ..  cjson_safe.encode(body) )
+  -- log(ERR,"query_by_target_title.resp:" ..  cjson_safe.encode(body) )
+  return _M:search(body)
+end
+
+function _M:query_by_targetid_source(target_id, source_reg, from , size, fields )
+  if not target_id or not source_reg then
+  	return nil,400
+  end
+  local  body = {
+    from = from,
+    size = size,
+    _source = fields,
+    query = {
+      bool = {
+        must = {
+		   nested = {
+		        path = "targets",
+		         query ={
+		           match = { 
+		              ["targets.id"] = target_id
+		           }
+		         }
+		      }
+	    },
+	    must = {
+            match = { status = 1 }
+        },
+        must = {
+            regexp = { source = source_reg }
+        }
+	  }
+    }
+  }
   return _M:search(body)
 end
 

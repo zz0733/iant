@@ -27,7 +27,7 @@ local body_json = cjson_safe.decode(data)
 
 
 if 'insert' == method  then
-	local resp, status = task_dao.insert_tasks(es_index, es_type , body_json )
+	local resp, status = task_dao:insert_tasks( body_json )
 	local message = {}
     message.data = resp
     message.code = 200
@@ -135,7 +135,7 @@ elseif 'nexts' == method then
 
       end
     end
-    local resp, status = task_dao.insert_tasks(es_index, es_type , task_array )
+    local resp, status = task_dao:insert_tasks(task_array )
     local message = {}
     message.data = resp
     message.code = 200

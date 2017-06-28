@@ -15,12 +15,6 @@ local CRIT = ngx.CRIT
 local _M = ESClient:new({index="task",type="table"})
 -- _M._VERSION = '0.01'
 
-function _M.check_insert_tasks(index, type, tasks ) 
-	if not tasks or not util_table.is_array(tasks) then
-		return false
-	end
-	return true
-end
 
 function utcformat()
 	-- local now_time = ngx.now()
@@ -37,17 +31,12 @@ function utcformat()
 	return new_time
 end
 
-function _M.insert_tasks(index, type, tasks )
-	if not _M.check_insert_tasks(index, type, tasks ) then
-		return
+
+function _M:insert_tasks(tasks )
+	if not tasks then
+	    return nil, 400
 	end
-	local es_body = {}
-	for k,v in ipairs(tasks) do
-		es_body[#es_body + 1] = {
-	      index = {
-	        ["_type"] = type
-	      }
-	    }
+	for _,v in ipairs(tasks) do
 	    if v.params and util_table.is_table(v.params) then
 	    	v.params = cjson_safe.encode(v.params)
 	    end
@@ -57,14 +46,11 @@ function _M.insert_tasks(index, type, tasks )
 	    if not v.utime then
 	    	v.utime = ngx.time()
 	    end
-	    es_body[#es_body + 1] = v
 	end
-
-	local resp, status = _M:bulk(es_body)
-	return resp, status
+    return self:create_docs( tasks )
 end
 
-function _M.load_by_level_status( from, size, level, types )
+function _M:load_by_level_status( from, size, level, types )
 	local body = {
 	    from = from,
 	    size = size,

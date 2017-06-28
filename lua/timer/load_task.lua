@@ -70,7 +70,7 @@ end
                  level = i -1
                  limit = task_level_size[i]
                  local start = ngx.now()
-                 local resp,status = task_dao.load_by_level_status(from,limit, level, script_types)
+                 local resp,status = task_dao:load_by_level_status(from,limit, level, script_types)
                  ngx.update_time()
                  local cost = (ngx.now() - start)
                  cost = tonumber(string.format("%.3f", cost))
