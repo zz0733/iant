@@ -200,6 +200,7 @@ function _M:query_by_targetid_source(target_id, source_reg, from , size, fields 
   if not target_id or not source_reg then
   	return nil,400
   end
+  target_id = tostring(target_id)
   local must_arr = {}
     table.insert(must_arr,{
 		   nested = {

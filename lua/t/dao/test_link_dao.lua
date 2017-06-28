@@ -91,23 +91,35 @@ end
 --   end
 -- end
 
-function tb:test_4incr_bury()
-  local id = "b506913785"
-  local target_id = "256406810"
-  local bury = 1
-  local digg = 2
-  local resp,status = link_dao:incr_bury_digg(id, target_id, bury, digg)
-  local str_resp = cjson_safe.encode(resp)
-  self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
-  if not resp then
-    error("error:" .. tostring(status))
-  end
-end
+-- function tb:test_4incr_bury()
+--   local id = "b506913785"
+--   local target_id = "256406810"
+--   local bury = 1
+--   local digg = 2
+--   local resp,status = link_dao:incr_bury_digg(id, target_id, bury, digg)
+--   local str_resp = cjson_safe.encode(resp)
+--   self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
+--   if not resp then
+--     error("error:" .. tostring(status))
+--   end
+-- end
 
-function tb:test_5bulk_docs()
-  local str_doc = '[{"link":"1nuAjYy9","source":"bdp-link-convert","id":"b1151853711","status":0,"_doc_cmd":"update"}]'
-  local docs = cjson_safe.decode(str_doc)
-  local resp,status = link_dao:bulk_docs(docs)
+-- function tb:test_5bulk_docs()
+--   local str_doc = '[{"link":"1nuAjYy9","source":"bdp-link-convert","id":"b1151853711","status":0,"_doc_cmd":"update"}]'
+--   local docs = cjson_safe.decode(str_doc)
+--   local resp,status = link_dao:bulk_docs(docs)
+--   local str_resp = cjson_safe.encode(resp)
+--   self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
+--   if not resp then
+--     error("error:" .. tostring(status))
+--   end
+-- end
+
+function tb:test_5query_by_targetid_source()
+  local target_id = "026167904";
+  local source =  "bdp-*"
+  local fields =  {"link"}
+  local resp,status = link_dao:query_by_targetid_source(target_id,source,0,100,fields)
   local str_resp = cjson_safe.encode(resp)
   self:log("str_resp:" .. tostring(str_resp) .. ",status:" .. tostring(status))
   if not resp then

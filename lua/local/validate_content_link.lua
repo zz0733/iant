@@ -34,7 +34,7 @@ local sourceClient = client_utils.client()
 local sourceIndex = "content";
 local scroll = "1m";
 local scanParams = {};
-local source_reg = "bdp-.*";
+local source_reg = "bdp-*";
 scanParams.index = sourceIndex
 scanParams.scroll = scroll
 -- scanParams.sort = {"_doc"}
@@ -84,13 +84,11 @@ while true do
              local target_id = v._id
              local from = 0
              local size = 10000
-             local data = link_dao:query_by_targetid_source(target_id,source_reg,from, size,content_fields)
-              local shits = cjson_safe.encode(data)
-                 log(ERR,"datalink-hits:" .. shits)
-             if data and data.hits and data.hits.total > 0 then
-                 local hits = data.hits.hits;
+             local lresp = link_dao:query_by_targetid_source(target_id,source_reg,from, size,content_fields)
+             if lresp and lresp.hits and lresp.hits.total > 0 then
+                 local hits = lresp.hits.hits;
                  local shits = cjson_safe.encode(hits)
-                 log(ERR,"link-hits:" .. shits)
+                 -- log(ERR,"link-hits:" .. shits)
                  for _,lv in ipairs(hits) do
                     local str_url = lv._source.link
                     if not string.match(str_url, "^http") then
@@ -101,7 +99,7 @@ while true do
                     task.url = str_url
                     task.level = 0
                     task.status = 0
-                    task.params = {tid = target_id,lid = lv._id}
+                    task.params = {tid = target_id,lid = lv._id, retry = { total = 5 } }
                     table.insert(task_docs, task)
                     task_count = task_count + 1
                  end

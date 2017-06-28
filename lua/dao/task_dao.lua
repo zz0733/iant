@@ -47,7 +47,7 @@ function _M:insert_tasks(tasks )
 	    	v.utime = ngx.time()
 	    end
 	end
-    return self:create_docs( tasks )
+    return self:index_docs( tasks )
 end
 
 function _M:load_by_level_status( from, size, level, types )
