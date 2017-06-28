@@ -222,7 +222,7 @@ function _M:query_by_targetid_source(target_id, source_reg, from , size, fields 
 	              source = { value = source_reg}
 	           }
     })
-  log(ERR,"query_by_targetid_source.resp:" ..  tostring(target_id) ..",source_reg:"..source_reg..",from:"..from..",size:"..size..cjson_safe.encode(fields))
+  -- log(ERR,"query_by_targetid_source.resp:" ..  tostring(target_id) ..",source_reg:"..source_reg..",from:"..from..",size:"..size..cjson_safe.encode(fields))
   local  body = {
     from = from,
     size = size,

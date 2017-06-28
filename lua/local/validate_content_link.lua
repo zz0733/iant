@@ -64,7 +64,7 @@ while true do
      if data == nil or not data["_scroll_id"] or #data["hits"]["hits"] == 0 then
         local cost = (ngx.now() - begin)
          cost = tonumber(string.format("%.3f", cost))
-        log(ERR, "done.validate,index:"..index..",scan:"..scan_count..",total:" .. tostring(total) .. ",cost:" .. cost)
+        log(ERR, "done.validate,index:"..index..",scan:"..scan_count..",total:" .. tostring(total) .. ",task:"..task_count..",cost:" .. cost)
         message.data = {cost = cost,index = index, scan = scan_count, total = total,task = task_count}
         break
      else
