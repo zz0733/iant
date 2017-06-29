@@ -224,7 +224,7 @@ $document.ready(function() {
 				            if(update_time) {
 					            var updateDate = new Date(update_time * 1000)
 					            var mm = updateDate.getMonth() + 1;
-					            var dd = updateDate.getMonth() + 1;
+					            var dd = updateDate.getDate();
 					            mm = mm < 10 ? '0' + mm : mm;
 					            dd = dd < 10 ? '0' + dd : dd;
 					            str_time = mm + '-' + dd
