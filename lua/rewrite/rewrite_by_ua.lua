@@ -15,6 +15,9 @@ end
 if string.match(uri, "^/snap/") then
 	return
 end
+if string.match(uri, "^/auth/") then
+	return
+end
 local user_agent = ngx.req.get_headers().user_agent
 if not user_agent then
 	return

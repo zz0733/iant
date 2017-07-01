@@ -172,7 +172,7 @@ exit 0
 {
   
   "query": {
-    "match": {"article.code":"23761370"}
+    "match": {"article.year":"2017"}
   },
   
   "from": 0,
@@ -180,14 +180,14 @@ exit 0
 }
  '
 exit 0
-curl -XPOST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+curl -XPOST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   
   "query": {
     "nested":{
-      "path" : "issueds",
+      "path" : "targets",
       "query":{
-        "match": {"issueds.region":"北京"}
+        "match": {"targets.id":"25580021"}
       }
     }
     
@@ -316,14 +316,32 @@ curl -X GET 'http://127.0.0.1:9200/task/table/_search?pretty' -d '
 }
 '
 
-curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   "from": 0,
-  "size": 1,
+  "size": 20,
+  "sort": {
+    "issueds.time": {
+      "order": "desc",
+      "mode": "max",
+      "nested_path": "issueds"
+    }
+  },
   "query": {
-      "match": {
-        "title":"不设限通缉"
+    "bool": {
+      "must": {
+        "nested": {
+          "path": "issueds",
+          "query": {
+            "range": {
+              "issueds.time": {
+                "lt": 1498838059
+              }
+            }
+          }
+        }
       }
+    }
   }
 }
 '

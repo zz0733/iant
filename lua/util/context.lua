@@ -8,11 +8,17 @@ local key_version = "app_verion"
 _M.jiathis_uid = "2129651"
 _M.weibo_app_key = "942886765"
 _M.weibo_uid = "1766676277"
+
+
 _M.search_page_size = 30
 _M.search_max_page = 100
-
 _M.link_page_size = 10
 _M.link_max_page = 100
+
+_M.AUTH_WX_MSG_KEY = os.getenv("AUTH_WX_MSG_KEY")
+_M.AUTH_WX_MSG_TOKEN = os.getenv("AUTH_WX_MSG_TOKEN")
+
+_M.SNAP_ENV = os.getenv("SNAP_ENV")
 function _M.version(new_ver)
     if new_ver then
         shared_dict:set(key_version,new_ver) 
