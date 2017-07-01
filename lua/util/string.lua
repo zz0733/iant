@@ -26,3 +26,18 @@ string.decodeURI = function(s)
     s = string.gsub(s, '%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
     return s
 end
+
+string.random = function(length)
+    -- A-Z,065-090
+    -- a-z,097-122
+    -- 0-9,048-057
+    math.randomseed(ngx.time())  
+    local base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    local len = string.len(base)
+    local str = "";
+    for i = 1, length do
+        local index = math.random(1, len)
+        str = str..string.sub(base,index,index);
+    end
+    return str;
+end

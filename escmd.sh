@@ -329,18 +329,28 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
   },
   "query": {
     "bool": {
-      "must": {
-        "nested": {
-          "path": "issueds",
-          "query": {
-            "range": {
-              "issueds.time": {
-                "lt": 1498838059
+      "must": [
+        {
+          "nested": {
+            "path": "issueds",
+            "query": {
+              "range": {
+                "issueds.time": {
+                  "lt": 1498922178,
+                  "gt": 1496246059
+                }
               }
             }
           }
+        },
+        {
+          "range": {
+            "ctime": {
+              "gt": 1498665259
+            }
+          }
         }
-      }
+      ]
     }
   }
 }

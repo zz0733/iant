@@ -2,7 +2,6 @@ local wxcrypt = require "util.wxcrypt"
 
 local log = ngx.log
 local ERR = ngx.ERR
-local CRIT = ngx.CRIT
 
 local args = ngx.req.get_uri_args()
 

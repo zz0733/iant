@@ -22,5 +22,13 @@ function _M.sub(array, offset, limit )
     return sub_arr
 end
 
+function _M.byte2string(bytes)
+  local s = ""
+  for _,v in ipairs(bytes) do
+      s = s .. string.char(v)
+  end
+  return s
+end
+
 
 return _M
