@@ -11,9 +11,11 @@ local ERR = ngx.ERR
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 
+local ngx_re_sub = ngx.re.sub;
+
 if req_method == "POST" then
 	local post_body = util_request.post_body(ngx.req)
-	-- post_body = '<xml><ToUserName><![CDATA[gh_d660614a423d]]></ToUserName> <FromUserName><![CDATA[od2SawOfo7zAFcs4Q7TBGjS0CQqs]]></FromUserName> <CreateTime>1498965223</CreateTime> <MsgType><![CDATA[text]]></MsgType> <Content><![CDATA[天才]]></Content> <MsgId>6438006611051384335</MsgId> </xml>'
+	post_body = '<xml><ToUserName><![CDATA[gh_d660614a423d]]></ToUserName> <FromUserName><![CDATA[od2SawOfo7zAFcs4Q7TBGjS0CQqs]]></FromUserName> <CreateTime>1498965223</CreateTime> <MsgType><![CDATA[text]]></MsgType> <Content><![CDATA[天才]]></Content> <MsgId>6438006611051384335</MsgId> </xml>'
 	log(ERR,"post_body:",post_body)
 	local decrypt_body = wxcrypt.decrypt(post_body)
 	log(ERR,"decrypt_body:",decrypt_body)
@@ -42,6 +44,8 @@ if req_method == "POST" then
 				msg = msg .. source.title
 				if string.match(v._id,"^b") and not string.match(link,"^http")  then
 					link = "https://pan.baidu.com/s/" .. link;
+				else
+					link = string.encodeURI(link)
 				end
 				msg = msg .. "\n" .. link
 				if source.secret then
@@ -61,11 +65,10 @@ if req_method == "POST" then
 	log(ERR,"msgid:",msgid)
 	log(ERR,"content:",content)
 	local xml_msg = xml_template;
-	xml_msg = string.gsub(xml_msg, "{fromUser}", to_user);
-	xml_msg = string.gsub(xml_msg, "{toUser}", from_user);
-	xml_msg = string.gsub(xml_msg, "{createTime}", ngx.time());
-	xml_msg = string.gsub(xml_msg, "{content}", msg_content);
-	log(ERR,"msg_content:",msg_content)
+	xml_msg = ngx_re_sub(xml_msg, "{fromUser}", to_user);
+	xml_msg = ngx_re_sub(xml_msg, "{toUser}", from_user);
+	xml_msg = ngx_re_sub(xml_msg, "{createTime}", ngx.time());
+	xml_msg = ngx_re_sub(xml_msg, "{content}", msg_content);
 	log(ERR,"xml_msg:",xml_msg)
 	ngx.say(xml_msg)
 	ngx.flush()

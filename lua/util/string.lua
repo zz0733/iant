@@ -17,14 +17,22 @@ string.encodeURI = function(s)
     return string.gsub(s, " ", "+")
 end
 
-string.encodeURI = function(s)
-    s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
-    return string.gsub(s, " ", "+")
+-- Encodes a character as a percent encoded string
+local function char_to_pchar(c)
+    return string.format("%%%02X", c:byte(1,1))
 end
 
-string.decodeURI = function(s)
-    s = string.gsub(s, '%%(%x%x)', function(h) return string.char(tonumber(h, 16)) end)
-    return s
+-- encodeURI replaces all characters except the following with the appropriate UTF-8 escape sequences:
+-- ; , / ? : @ & = + $
+-- alphabetic, decimal digits, - _ . ! ~ * ' ( )
+-- #
+string.encodeURI = function (str)
+    return (str:gsub("[^%;%,%/%?%:%@%&%=%+%$%w%-%_%.%!%~%*%'%(%)%#]", char_to_pchar))
+end
+
+-- encodeURIComponent escapes all characters except the following: alphabetic, decimal digits, - _ . ! ~ * ' ( )
+string.encodeURIComponent = function(str)
+    return (str:gsub("[^%w%-_%.%!%~%*%'%(%)]", char_to_pchar))
 end
 
 string.random = function(length)
