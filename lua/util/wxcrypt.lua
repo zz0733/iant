@@ -41,7 +41,7 @@ function _M.encode(text)
         amount_to_pad = 0
     end
     -- 获得补位所用的字符
-    log(ERR,"amount_to_pad:",amount_to_pad)
+    log(ERR,"amount_to_pad:"..amount_to_pad..",text_length:" .. text_length)
     local pad_char = string.char(amount_to_pad)
     local pad_temp = ""
     for i=1,amount_to_pad do
@@ -105,8 +105,7 @@ function _M.decrypt(encrypted)
 	if not decode_txt then
 		return encrypted
 	end
-	log(ERR,"decode_txt:",decode_txt)
-
+	-- log(ERR,"decode_txt:",decode_txt)
 	local plain_text = cryptor:decrypt(decode_txt)
 	log(ERR,"plain_text:",plain_text)
 	 -- 去掉补位字符串
