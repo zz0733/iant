@@ -41,13 +41,14 @@ function _M.encode(text)
         amount_to_pad = 0
     end
     -- 获得补位所用的字符
-    log(ERR,"amount_to_pad:"..amount_to_pad..",text_length:" .. text_length)
     local pad_char = string.char(amount_to_pad)
     local pad_temp = ""
     for i=1,amount_to_pad do
     	pad_temp = pad_temp .. pad_char
     end
-    return text .. pad_temp
+    text =  text .. pad_temp
+    log(ERR,"amount_to_pad:"..amount_to_pad..",text_length:" .. string_len(text))
+    return text
 end
 -- 删除解密后明文的补位字符
 function _M.decode(decrypted)
