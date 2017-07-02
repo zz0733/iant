@@ -5,10 +5,8 @@ local ERR = ngx.ERR
 
 local args = ngx.req.get_uri_args()
 
-if wxcrypt.verify(args.timestamp, args.nonce, args.echostr, args.signature ) then
+if not wxcrypt.verify(args.timestamp, args.nonce, args.echostr, args.signature ) then
    -- ngx.exit(ngx.HTTP_FORBIDDEN)
    log(ERR,"verify fail")
-else
-   log(ERR,"verify success")
 end
 

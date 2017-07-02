@@ -48,14 +48,19 @@ function _M.encrypt(text)
 	local size2string = arrays.byte2string(sizeByteArr)
 	text =  random_txt .. size2string .. text .. appid
 	log(ERR,"pkcs7.in.txt:", text)
-	text = M.encode(text)
+	text = _M.encode(text)
 	log(ERR,"pkcs7.out.txt:", text)
-	local encrypt_text =  cryptor.encrypt(text);
+	local encrypt_text =  cryptor:encrypt(text);
 	return encode_base64(encrypt_text);
 end
 
 function _M.decrypt(encrypted)
 	local decode_txt = decode_base64(encrypted)
+	-- 明文加密
+	if not decode_txt then
+		return encrypted
+	end
+	log(ERR,"decode_txt:",decode_txt)
 	local plain_text = cryptor:decrypt(decode_txt)
 	 -- 去掉补位字符串
 	plain_text = _M.decode(plain_text);
@@ -80,14 +85,21 @@ end
 
 -- 对需要加密的明文进行填充补位
 function _M.encode(text)
+	-- // 计算需要填充的位数
     local text_length = string.len(text)
     local amount_to_pad = block_size - (text_length % block_size)
     if amount_to_pad == 0 then
     	amount_to_pad = 0
     end
     -- 获得补位所用的字符
-    local pad = string.char(amount_to_pad)
-    return text + pad * amount_to_pad
+    log(ERR,"text:",text)
+    log(ERR,"amount_to_pad:",amount_to_pad)
+    local pad_char = string.char(amount_to_pad)
+    local pad_temp = ""
+    for i=1,amount_to_pad do
+    	pad_temp = pad_temp .. pad_char
+    end
+    return text .. pad_temp
 end
 -- 删除解密后明文的补位字符
 function _M.decode(decrypted)
