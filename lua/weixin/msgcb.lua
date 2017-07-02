@@ -54,20 +54,21 @@ if req_method == "POST" then
 		table.insert(msg_arr,tips)
 		msg_content = table.concat(msg_arr, "\n\n")
 	else
-		msg_content = "💗亲爱的，你发的剧名可能不对或暂时没有收录(可以去后台留意哟)。\n每日最新最全更新,更多免费资源尽在狸猫资讯\nhttp://www.lezomao.com?r=mp\n 感谢您的关注 么么哒😘"
+		msg_content = "💗亲爱的，你发的剧名可能不对或暂时没有收录(可以去后台留言哟)。\n每日最新最全更新,更多免费资源尽在狸猫资讯\nhttp://www.lezomao.com?r=mp\n 感谢您的关注 么么哒😘"
 	end
 	log(ERR,"from_user:",from_user)
 	log(ERR,"to_user:",to_user)
 	log(ERR,"msgid:",msgid)
 	log(ERR,"content:",content)
 	local xml_msg = xml_template;
-	xml_msg = string.gsub(xml_msg, "{fromUser}", from_user);
-	xml_msg = string.gsub(xml_msg, "{toUser}", to_user);
+	xml_msg = string.gsub(xml_msg, "{fromUser}", to_user);
+	xml_msg = string.gsub(xml_msg, "{toUser}", from_user);
 	xml_msg = string.gsub(xml_msg, "{createTime}", ngx.time());
 	xml_msg = string.gsub(xml_msg, "{content}", msg_content);
 	log(ERR,"msg_content:",msg_content)
 	log(ERR,"xml_msg:",xml_msg)
 	ngx.say(xml_msg)
+	ngx.flush()
 elseif req_method == "GET" then
 	local echostr = args.echostr;
 	local dest = wxcrypt.decrypt(echostr)
