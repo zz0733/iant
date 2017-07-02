@@ -25,6 +25,7 @@ if req_method == "POST" then
 	if xml_node.Encrypt then
 		local encrypt = xml_node.Encrypt:ownValue()
 		local decrypt_body = wxcrypt.decrypt(encrypt)
+		log(ERR,"decrypt_body:",decrypt_body)
 		xml_doc = xmlParser:ParseXmlText(decrypt_body)
 		xml_node = xml_doc.xml;
 	end
