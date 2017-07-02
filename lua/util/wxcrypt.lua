@@ -115,7 +115,7 @@ end
 -- 删除解密后明文的补位字符
 function _M.decode(decrypted)
 	if not decrypted then
-		return nil, "bad decrypted"
+		return decrypted
 	end
 	local len = string_len(decrypted)
     local pad = string_byte(decrypted, len)
