@@ -75,6 +75,9 @@ function _M.decrypt(encrypted)
 		return encrypted
 	end
 	local plain_text = cryptor:decrypt(decode_txt)
+	if not plain_text then
+		return encrypted
+	end
 	 -- 去掉补位字符串
 	plain_text = _M.decode(plain_text);
      -- 去除16位随机字符串
