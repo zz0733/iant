@@ -45,11 +45,13 @@ if req_method == "POST" then
 				end
 				msg = msg .. "\n" .. link
 				if source.secret then
-					msg = msg .. "\n密码:" .. source.secret
+					msg = msg .. " 密码:" .. source.secret
 				end
 				table.insert(msg_arr,msg)
 			end
 		end
+		local tips = "友情提示: 非百度云链接，可以复制链接，前往百度云离线下载或迅雷下载获取资源哟"
+		table.insert(msg_arr,tips)
 		msg_content = table.concat(msg_arr, "\n\n")
 	else
 		msg_content = "💗亲爱的，你发的剧名可能不对或暂时没有收录(可以去后台留意哟)。\n每日最新最全更新,更多免费资源尽在狸猫资讯\nhttp://www.lezomao.com?r=mp\n 感谢您的关注 么么哒😘"
@@ -65,6 +67,7 @@ if req_method == "POST" then
 	xml_msg = string.gsub(xml_msg, "{content}", msg_content);
 	log(ERR,"msg_content:",msg_content)
 	log(ERR,"xml_msg:",xml_msg)
+	ngx.say(xml_msg)
 elseif req_method == "GET" then
 	local echostr = args.echostr;
 	local dest = wxcrypt.decrypt(echostr)
