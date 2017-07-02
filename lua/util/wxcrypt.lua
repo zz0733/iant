@@ -6,6 +6,7 @@ local resty_string = require "resty.string"
 local aes = require "resty.aes"
 local bit = require "bit"
 
+
 local decode_base64 = ngx.decode_base64
 local encode_base64 = ngx.encode_base64
 
@@ -14,36 +15,49 @@ _M._VERSION = '0.01'
 
 local log = ngx.log
 local ERR = ngx.ERR
+local cjson_safe = require "cjson.safe"
+
+
+local string_byte = string.byte
+local string_sub = string.sub
+local string_len = string.len
+local table_insert = table.insert
 
 local token = context.AUTH_WX_MSG_TOKEN
 local appid = context.AUTH_WX_MSG_APPID
 local aesKey = decode_base64(context.AUTH_WX_MSG_AESKEY .. "=")
-local cryptor = aes:new(aesKey:sub(1,16))
+local ivKey = string_sub(aesKey,1,16)
+local cryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 local block_size = 32
 
-function _M.verify(timestamp, nonce, encrypt, signature)
+function _M.signature(timestamp, nonce, encrypt)
+	log(ERR,"msg.timestamp:", timestamp)
+	log(ERR,"msg.nonce:", nonce)
+	log(ERR,"msg.encrypt:", encrypt)
 	local param_arr = {}
-    table.insert(param_arr,token)
-    table.insert(param_arr,timestamp)
-    table.insert(param_arr,nonce)
-    table.insert(param_arr,encrypt)
-    table.sort(param_arr)
-	local msg = table.concat(param_arr)
+    table_insert(param_arr,token)
+    table_insert(param_arr,timestamp)
+    table_insert(param_arr,nonce)
+    table_insert(param_arr,encrypt)
+    function char_sort(a,b) 
+    	local str_a = tostring(a)
+    	local str_b = tostring(b)
+    	return str_a < str_b;
+	end
+    table.sort(param_arr,char_sort) 
+	-- table.sort(param_arr)
+	local msg = table.concat(param_arr,"")
+	log(ERR,"msg.concat:", table.concat(param_arr,"="))
 	local sha1 = resty_sha1:new()
 	sha1:update(msg)
 	local digest = sha1:final()
 	digest = resty_string.to_hex(digest)
-
-	log(ERR,"msg:", msg)
-	log(ERR,"digest:", digest)
-	log(ERR,"signature:", signature)
-	log(ERR,"signature = digest:", tostring(signature == digest))
-	return digest == signature
+	return digest;
 end
 
 function _M.encrypt(text)
 	local random_txt = string.random(16)
-	local len = string.len(text)
+	local len = string_len(text)
 	local sizeByteArr = _M.getNetworkBytesOrder(len)
 	local size2string = arrays.byte2string(sizeByteArr)
 	text =  random_txt .. size2string .. text .. appid
@@ -60,33 +74,27 @@ function _M.decrypt(encrypted)
 	if not decode_txt then
 		return encrypted
 	end
-	log(ERR,"decode_txt:",decode_txt)
 	local plain_text = cryptor:decrypt(decode_txt)
 	 -- 去掉补位字符串
 	plain_text = _M.decode(plain_text);
-	if not plain_text then
-		return nil, "bad text after decode"
-	end
      -- 去除16位随机字符串
-    content = string.sub(plain_text,16)
+    content = string_sub(plain_text,17)
     local len_bytes = {}
-    for i=1,4 do
-	    table.insert(len_bytes,string.byte(content,1))
-    end
+	for i=1,4 do
+		table_insert(len_bytes,string_byte(content,i))
+	end
+    log(ERR,"len_bytes:",cjson_safe.encode(len_bytes))
     local xml_len = _M.recoverNetworkBytesOrder(len_bytes)
-    local xml_content = string.sub(content,4, xml_len + 4)
-    local from_appid = string.sub(xml_len + 4)
-	log(ERR,"encrypted:", encrypted)
-	log(ERR,"xml_len:", xml_len)
-	log(ERR,"xml_content:", xml_content)
-	log(ERR,"from_appid:", from_appid)
+    local xml_content = string_sub(content,5, xml_len + 4)
+    local from_appid = string_sub(content,xml_len + 5)
+    assert(appid == from_appid)
 	return xml_content
 end
 
 -- 对需要加密的明文进行填充补位
 function _M.encode(text)
 	-- // 计算需要填充的位数
-    local text_length = string.len(text)
+    local text_length = string_len(text)
     local amount_to_pad = block_size - (text_length % block_size)
     if amount_to_pad == 0 then
     	amount_to_pad = 0
@@ -106,22 +114,22 @@ function _M.decode(decrypted)
 	if not decrypted then
 		return nil, "bad decrypted"
 	end
-	local len = len(decrypted)
-    pad = string.string.byte(decrypted, len)
+	local len = string_len(decrypted)
+    local pad = string_byte(decrypted, len)
     if pad<1 or pad >32 then
         pad = 0
     end
-    return string.sub(decrypted,1,len-pad);
+    return string_sub(decrypted,1,len-pad);
 end
 
 
 -- 生成4个字节的网络字节序
 function _M.getNetworkBytesOrder(sourceNumber)
 	local orderBytes = {}
-	table.insert(orderBytes, bit.band(bit.rshift(sourceNumber,24),0xFF))
-	table.insert(orderBytes, bit.band(bit.rshift(sourceNumber,16),0xFF))
-	table.insert(orderBytes, bit.band(bit.rshift(sourceNumber,8),0xFF))
-	table.insert(orderBytes, bit.band(sourceNumber,0xFF))
+	table_insert(orderBytes, bit.band(bit.rshift(sourceNumber,24),0xFF))
+	table_insert(orderBytes, bit.band(bit.rshift(sourceNumber,16),0xFF))
+	table_insert(orderBytes, bit.band(bit.rshift(sourceNumber,8),0xFF))
+	table_insert(orderBytes, bit.band(sourceNumber,0xFF))
 	return orderBytes;
 end
 

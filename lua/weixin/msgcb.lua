@@ -1,7 +1,8 @@
 local wxcrypt = require "util.wxcrypt"
 local util_request = require "util.request"
 local cjson_safe = require "cjson.safe"
-local xmlParser = require("3th.samplexml").newParser()
+local xml = require("3th.samplexml")
+local xmlParser = xml.newParser()
 
 local link_dao = require "dao.link_dao"
 
@@ -16,21 +17,29 @@ local ngx_re_sub = ngx.re.sub;
 if req_method == "POST" then
 	local post_body = util_request.post_body(ngx.req)
 	post_body = '<xml><ToUserName><![CDATA[gh_d660614a423d]]></ToUserName> <FromUserName><![CDATA[od2SawOfo7zAFcs4Q7TBGjS0CQqs]]></FromUserName> <CreateTime>1498965223</CreateTime> <MsgType><![CDATA[text]]></MsgType> <Content><![CDATA[天才]]></Content> <MsgId>6438006611051384335</MsgId> </xml>'
+	-- post_body = '<xml><ToUserName><![CDATA[gh_10f6c3c3ac5a]]></ToUserName><FromUserName><![CDATA[oyORnuP8q7ou2gfYjqLzSIWZf0rs]]></FromUserName><CreateTime>1409735668</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[abcdteT]]></Content><MsgId>6054768590064713728</MsgId><Encrypt><![CDATA[hyzAe4OzmOMbd6TvGdIOO6uBmdJoD0Fk53REIHvxYtJlE2B655HuD0m8KUePWB3+LrPXo87wzQ1QLvbeUgmBM4x6F8PGHQHFVAFmOD2LdJF9FrXpbUAh0B5GIItb52sn896wVsMSHGuPE328HnRGBcrS7C41IzDWyWNlZkyyXwon8T332jisa+h6tEDYsVticbSnyU8dKOIbgU6ux5VTjg3yt+WGzjlpKn6NPhRjpA912xMezR4kw6KWwMrCVKSVCZciVGCgavjIQ6X8tCOp3yZbGpy0VxpAe+77TszTfRd5RJSVO/HTnifJpXgCSUdUue1v6h0EIBYYI1BD1DlD+C0CR8e6OewpusjZ4uBl9FyJvnhvQl+q5rv1ixrcpCumEPo5MJSgM9ehVsNPfUM669WuMyVWQLCzpu9GhglF2PE=]]></Encrypt></xml>'
 	log(ERR,"post_body:",post_body)
-	local decrypt_body = wxcrypt.decrypt(post_body)
-	log(ERR,"decrypt_body:",decrypt_body)
-	local xml_doc = xmlParser:ParseXmlText(decrypt_body)
-	local xml_node = xml_doc.xml;
+	local xml_doc = xmlParser:ParseXmlText(post_body)
+	local origin_xml_node = xml_doc.xml;
+	local xml_node = origin_xml_node;
+	if xml_node.Encrypt then
+		local encrypt = xml_node.Encrypt:ownValue()
+		local decrypt_body = wxcrypt.decrypt(encrypt)
+		xml_doc = xmlParser:ParseXmlText(decrypt_body)
+		xml_node = xml_doc.xml;
+	end
 	local from_user = xml_node.FromUserName:ownValue()
 	local to_user = xml_node.ToUserName:ownValue()
 	local content = xml_node.Content:ownValue()
-	local msgid = xml_node.MsgId:ownValue()
-	local names = {}
-	local from = 0
-	local size = 5
-	local fields = nil
-	table.insert(names,content)
-	local resp,status = link_dao:query_by_titles(names, from, size, fields)
+	local resp
+    if content then
+		local names = {}
+		local from = 0
+		local size = 5
+		local fields = nil
+		table.insert(names,content)
+		resp = link_dao:query_by_titles(names, from, size, fields)
+    end
 	local xml_template = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><FromUserName><![CDATA[{fromUser}]]></FromUserName><CreateTime>{createTime}</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[{content}]]></Content></xml>'
 	local msg_content = ""
 	if resp and resp.hits and resp.hits.total > 0 then
@@ -64,12 +73,27 @@ if req_method == "POST" then
 	log(ERR,"to_user:",to_user)
 	log(ERR,"msgid:",msgid)
 	log(ERR,"content:",content)
+	local timestamp = ngx.time()
 	local xml_msg = xml_template;
 	xml_msg = ngx_re_sub(xml_msg, "{fromUser}", to_user);
 	xml_msg = ngx_re_sub(xml_msg, "{toUser}", from_user);
-	xml_msg = ngx_re_sub(xml_msg, "{createTime}", ngx.time());
+	xml_msg = ngx_re_sub(xml_msg, "{createTime}", timestamp);
 	xml_msg = ngx_re_sub(xml_msg, "{content}", msg_content);
 	log(ERR,"xml_msg:",xml_msg)
+	if origin_xml_node.Encrypt then
+        local encrypt_xml_template = '<xml><Encrypt>{encrypt}</Encrypt><MsgSignature>{msgsignature}</MsgSignature><TimeStamp>{timestamp}</TimeStamp><Nonce>{nonce}</Nonce></xml>';
+        local encrypt_xml = wxcrypt.encrypt(xml_msg)
+        log(ERR,"encrypt_xml:",encrypt_xml)
+		local nonce = args.nonce or ""
+		local msgsignature = wxcrypt.signature(timestamp, nonce, 'sXvvgxuZ6JI4KLavk1l3Hh6zypeO0IzSeG4OEED60pRkoA0VMvONbty2vip55AJvUQ7ZLfQb')
+		log(ERR,"msgsignature:",msgsignature)
+		xml_msg = encrypt_xml_template;
+		xml_msg = ngx_re_sub(xml_msg, "{nonce}", nonce);
+		xml_msg = ngx_re_sub(xml_msg, "{timestamp}", timestamp);
+		xml_msg = ngx_re_sub(xml_msg, "{msgsignature}", msgsignature);
+		xml_msg = ngx_re_sub(xml_msg, "{encrypt}", encrypt_xml);
+		log(ERR,"xml_msg.encrypt:",xml_msg)
+	end
 	ngx.say(xml_msg)
 	ngx.flush()
 elseif req_method == "GET" then
