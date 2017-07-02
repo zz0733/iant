@@ -85,7 +85,7 @@ if req_method == "POST" then
         local encrypt_xml = wxcrypt.encrypt(xml_msg)
         log(ERR,"encrypt_xml:",encrypt_xml)
 		local nonce = args.nonce or ""
-		local msgsignature = wxcrypt.signature(timestamp, nonce, 'sXvvgxuZ6JI4KLavk1l3Hh6zypeO0IzSeG4OEED60pRkoA0VMvONbty2vip55AJvUQ7ZLfQb')
+		local msgsignature = wxcrypt.signature(timestamp, nonce, encrypt_xml)
 		log(ERR,"msgsignature:",msgsignature)
 		xml_msg = encrypt_xml_template;
 		xml_msg = ngx_re_sub(xml_msg, "{nonce}", nonce);
