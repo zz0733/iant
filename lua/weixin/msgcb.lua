@@ -40,7 +40,7 @@ if req_method == "POST" then
 		table.insert(names,content)
 		resp = link_dao:query_by_titles(names, from, size, fields)
     end
-	local xml_template = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><FromUserName><![CDATA[{fromUser}]]></FromUserName><CreateTime>{createTime}</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[{content}]]></Content></xml>'
+	local xml_template = '<xml><FromUserName><![CDATA[{fromUser}]]></FromUserName><CreateTime>{createTime}</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[{content}]]></Content></xml>'
 	local msg_content = ""
 	if resp and resp.hits and resp.hits.total > 0 then
 		local hits = resp.hits.hits

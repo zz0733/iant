@@ -28,7 +28,37 @@ local appid = context.AUTH_WX_MSG_APPID
 local aesKey = decode_base64(context.AUTH_WX_MSG_AESKEY .. "=")
 local ivKey = string_sub(aesKey,1,16)
 local cryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
-local block_size = 32
+
+-- 对需要加密的明文进行填充补位
+function _M.encode(text)
+	-- // 计算需要填充的位数
+	local block_size = 32
+    local text_length = string_len(text)
+    local amount_to_pad = block_size - (text_length % block_size)
+    if amount_to_pad < 1 or amount_to_pad > 32 then
+        amount_to_pad = 0
+    end
+    -- 获得补位所用的字符
+    log(ERR,"amount_to_pad:",amount_to_pad)
+    local pad_char = string.char(amount_to_pad)
+    local pad_temp = ""
+    for i=1,amount_to_pad do
+    	pad_temp = pad_temp .. pad_char
+    end
+    return text .. pad_temp
+end
+-- 删除解密后明文的补位字符
+function _M.decode(decrypted)
+	if not decrypted then
+		return decrypted
+	end
+	local len = string_len(decrypted)
+    local pad = string_byte(decrypted, len)
+    if pad<1 or pad >32 then
+        pad = 0
+    end
+    return string_sub(decrypted,1,len-pad);
+end
 
 function _M.signature(timestamp, nonce, encrypt)
 	log(ERR,"msg.timestamp:", timestamp)
@@ -61,9 +91,7 @@ function _M.encrypt(text)
 	local sizeByteArr = _M.getNetworkBytesOrder(len)
 	local size2string = arrays.byte2string(sizeByteArr)
 	text =  random_txt .. size2string .. text .. appid
-	log(ERR,"pkcs7.in.txt:", text)
 	text = _M.encode(text)
-	log(ERR,"pkcs7.out.txt:", text)
 	local encrypt_text =  cryptor:encrypt(text);
 	return encode_base64(encrypt_text);
 end
@@ -94,36 +122,7 @@ function _M.decrypt(encrypted)
 	return xml_content
 end
 
--- 对需要加密的明文进行填充补位
-function _M.encode(text)
-	-- // 计算需要填充的位数
-    local text_length = string_len(text)
-    local amount_to_pad = block_size - (text_length % block_size)
-    if amount_to_pad == 0 then
-    	amount_to_pad = 0
-    end
-    -- 获得补位所用的字符
-    log(ERR,"text:",text)
-    log(ERR,"amount_to_pad:",amount_to_pad)
-    local pad_char = string.char(amount_to_pad)
-    local pad_temp = ""
-    for i=1,amount_to_pad do
-    	pad_temp = pad_temp .. pad_char
-    end
-    return text .. pad_temp
-end
--- 删除解密后明文的补位字符
-function _M.decode(decrypted)
-	if not decrypted then
-		return decrypted
-	end
-	local len = string_len(decrypted)
-    local pad = string_byte(decrypted, len)
-    if pad<1 or pad >32 then
-        pad = 0
-    end
-    return string_sub(decrypted,1,len-pad);
-end
+
 
 
 -- 生成4个字节的网络字节序
