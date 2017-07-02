@@ -27,6 +27,8 @@ local token = context.AUTH_WX_MSG_TOKEN
 local appid = context.AUTH_WX_MSG_APPID
 local aesKey = decode_base64(context.AUTH_WX_MSG_AESKEY .. "=")
 local ivKey = string_sub(aesKey,1,16)
+log(ERR,"token:",token)
+log(ERR,"aesKey:",aesKey)
 local cryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 
 -- 对需要加密的明文进行填充补位
@@ -97,15 +99,16 @@ function _M.encrypt(text)
 end
 
 function _M.decrypt(encrypted)
+	log(ERR,"encrypted:",encrypted)
 	local decode_txt = decode_base64(encrypted)
 	-- 明文加密
 	if not decode_txt then
 		return encrypted
 	end
+	log(ERR,"decode_txt:",decode_txt)
+
 	local plain_text = cryptor:decrypt(decode_txt)
-	if not plain_text then
-		return encrypted
-	end
+	log(ERR,"plain_text:",plain_text)
 	 -- 去掉补位字符串
 	plain_text = _M.decode(plain_text);
      -- 去除16位随机字符串
