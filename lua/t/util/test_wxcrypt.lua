@@ -19,7 +19,7 @@ function tb:test_0encrypt()
    local cur_len = string.len(encrypt_xml)
    local dest_len = 80
    if cur_len ~= dest_len then
-        error("expect len["..tostring(dest_len).."],but[" .. tostring(cur_len) .. "]")
+        error("error,expect len["..tostring(dest_len).."],but[" .. tostring(cur_len) .. "]")
     end
 end
 

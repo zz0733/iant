@@ -4,6 +4,7 @@ local arrays = require "util.arrays"
 local resty_sha1 = require "resty.sha1"
 local resty_string = require "resty.string"
 local aes = require "resty.aes"
+-- local aes = require("resty.nettle.aes")
 local bit = require "bit"
 
 
@@ -89,7 +90,7 @@ function _M.encrypt(text)
 	local size2string = arrays.byte2string(sizeByteArr)
 	text =  random_txt .. size2string .. text .. appid
 	-- text = _M.encode(text);
-	local encryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
+	local encryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey, method=nil}))
 	local encrypt_text =  encryptor:encrypt(text);
 	local dest_txt =  encode_base64(encrypt_text);
 	log(ERR,"text:" .. text .. ",len:" .. string.len(text))
