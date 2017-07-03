@@ -88,7 +88,7 @@ function _M.encrypt(text)
 	local sizeByteArr = _M.getNetworkBytesOrder(len)
 	local size2string = arrays.byte2string(sizeByteArr)
 	text =  random_txt .. size2string .. text .. appid
-	text = _M.encode(text);
+	-- text = _M.encode(text);
 	local encryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 	local encrypt_text =  encryptor:encrypt(text);
 	local dest_txt =  encode_base64(encrypt_text);
