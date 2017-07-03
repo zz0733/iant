@@ -90,6 +90,7 @@ function _M.encrypt(text)
 	local size2string = arrays.byte2string(sizeByteArr)
 	text =  random_txt .. size2string .. text .. appid
 	-- text = _M.encode(text);
+	-- 调用openssl库，已使用PKCS7进行padding
 	local encryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 	local encrypt_text =  encryptor:encrypt(text);
 	local dest_txt =  encode_base64(encrypt_text);
