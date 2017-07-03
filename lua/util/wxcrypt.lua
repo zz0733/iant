@@ -19,6 +19,7 @@ local cjson_safe = require "cjson.safe"
 
 
 local string_byte = string.byte
+local string_char = string.char
 local string_sub = string.sub
 local string_len = string.len
 local table_insert = table.insert
@@ -27,9 +28,6 @@ local token = context.AUTH_WX_MSG_TOKEN
 local appid = context.AUTH_WX_MSG_APPID
 local aesKey = decode_base64(context.AUTH_WX_MSG_AESKEY .. "=")
 local ivKey = string_sub(aesKey,1,16)
-log(ERR,"token:",token)
-log(ERR,"aesKey:",aesKey)
-local cryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 
 -- 对需要加密的明文进行填充补位
 function _M.encode(text)
@@ -41,7 +39,7 @@ function _M.encode(text)
         amount_to_pad = 0
     end
     -- 获得补位所用的字符
-    local pad_char = string.char(amount_to_pad)
+    local pad_char = string_char(amount_to_pad)
     local pad_temp = ""
     for i=1,amount_to_pad do
     	pad_temp = pad_temp .. pad_char
@@ -64,9 +62,6 @@ function _M.decode(decrypted)
 end
 
 function _M.signature(timestamp, nonce, encrypt)
-	log(ERR,"msg.timestamp:", timestamp)
-	log(ERR,"msg.nonce:", nonce)
-	log(ERR,"msg.encrypt:", encrypt)
 	local param_arr = {}
     table_insert(param_arr,token)
     table_insert(param_arr,timestamp)
@@ -80,7 +75,6 @@ function _M.signature(timestamp, nonce, encrypt)
     table.sort(param_arr,char_sort) 
 	-- table.sort(param_arr)
 	local msg = table.concat(param_arr,"")
-	log(ERR,"msg.concat:", table.concat(param_arr,"="))
 	local sha1 = resty_sha1:new()
 	sha1:update(msg)
 	local digest = sha1:final()
@@ -94,21 +88,25 @@ function _M.encrypt(text)
 	local sizeByteArr = _M.getNetworkBytesOrder(len)
 	local size2string = arrays.byte2string(sizeByteArr)
 	text =  random_txt .. size2string .. text .. appid
-	text = _M.encode(text)
-	local encrypt_text =  cryptor:encrypt(text);
-	return encode_base64(encrypt_text);
+	text = _M.encode(text);
+	local encryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
+	local encrypt_text =  encryptor:encrypt(text);
+	local dest_txt =  encode_base64(encrypt_text);
+	log(ERR,"text:" .. text .. ",len:" .. string.len(text))
+	log(ERR,"encrypt_text:" .. encrypt_text .. ",len:" .. string.len(encrypt_text))
+	log(ERR,"dest_txt:" .. dest_txt .. ",len:" .. string.len(dest_txt))
+	return dest_txt;
 end
 
 function _M.decrypt(encrypted)
-	log(ERR,"encrypted:",encrypted)
 	local decode_txt = decode_base64(encrypted)
 	-- 明文加密
 	if not decode_txt then
 		return encrypted
 	end
-	-- log(ERR,"decode_txt:",decode_txt)
+	local cryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 	local plain_text = cryptor:decrypt(decode_txt)
-	log(ERR,"plain_text:",plain_text)
+	-- log(ERR,"plain_text:",plain_text)
 	 -- 去掉补位字符串
 	plain_text = _M.decode(plain_text);
      -- 去除16位随机字符串
@@ -117,7 +115,6 @@ function _M.decrypt(encrypted)
 	for i=1,4 do
 		table_insert(len_bytes,string_byte(content,i))
 	end
-    log(ERR,"len_bytes:",cjson_safe.encode(len_bytes))
     local xml_len = _M.recoverNetworkBytesOrder(len_bytes)
     local xml_content = string_sub(content,5, xml_len + 4)
     local from_appid = string_sub(content,xml_len + 5)
