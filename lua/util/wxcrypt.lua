@@ -109,7 +109,7 @@ function _M.decrypt(encrypted)
 	local plain_text = cryptor:decrypt(decode_txt)
 	-- log(ERR,"plain_text:",plain_text)
 	 -- 去掉补位字符串
-	plain_text = _M.decode(plain_text);
+	-- plain_text = _M.decode(plain_text);
      -- 去除16位随机字符串
     content = string_sub(plain_text,17)
     local len_bytes = {}
