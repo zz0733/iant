@@ -82,7 +82,7 @@ if req_method == "POST" then
 	xml_msg = ngx_re_sub(xml_msg, "{content}", msg_content);
 	log(ERR,"xml_msg:",xml_msg)
 	if origin_xml_node.Encrypt then
-        local encrypt_xml_template = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><Encrypt><![CDATA[{encrypt}]]></Encrypt><MsgSignature><![CDATA[{msgsignature}]]></MsgSignature><TimeStamp>{timestamp}</TimeStamp><Nonce><![CDATA[{nonce}]]></Nonce></xml>';
+        local encrypt_xml_template = '<xml><Encrypt><![CDATA[{encrypt}]]></Encrypt><MsgSignature><![CDATA[{msgsignature}]]></MsgSignature><TimeStamp>{timestamp}</TimeStamp><Nonce><![CDATA[{nonce}]]></Nonce></xml>';
         local encrypt_xml = wxcrypt.encrypt(xml_msg)
         log(ERR,"encrypt_xml:",encrypt_xml)
 		local nonce = args.nonce or ""

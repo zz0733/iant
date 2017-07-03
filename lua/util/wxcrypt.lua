@@ -90,7 +90,7 @@ function _M.encrypt(text)
 	local size2string = arrays.byte2string(sizeByteArr)
 	text =  random_txt .. size2string .. text .. appid
 	-- text = _M.encode(text);
-	local encryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey, method=nil}))
+	local encryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 	local encrypt_text =  encryptor:encrypt(text);
 	local dest_txt =  encode_base64(encrypt_text);
 	log(ERR,"text:" .. text .. ",len:" .. string.len(text))
@@ -119,7 +119,7 @@ function _M.decrypt(encrypted)
     local xml_len = _M.recoverNetworkBytesOrder(len_bytes)
     local xml_content = string_sub(content,5, xml_len + 4)
     local from_appid = string_sub(content,xml_len + 5)
-    assert(appid == from_appid)
+    assert(appid == from_appid,"appid is different")
 	return xml_content
 end
 
