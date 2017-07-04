@@ -24,7 +24,9 @@ echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> $SI
 for mapfile in $SITEMAP_FILES
 do
    DEST_FILE="sitemap$INDEX.xml"
-   echo '<?xml version="1.0" encoding="utf-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n<url><loc>http://www.lezomao.com/</loc><priority>1.0</priority><changefreq>hourly</changefreq></url>' > $DEST_FILE
+   echo '<?xml version="1.0" encoding="utf-8"?>' > $DEST_FILE
+   echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> $DEST_FILE
+   echo '<url><loc>http://www.lezomao.com/</loc><priority>1.0</priority><changefreq>hourly</changefreq></url>' >> $DEST_FILE
    cat $mapfile >> $DEST_FILE
    echo '</urlset>' >> $DEST_FILE
    rm -rf $mapfile
