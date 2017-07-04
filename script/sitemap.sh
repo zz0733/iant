@@ -2,13 +2,13 @@
 USER_PATH=~
 SOURCE_FILE="$USER_PATH/.bash_profile"
 if [[ -f $SOURCE_FILE ]]; then
-	echo "source $SOURCE_FILE"
-	source $SOURCE_FILE
+   echo "source $SOURCE_FILE"
+   source $SOURCE_FILE
 fi
 SOURCE_FILE="$USER_PATH/.profile"
 if [[ -f $SOURCE_FILE ]]; then
-	echo "source $SOURCE_FILE"
-	source $SOURCE_FILE
+   echo "source $SOURCE_FILE"
+   source $SOURCE_FILE
 fi
 TEMP_FILE=sitemap.data
 TEMP_PREFIX=sitemap_split
@@ -21,11 +21,10 @@ SITEMAP_FILES=`ls $TEMP_PREFIX*`
 INDEX=1
 echo '<?xml version="1.0" encoding="UTF-8"?>' > $SITEMAP_XML
 echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' >> $SITEMAP_XML
-
 for mapfile in $SITEMAP_FILES
 do
    DEST_FILE="sitemap$INDEX.xml"
-   echo '<?xml version="1.0" encoding="UTF-8" standalone="no"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://www.lezomao.com/</loc><priority>1.0</priority><changefreq>hourly</changefreq></url>' > $DEST_FILE
+   echo '<?xml version="1.0" encoding="utf-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n<url><loc>http://www.lezomao.com/</loc><priority>1.0</priority><changefreq>hourly</changefreq></url>' > $DEST_FILE
    cat $mapfile >> $DEST_FILE
    echo '</urlset>' >> $DEST_FILE
    rm -rf $mapfile
