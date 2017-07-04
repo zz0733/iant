@@ -8,7 +8,7 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
-local _M = ESClient:new({index = "content_v2", type = "table"})
+local _M = ESClient:new({index = "content", type = "table"})
 _M._VERSION = '0.01'
 
 function _M:query_by_codes(from, size, codes, fields )
