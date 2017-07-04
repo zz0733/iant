@@ -29,8 +29,8 @@ do
    echo '</urlset>' >> $DEST_FILE
    rm -rf $mapfile
    gzip -q $DEST_FILE
-   mv -f "$DEST_FILE.gz" "$NGX_ROOT_PATH/$SITEMAP_XML"
-   echo "data[`date`]move [$DEST_FILE.gz],[$NGX_ROOT_PATH/$DEST_FILE]"
+   mv -f "$DEST_FILE.gz" "$NGX_ROOT_PATH/$DEST_FILE.gz"
+   echo "data[`date`]move [$DEST_FILE.gz],[$NGX_ROOT_PATH/$DEST_FILE.gz]"
    echo "<sitemap><loc>http://www.lezomao.com/sitemap$INDEX.xml.gz</loc></sitemap>" >> $SITEMAP_XML
    INDEX=$(($INDEX + 1))
 done
