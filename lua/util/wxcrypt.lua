@@ -78,6 +78,7 @@ function _M.signature(timestamp, nonce, encrypt)
 	end
     table.sort(param_arr,char_sort) 
 	-- table.sort(param_arr)
+	log(ERR,"sign:",table.concat(param_arr,"="))
 	local msg = table.concat(param_arr,"")
 	local sha1 = resty_sha1:new()
 	sha1:update(msg)
