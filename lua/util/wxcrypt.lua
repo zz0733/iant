@@ -30,6 +30,9 @@ local appid = context.AUTH_WX_MSG_APPID
 local aesKey = decode_base64(context.AUTH_WX_MSG_AESKEY .. "=")
 local ivKey = string_sub(aesKey,1,16)
 
+assert(string_len(aesKey) == 32,"aesKey's len must be 32,but:" ..string_len(aesKey))
+assert(string_len(ivKey) == 16,"ivKey's len must be 32,but:" ..string_len(ivKey))
+
 -- 对需要加密的明文进行填充补位
 function _M.encode(text)
 	-- // 计算需要填充的位数
@@ -106,8 +109,9 @@ function _M.decrypt(encrypted)
 	if not decode_txt then
 		return encrypted
 	end
-	local cryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
-	local plain_text = cryptor:decrypt(decode_txt)
+	local decryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
+	local plain_text = decryptor:decrypt(decode_txt)
+	assert(plain_text,"decrypt result must not be nil")
 	-- log(ERR,"plain_text:",plain_text)
 	 -- 去掉补位字符串
 	-- plain_text = _M.decode(plain_text);

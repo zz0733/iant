@@ -336,8 +336,7 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
             "query": {
               "range": {
                 "issueds.time": {
-                  "lt": 1498922178,
-                  "gt": 1496246059
+                  "lt": 1499005701
                 }
               }
             }
@@ -346,7 +345,7 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
         {
           "range": {
             "ctime": {
-              "gt": 1498665259
+              "gt": 1499006862
             }
           }
         }
