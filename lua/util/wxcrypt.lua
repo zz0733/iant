@@ -49,7 +49,7 @@ function _M.encode(text)
     	pad_temp = pad_temp .. pad_char
     end
     text =  text .. pad_temp
-    log(ERR,"amount_to_pad:"..amount_to_pad..",text_length:" .. string_len(text))
+    -- log(ERR,"amount_to_pad:"..amount_to_pad..",text_length:" .. string_len(text))
     return text
 end
 -- 删除解密后明文的补位字符
@@ -97,9 +97,6 @@ function _M.encrypt(text)
 	local encryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 	local encrypt_text =  encryptor:encrypt(text);
 	local dest_txt =  encode_base64(encrypt_text);
-	log(ERR,"text:" .. text .. ",len:" .. string.len(text))
-	log(ERR,"encrypt_text:" .. encrypt_text .. ",len:" .. string.len(encrypt_text))
-	log(ERR,"dest_txt:" .. dest_txt .. ",len:" .. string.len(dest_txt))
 	return dest_txt;
 end
 

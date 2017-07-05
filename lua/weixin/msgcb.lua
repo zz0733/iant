@@ -80,25 +80,24 @@ if req_method == "POST" then
 	xml_msg = ngx_re_sub(xml_msg, "{toUser}", from_user);
 	xml_msg = ngx_re_sub(xml_msg, "{createTime}", timestamp);
 	xml_msg = ngx_re_sub(xml_msg, "{content}", msg_content);
-	log(ERR,"xml_msg:",xml_msg)
+	-- log(ERR,"xml_msg:",xml_msg)
 	if origin_xml_node.Encrypt then
         local encrypt_xml_template = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><Encrypt><![CDATA[{encrypt}]]></Encrypt><MsgSignature><![CDATA[{msgsignature}]]></MsgSignature><TimeStamp>{timestamp}</TimeStamp><Nonce><![CDATA[{nonce}]]></Nonce></xml>';
         local encrypt_xml = wxcrypt.encrypt(xml_msg)
-        log(ERR,"encrypt_xml:",encrypt_xml)
+        -- log(ERR,"encrypt_xml:",encrypt_xml)
 		local nonce = args.nonce or ""
 		local msgsignature = wxcrypt.signature(timestamp, nonce, encrypt_xml)
-		log(ERR,"msgsignature:",msgsignature)
+		-- log(ERR,"msgsignature:",msgsignature)
 		xml_msg = encrypt_xml_template;
 		xml_msg = ngx_re_sub(xml_msg, "{toUser}", from_user);
 		xml_msg = ngx_re_sub(xml_msg, "{nonce}", nonce);
 		xml_msg = ngx_re_sub(xml_msg, "{timestamp}", timestamp);
 		xml_msg = ngx_re_sub(xml_msg, "{msgsignature}", msgsignature);
 		xml_msg = ngx_re_sub(xml_msg, "{encrypt}", encrypt_xml);
-		log(ERR,"xml_msg.encrypt:",xml_msg)
-		log(ERR,"xml_msg.decrypt:",wxcrypt.decrypt(encrypt_xml))
+		-- log(ERR,"xml_msg.encrypt:",xml_msg)
+		-- log(ERR,"xml_msg.decrypt:",wxcrypt.decrypt(encrypt_xml))
 	end
 	ngx.say(xml_msg)
-	ngx.flush()
 elseif req_method == "GET" then
 	local echostr = args.echostr;
 	local dest = echostr
