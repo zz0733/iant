@@ -16,8 +16,13 @@ _M.link_page_size = 10
 _M.link_max_page = 100
 
 _M.AUTH_WX_MSG_APPID = os.getenv("AUTH_WX_MSG_APPID")
-_M.AUTH_WX_MSG_AESKEY = os.getenv("AUTH_WX_MSG_AESKEY")
 _M.AUTH_WX_MSG_TOKEN = os.getenv("AUTH_WX_MSG_TOKEN")
+_M.AUTH_WX_MSG_AESKEY = os.getenv("AUTH_WX_MSG_AESKEY")
+_M.AUTH_WX_MSG_AESKEY_LAST = os.getenv("AUTH_WX_MSG_AESKEY_LAST")
+
+_M.AUTH_WX_MSG_AESKEY = decode_base64(context.AUTH_WX_MSG_AESKEY .. "=")
+_M.AUTH_WX_MSG_AESKEY_LAST = decode_base64(context.AUTH_WX_MSG_AESKEY_LAST .. "=")
+
 
 _M.SNAP_ENV = os.getenv("SNAP_ENV")
 function _M.version(new_ver)

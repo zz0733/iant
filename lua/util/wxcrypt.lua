@@ -27,11 +27,7 @@ local table_insert = table.insert
 
 local token = context.AUTH_WX_MSG_TOKEN
 local appid = context.AUTH_WX_MSG_APPID
-local aesKey = decode_base64(context.AUTH_WX_MSG_AESKEY .. "=")
-local ivKey = string_sub(aesKey,1,16)
 
-assert(string_len(aesKey) == 32,"aesKey's len must be 32,but:" ..string_len(aesKey))
-assert(string_len(ivKey) == 16,"ivKey's len must be 32,but:" ..string_len(ivKey))
 
 -- 对需要加密的明文进行填充补位
 function _M.encode(text)
@@ -87,7 +83,10 @@ function _M.signature(timestamp, nonce, encrypt)
 	return digest;
 end
 
-function _M.encrypt(text)
+function _M.encrypt(text,aesKey)
+	assert(string_len(aesKey) == 32,"aesKey's len must be 32,but:" ..string_len(aesKey))
+	local ivKey = string_sub(aesKey,1,16)
+	assert(string_len(ivKey) == 16,"ivKey's len must be 32,but:" ..string_len(ivKey))
 	local random_txt = string.random(16)
 	local len = string_len(text)
 	local sizeByteArr = _M.getNetworkBytesOrder(len)
@@ -101,15 +100,20 @@ function _M.encrypt(text)
 	return dest_txt;
 end
 
-function _M.decrypt(encrypted)
+function _M.decrypt(encrypted, aesKey)
+	assert(string_len(aesKey) == 32,"aesKey's len must be 32,but:" ..string_len(aesKey))
+	local ivKey = string_sub(aesKey,1,16)
+	assert(string_len(ivKey) == 16,"ivKey's len must be 32,but:" ..string_len(ivKey))
 	local decode_txt = decode_base64(encrypted)
-	-- 明文加密
 	if not decode_txt then
-		return encrypted
+		return nil,"decode base64 fail"
 	end
+
 	local decryptor = assert(aes:new(aesKey,nil, aes.cipher(256,"cbc"), {iv=ivKey}))
 	local plain_text = decryptor:decrypt(decode_txt)
-	assert(plain_text,"decrypt result must not be nil")
+	if not plain_text  then
+		return nil,"decrypt fail"
+	end
 	-- log(ERR,"plain_text:",plain_text)
 	 -- 去掉补位字符串
 	-- plain_text = _M.decode(plain_text);
@@ -122,7 +126,9 @@ function _M.decrypt(encrypted)
     local xml_len = _M.recoverNetworkBytesOrder(len_bytes)
     local xml_content = string_sub(content,5, xml_len + 4)
     local from_appid = string_sub(content,xml_len + 5)
-    assert(appid == from_appid,"appid is different")
+    if appid ~= from_appid then
+    	return nil,"appid validate fail"
+    end
 	return xml_content
 end
 
