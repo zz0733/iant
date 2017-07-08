@@ -26,10 +26,12 @@ if req_method == "POST" then
 	if xml_node.Event then
 		function handleEvent( xml_node )
 			local event = xml_node.Event:ownValue()
-			local msg_content = "OK"
+			local msg_content = "success"
 			log(ERR,"event:",event)
+			local from_user = xml_node.FromUserName:ownValue()
+			local to_user = xml_node.ToUserName:ownValue()
 			if event == "subscribe" then
-				msg_content = "感谢您的关注，回复剧名获取资源"
+				msg_content = "感谢您关注「笑点科技」🌹，免费获取最新最全资源，回复剧名即可获取。如：神偷奶爸"
 				if xml_node.EventKey then
 					local eventKey = xml_node.EventKey:ownValue()
 					local ticket = nil
@@ -41,10 +43,11 @@ if req_method == "POST" then
 				end
 				log(ERR,"event")
 			elseif event == "unsubscribe" then
-				msg_content = "感谢您的一路陪伴，我们一直在努力，明天会更好"
+				-- 帐号的解绑
+				-- msg_content = "感谢您的一路陪伴，我们一直在努力，明天会更好"
+				log(ERR,"unsubscribe,user:" .. tostring(from_user) .. ",by:" .. tostring(to_user))
 			end
-			local from_user = xml_node.FromUserName:ownValue()
-			local to_user = xml_node.ToUserName:ownValue()
+		
 			local timestamp = ngx.time()
 			local xml_msg = context.WX_REPLY_TEMPLATE;
 			xml_msg = ngx_re_sub(xml_msg, "{MsgType}", "text");
