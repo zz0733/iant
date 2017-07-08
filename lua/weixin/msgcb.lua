@@ -1,3 +1,4 @@
+local context = require "util.context"
 local wxcrypt = require "util.wxcrypt"
 local util_request = require "util.request"
 local cjson_safe = require "cjson.safe"
@@ -54,9 +55,16 @@ if req_method == "POST" then
 			ngx.say(xml_msg)
 		end
 		return handleEvent(xml_node)
-	elseif xml_node.Encrypt then
+	end
+	local aseKey = nil
+	if xml_node.Encrypt then
+		aseKey = context.AUTH_WX_MSG_AESKEY;
 		local encrypt = xml_node.Encrypt:ownValue()
-		local decrypt_body = wxcrypt.decrypt(encrypt)
+		local decrypt_body = wxcrypt.decrypt(encrypt,aseKey)
+		if not decrypt_body then
+			aseKey = context.AUTH_WX_MSG_AESKEY_LAST;
+			decrypt_body = wxcrypt.decrypt(encrypt,aseKey)
+		end
 		log(ERR,"decrypt_body:",decrypt_body)
 		xml_doc = xmlParser:ParseXmlText(decrypt_body)
 		xml_node = xml_doc.xml;
@@ -115,7 +123,7 @@ if req_method == "POST" then
 	-- log(ERR,"xml_msg:",xml_msg)
 	if origin_xml_node.Encrypt then
         local encrypt_xml_template = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><Encrypt><![CDATA[{encrypt}]]></Encrypt><MsgSignature><![CDATA[{msgsignature}]]></MsgSignature><TimeStamp>{timestamp}</TimeStamp><Nonce><![CDATA[{nonce}]]></Nonce></xml>';
-        local encrypt_xml = wxcrypt.encrypt(xml_msg)
+        local encrypt_xml = wxcrypt.encrypt(xml_msg,aseKey)
         -- log(ERR,"encrypt_xml:",encrypt_xml)
 		local nonce = args.nonce or ""
 		local msgsignature = wxcrypt.signature(timestamp, nonce, encrypt_xml)

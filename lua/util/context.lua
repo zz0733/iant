@@ -1,5 +1,6 @@
 local util_table = require "util.table"
 local util_string = require "util.string"
+local decode_base64 = ngx.decode_base64
 local _M = util_table.new_table(0, 1)
 _M._VERSION = '0.01'
 
@@ -16,8 +17,13 @@ _M.link_page_size = 10
 _M.link_max_page = 100
 
 _M.AUTH_WX_MSG_APPID = os.getenv("AUTH_WX_MSG_APPID")
-_M.AUTH_WX_MSG_AESKEY = os.getenv("AUTH_WX_MSG_AESKEY")
 _M.AUTH_WX_MSG_TOKEN = os.getenv("AUTH_WX_MSG_TOKEN")
+_M.AUTH_WX_MSG_AESKEY = os.getenv("AUTH_WX_MSG_AESKEY")
+_M.AUTH_WX_MSG_AESKEY_LAST = os.getenv("AUTH_WX_MSG_AESKEY_LAST")
+
+_M.AUTH_WX_MSG_AESKEY = decode_base64(_M.AUTH_WX_MSG_AESKEY .. "=")
+_M.AUTH_WX_MSG_AESKEY_LAST = decode_base64(_M.AUTH_WX_MSG_AESKEY_LAST .. "=")
+
 
 _M.WX_REPLY_TEMPLATE = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><FromUserName><![CDATA[{fromUser}]]></FromUserName><CreateTime>{createTime}</CreateTime><MsgType><![CDATA[{MsgType}]]></MsgType><Content><![CDATA[{content}]]></Content></xml>'
 
