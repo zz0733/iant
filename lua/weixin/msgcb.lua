@@ -22,7 +22,39 @@ if req_method == "POST" then
 	local xml_doc = xmlParser:ParseXmlText(post_body)
 	local origin_xml_node = xml_doc.xml;
 	local xml_node = origin_xml_node;
-	if xml_node.Encrypt then
+	if xml_node.Event then
+		function handleEvent( xml_node )
+			local event = xml_node.Event:ownValue()
+			local msg_content = "OK"
+			log(ERR,"event:",event)
+			if event == "subscribe" then
+				msg_content = "感谢您的关注，回复剧名获取资源"
+				if xml_node.EventKey then
+					local eventKey = xml_node.EventKey:ownValue()
+					local ticket = nil
+					if xml_node.Ticket then
+						ticket = xml_node.Ticket:ownValue()
+					end
+					log(ERR,"eventKey:",tostring(eventKey))
+					log(ERR,"ticket:",tostring(ticket))
+				end
+				log(ERR,"event")
+			elseif event == "unsubscribe" then
+				msg_content = "感谢您的一路陪伴，我们一直在努力，明天会更好"
+			end
+			local from_user = xml_node.FromUserName:ownValue()
+			local to_user = xml_node.ToUserName:ownValue()
+			local timestamp = ngx.time()
+			local xml_msg = context.WX_REPLY_TEMPLATE;
+			xml_msg = ngx_re_sub(xml_msg, "{MsgType}", "text");
+			xml_msg = ngx_re_sub(xml_msg, "{fromUser}", to_user);
+			xml_msg = ngx_re_sub(xml_msg, "{toUser}", from_user);
+			xml_msg = ngx_re_sub(xml_msg, "{createTime}", timestamp);
+			xml_msg = ngx_re_sub(xml_msg, "{content}", msg_content);
+			ngx.say(xml_msg)
+		end
+		return handleEvent(xml_node)
+	elseif xml_node.Encrypt then
 		local encrypt = xml_node.Encrypt:ownValue()
 		local decrypt_body = wxcrypt.decrypt(encrypt)
 		log(ERR,"decrypt_body:",decrypt_body)
@@ -41,7 +73,6 @@ if req_method == "POST" then
 		table.insert(names,content)
 		resp = link_dao:query_by_titles(names, from, size, fields)
     end
-	local xml_template = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><FromUserName><![CDATA[{fromUser}]]></FromUserName><CreateTime>{createTime}</CreateTime><MsgType><![CDATA[text]]></MsgType><Content><![CDATA[{content}]]></Content></xml>'
 	local msg_content = ""
 	if resp and resp.hits and resp.hits.total > 0 then
 		local hits = resp.hits.hits
@@ -75,7 +106,8 @@ if req_method == "POST" then
 	log(ERR,"msgid:",msgid)
 	log(ERR,"content:",content)
 	local timestamp = ngx.time()
-	local xml_msg = xml_template;
+	local xml_msg = context.WX_REPLY_TEMPLATE;
+	xml_msg = ngx_re_sub(xml_msg, "{MsgType}", "text");
 	xml_msg = ngx_re_sub(xml_msg, "{fromUser}", to_user);
 	xml_msg = ngx_re_sub(xml_msg, "{toUser}", from_user);
 	xml_msg = ngx_re_sub(xml_msg, "{createTime}", timestamp);

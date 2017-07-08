@@ -19,6 +19,9 @@ _M.AUTH_WX_MSG_APPID = os.getenv("AUTH_WX_MSG_APPID")
 _M.AUTH_WX_MSG_AESKEY = os.getenv("AUTH_WX_MSG_AESKEY")
 _M.AUTH_WX_MSG_TOKEN = os.getenv("AUTH_WX_MSG_TOKEN")
 
+_M.WX_REPLY_TEMPLATE = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><FromUserName><![CDATA[{fromUser}]]></FromUserName><CreateTime>{createTime}</CreateTime><MsgType><![CDATA[{MsgType}]]></MsgType><Content><![CDATA[{content}]]></Content></xml>'
+
+
 _M.SNAP_ENV = os.getenv("SNAP_ENV")
 function _M.version(new_ver)
     if new_ver then

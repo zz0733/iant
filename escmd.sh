@@ -320,6 +320,7 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   "from": 0,
   "size": 20,
+  "_source": ["title","link","secret"],
   "sort": {
     "issueds.time": {
       "order": "desc",
@@ -345,7 +346,7 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
         {
           "range": {
             "ctime": {
-              "gt": 1499006862
+              "gt": 1499181608
             }
           }
         }
