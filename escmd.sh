@@ -321,32 +321,13 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
   "from": 0,
   "size": 20,
   "_source": ["title","link","secret"],
-  "sort": {
-    "issueds.time": {
-      "order": "desc",
-      "mode": "max",
-      "nested_path": "issueds"
-    }
-  },
   "query": {
     "bool": {
       "must": [
         {
-          "nested": {
-            "path": "issueds",
-            "query": {
-              "range": {
-                "issueds.time": {
-                  "lt": 1499005701
-                }
-              }
-            }
-          }
-        },
-        {
           "range": {
             "ctime": {
-              "gt": 1499181608
+              "gt": 1499681295
             }
           }
         }

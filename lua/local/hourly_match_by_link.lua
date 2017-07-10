@@ -24,8 +24,7 @@ local body = {
             filter = {
               range = {
                 ctime ={
-                  gte = from_date,
-                  lt = to_date
+                  gte = from_date
                 }
               }
             }

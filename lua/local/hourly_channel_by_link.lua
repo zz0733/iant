@@ -29,18 +29,6 @@ local doc_id = media ..";" .. source ..";".. groupby ..";".. timeby ..";".. chan
 
 local must_array = {}
 table.insert(must_array,{match = { status = 1 }})
--- table.insert(must_array,{
---                nested = {
---                     path = "issueds",
---                      query ={
---                           range = {
---                             ["issueds.time"] ={
---                               gte = from_issued
---                             }
---                           }
---                      }
---                   }
---             })
 
 local body = {
     query = {
