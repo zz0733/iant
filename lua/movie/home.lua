@@ -69,12 +69,13 @@ function getContentByChannel( media, channel, maxChannel )
 	if resp and resp.hits then
 		movie_codes = selectCodes(resp.hits.hits, maxChannel)
 	end
-	local from = 0
-	local size = #movie_codes
-	local fields = {"article","digests","lcount","issueds","evaluates","genres"}
-	return content_dao:query_by_codes(from,size,movie_codes,fields);
+	return movie_codes;
 end
-local resp  = getContentByChannel("all","newest",100)
+
+local fields = {"article","digests","lcount","issueds","evaluates","genres"}
+
+local movie_ids  = getContentByChannel("all","newest",100)
+local resp =  content_dao:query_by_ids(movie_ids,fields);
 local contents = {}
 if resp then
 	contents = resp.hits
@@ -84,7 +85,10 @@ else
 end
 local randomWord = buildSearchWord(contents.hits)
 
-local resp  = getContentByChannel("movie","正在热播",30)
+local movie_codes  = getContentByChannel("movie","正在热播",30)
+local from = 0
+local size = #movie_codes
+local resp =  content_dao:query_by_codes(from,size,movie_codes,fields);
 local playing_movie = {}
 if resp then
 	playing_movie = resp.hits
