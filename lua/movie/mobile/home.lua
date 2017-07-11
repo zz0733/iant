@@ -22,24 +22,17 @@ function buildHeader( )
 	return header;
 end
 
-function selectContents( hits )
-	local contents = {}
+function selectCodes( hits, max )
 	if not hits then
-		contents.hits = {}
-		contents.total = 0
-		return contents
+		return nil
 	end
 	function comp( left, right )
-		if not left.index then
-			return true
-		end
-		if not right.index then
-			return false
-		end
-		return left.index < right.index
+		local lnum = left.index or left.ticket_rate_tf or 0
+		local rnum = right.index or right.ticket_rate_tf or 0
+		return lnum < rnum
 	end
 	local select_ids = {}
-	local max_select = 30
+	local max_select = max or 30
 	for _,hv in ipairs(hits) do
 		local elements = hv._source.elements
 		if elements then
@@ -55,36 +48,47 @@ function selectContents( hits )
 			end
 		end
 	end
-	local  fields = {"article","digests","lcount","issueds","evaluates","genres"}
-	local resp =  content_dao:query_by_ids(select_ids,fields);
-	if resp then
-		contents = resp.hits
-	end
-	return contents
+	return select_ids
 end
 function buildSearchWord( hits )
 	if not hits or #hits < 1 then
 		return
 	end
 	local channel_index = math.random(1, #hits)
-	if hits[channel_index] and hits[channel_index]._source.elements then
+	if hits[channel_index] then
 		local channle_doc = hits[channel_index]
-		local elements = channle_doc._source.elements
-		if elements and #elements > 0 then
-			local index = math.random(1, #elements)
-			local content_obj = elements[index]
-			return content_obj.title
-		end
+		local article = channle_doc._source.article
+		return article.title
 	end
 end
-local channel_ids = {"hotest"}
-local resp, status = channel_dao:query_by_ids(channel_ids)
-local contents = selectContents(resp.hits.hits)
+function getContentByChannel( media, channel, maxChannel )
+	local v = { media = media, channel = channel }
+	local channel_fields = {"timeby","channel","media","total","elements"}
+	local resp = channel_dao:query_lastest_by_channel(v.media, v.channel, channel_fields)
+	local movie_codes = {}
+	if resp and resp.hits then
+		movie_codes = selectCodes(resp.hits.hits, maxChannel)
+	end
+	return movie_codes;
+end
+
+local fields = {"article","digests","lcount","issueds","evaluates","genres"}
+
+local movie_ids  = getContentByChannel("all","newest",100)
+local resp =  content_dao:query_by_ids(movie_ids,fields);
+local contents = {}
+if resp then
+	contents = resp.hits
+else
+	contents.hits = {}
+	contents.total = 0
+end
+local randomWord = buildSearchWord(contents.hits)
 
 local content_doc = {}
 content_doc.header = buildHeader()
 content_doc.version = context.version()
 content_doc.hits  = contents
-content_doc.qWord  = buildSearchWord(resp.hits.hits)
+content_doc.qWord  = randomWord
 
 template.render("mobile/home.html", content_doc)
