@@ -22,7 +22,7 @@ function buildHeader( )
 	return header;
 end
 
-function selectCodes( hits )
+function selectCodes( hits, max )
 	if not hits then
 		return nil
 	end
@@ -32,7 +32,7 @@ function selectCodes( hits )
 		return lnum < rnum
 	end
 	local select_ids = {}
-	local max_select = 30
+	local max_select = max or 30
 	for _,hv in ipairs(hits) do
 		local elements = hv._source.elements
 		if elements then
@@ -55,21 +55,26 @@ function buildSearchWord( hits )
 		return
 	end
 	local channel_index = math.random(1, #hits)
-	if hits[channel_index] and hits[channel_index]._source.elements then
+	if hits[channel_index] then
 		local channle_doc = hits[channel_index]
-		local elements = channle_doc._source.elements
-		if elements and #elements > 0 then
-			local index = math.random(1, #elements)
-			local content_obj = elements[index]
-			return content_obj.title
-		end
+		local article = channle_doc._source.article
+		return article.title
 	end
 end
-local channel_ids = {"hotest"}
-local resp = channel_dao:query_by_ids(channel_ids)
-local select_ids = selectCodes(resp.hits.hits)
-local fields = {"article","digests","lcount","issueds","evaluates","genres"}
-local resp =  content_dao:query_by_ids(select_ids,fields);
+function getContentByChannel( media, channel, maxChannel )
+	local v = { media = media, channel = channel }
+	local channel_fields = {"timeby","channel","media","total","elements"}
+	local resp = channel_dao:query_lastest_by_channel(v.media, v.channel, channel_fields)
+	local movie_codes = {}
+	if resp and resp.hits then
+		movie_codes = selectCodes(resp.hits.hits, maxChannel)
+	end
+	local from = 0
+	local size = #movie_codes
+	local fields = {"article","digests","lcount","issueds","evaluates","genres"}
+	return content_dao:query_by_codes(from,size,movie_codes,fields);
+end
+local resp  = getContentByChannel("all","newest",100)
 local contents = {}
 if resp then
 	contents = resp.hits
@@ -77,18 +82,9 @@ else
 	contents.hits = {}
 	contents.total = 0
 end
-local randomWord = buildSearchWord(resp.hits.hits)
+local randomWord = buildSearchWord(contents.hits)
 
-local v = { media = "movie", channel = "正在热播" }
-local channel_fields = {"timeby","channel","media","total","elements"}
-local resp = channel_dao:query_lastest_by_channel(v.media, v.channel, channel_fields)
-local movie_codes = {}
-if resp and resp.hits then
-	movie_codes = selectCodes(resp.hits.hits)
-end
-local from = 0
-local size = #movie_codes
-local resp  = content_dao:query_by_codes(from,size,movie_codes,fields);
+local resp  = getContentByChannel("movie","正在热播",30)
 local playing_movie = {}
 if resp then
 	playing_movie = resp.hits

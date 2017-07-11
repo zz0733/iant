@@ -320,7 +320,6 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   "from": 0,
   "size": 20,
-  "_source": ["title","link","secret"],
   "query": {
     "bool": {
       "must": [
