@@ -95,65 +95,74 @@
                %}
                 </ul>
               </div>
-              <div class="col-md-4 msgbox"> 
-                <div class="playing-head"> 正在热播 </div>
-                <ul class="playing-list">
-                  {%
-                    local playing_movie = context.playing_movie.hits;
-                    for _,v in ipairs(playing_movie) do
-                        local source = v._source;
-                        local article = source.article;
-                        local genres = source.genres;
-                        local digests = source.digests;
-                        local evaluates = source.evaluates;
-                        local rate = 0
-                        local comment = 0
-                        if evaluates and evaluates[1] then
-                             rate = evaluates[1].rate
-                             comment = evaluates[1].comment
-                        end
-                        local str_cost
-                        if article.cost then
-                           local lcost = article.cost / 60
-                           str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
-                        end
-                        local str_img
-                        if digests then
-                           for _,v in ipairs(digests) do
-                              if v.sort == 'img' then
-                                 str_img = v.content
-                                 str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                                 break
-                              end
-                           end
-                        end
-                        local lcount = source.lcount or 0
-                    %}
-                      <li>
-                      <div class="video-item">
-                        <a href="/movie/detail/{{v._id}}.html" target="_blank">
-                          <div class="video-pic">
-                            <img alt="{{article.title}}" src="{{str_img}}">
-                            <i class="ftype video"> <span>{{str_cost}}</span> </i>
-                          </div>
-                          
-                          <div class="video-txt"> 
-                              <h4>{{article.title}}</h4> 
-                              <p> 
-                               <span>{{lcount}}资源</span>
-                               <span>⋅{{comment}}评论</span> 
-                               <span>⋅{{rate}}评分</span>
-                              </p> 
-                          </div>
-                        </a>
-                      </div>
-                    </li>
+              <div class="col-md-4 "> 
+      
+                <div class="wx-mp-box">
+                    <h4 class="wx-mp-txt">微信<span style="color: blue;">扫一扫</span>下方二维码</span><br/>关注微信公众号<br/>最新热门资源及时获取</h4>
+                    <div class="wx-mp-img">
+                      <img width="220px" height="220px" src="/assets/img/wx-mp-qrcode.jpg" alt="关注微信公众号" class="img-rounded">
+                    </div>
+                </div>
+                <div class="msgbox">
+                  <div class="playing-head"> 正在热播 </div>
+                  <ul class="playing-list">
                     {%
-                    end
-                  %}
-                
-                </ul>
+                      local playing_movie = context.playing_movie.hits;
+                      for _,v in ipairs(playing_movie) do
+                          local source = v._source;
+                          local article = source.article;
+                          local genres = source.genres;
+                          local digests = source.digests;
+                          local evaluates = source.evaluates;
+                          local rate = 0
+                          local comment = 0
+                          if evaluates and evaluates[1] then
+                               rate = evaluates[1].rate
+                               comment = evaluates[1].comment
+                          end
+                          local str_cost
+                          if article.cost then
+                             local lcost = article.cost / 60
+                             str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+                          end
+                          local str_img
+                          if digests then
+                             for _,v in ipairs(digests) do
+                                if v.sort == 'img' then
+                                   str_img = v.content
+                                   str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                                   break
+                                end
+                             end
+                          end
+                          local lcount = source.lcount or 0
+                      %}
+                        <li>
+                        <div class="video-item">
+                          <a href="/movie/detail/{{v._id}}.html" target="_blank">
+                            <div class="video-pic">
+                              <img alt="{{article.title}}" src="{{str_img}}">
+                              <i class="ftype video"> <span>{{str_cost}}</span> </i>
+                            </div>
+                            
+                            <div class="video-txt"> 
+                                <h4>{{article.title}}</h4> 
+                                <p> 
+                                 <span>{{lcount}}资源</span>
+                                 <span>⋅{{comment}}评论</span> 
+                                 <span>⋅{{rate}}评分</span>
+                                </p> 
+                            </div>
+                          </a>
+                        </div>
+                      </li>
+                      {%
+                      end
+                    %}
+                  
+                  </ul>
               </div>
+             </div>
         </div>
       </div>
     </div>

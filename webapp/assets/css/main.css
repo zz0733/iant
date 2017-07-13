@@ -1283,3 +1283,17 @@ body.home>div.main {
 .video-txt p {
 	font-size: 12px;
 }
+.wx-mp-box {
+   text-align: center;
+   border-radius: 3px;
+   background-color: #F7F5F4;
+   line-height: 1.5em;
+   max-width: 340px;
+   padding-top: 10px;
+}
+.wx-mp-txt {
+   text-align: center;
+}
+.wx-mp-img {
+    margin: 0 auto;
+}
