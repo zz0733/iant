@@ -54,6 +54,18 @@ function excludeName( title )
     end
     return false
 end
+function addMsg(nameArr,msg_obj,source)
+    local md5 = source.md5
+    if md5 and string.len(md5) > 1 and md5_set[md5] then
+      return
+    end
+    if name_set[title] then
+        return
+    end
+    md5_set[md5] = 1
+    name_set[title] = 1
+    table.insert(nameArr,msg_obj)
+end
 while true do
      index = index + 1;
      local data,err;
@@ -109,16 +121,7 @@ while true do
                       end
                   end
                   msg_obj.time = near_time
-                  local md5 = source.md5
-                  if md5 and string.len(md5) > 1 then
-                      if not md5_set[md5]  and not name_set[title] then
-                        table.insert(name_arr,msg_obj)
-                        md5_set[md5] = 1
-                        name_set[title] = 1
-                      end
-                  else
-                    table.insert(name_arr,msg_obj)
-                  end
+                  addMsg(name_arr,msg_obj,source)
              end
          end
          scrollId = data["_scroll_id"]
