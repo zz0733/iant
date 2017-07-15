@@ -9,6 +9,7 @@ local args = ngx.req.get_uri_args()
 
 local string_match = string.match;
 local ngx_re_gsub = ngx.re.gsub;
+local ngx_re_match = ngx.re.match;
 local message = {}
 message.code = 200
 
@@ -16,7 +17,7 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 local to_date = ngx.time()
-local from_date = to_date - 24*60*60
+local from_date = to_date - 50*24*60*60
 local body = {
     _source = {"title","format","ctime"},
     query = {
@@ -50,12 +51,19 @@ local begin = ngx.now()
 local md5_set = {}
 local name_set = {}
 local name_arr = {}
+local cur_year = os.date("%Y");
 function excludeName( title )
     if not title then
         return true
     end
     if string_match(title,"分享群") then
         return true
+    end
+    local mm = ngx_re_match(title,"[^0-9](19[0-9]{2}|2[0-9]{3})[^0-9]")
+    if mm and mm[0] then
+        if mm[0] ~= cur_year then
+            return true
+        end
     end
     return false
 end
