@@ -16,7 +16,7 @@ local CRIT = ngx.CRIT
 local to_date = ngx.time()
 local from_date = to_date - 24*60*60
 local body = {
-    _source = {"title","format"},
+    _source = {"title","format","ctime"},
     query = {
         bool = {
             filter = {
@@ -37,7 +37,7 @@ local scanParams = {};
 scanParams.index = sourceIndex
 scanParams.scroll = scroll
 -- scanParams.sort = {"_doc"}
-scanParams.size = 10
+scanParams.size = 100
 scanParams.body = body
 
 local scan_count = 0
@@ -45,7 +45,14 @@ local scrollId = nil
 local index = 0
 local total = nil
 local begin = ngx.now()
+local md5_set = {}
 local name_arr = {}
+function excludeName( title )
+    if string.match(title,"分享群") then
+        return true
+    end
+    return false
+end
 while true do
      index = index + 1;
      local data,err;
@@ -79,15 +86,52 @@ while true do
                 .. ",scan:" .. tostring(scan_count)..",index:"..index..",cost:" .. cost)
          -- match_handler.build_similars(hits)
          for _,v in ipairs(hits) do
-             local name = v._source.title
-             local format = v._source.format
-             if not format or 'ppt' ~=format then
-                  table.insert(name_arr,name)
+             local source = v._source
+             local title = source.title
+             local format = source.format
+             if not excludeName(title) and (not format or 'ppt' ~=format) then
+                  local msg_obj = {}
+                  title = ngx.re.gsub(title, "★", "")
+                  title = ngx.re.gsub(title, "【微博@.*?】", "")
+                  msg_obj.title = title
+                  local now_time = ngx.time()
+                  local near_time = source.ctime;
+                  local issueds = source.issueds
+                  if issueds  then
+                      local min_gap = ngx.time()
+                      for _,v in ipairs(issueds) do
+                          local gap = now_time - v.time
+                          if gap < min_gap then
+                              min_gap = gap
+                              near_time = v.time
+                          end
+                      end
+                  end
+                  msg_obj.time = near_time
+                  local md5 = source.md5
+                  if md5 and string.len(md5) > 1 then
+                      if not md5_set[md5] then
+                        table.insert(name_arr,msg_obj)
+                        md5_set[md5] = 1
+                      end
+                  else
+                    table.insert(name_arr,msg_obj)
+                  end
              end
          end
          scrollId = data["_scroll_id"]
      end
 end
-message.data = table.concat( name_arr , "\n")
-local body = cjson_safe.encode(message)
+function cmp( a, b )
+    return b.time < a.time
+end
+table.sort( name_arr, cmp )
+local title_arr = {}
+for _,v in ipairs(name_arr) do
+    table.insert(title_arr,v.title)
+end
+local shits = cjson_safe.encode(name_arr)
+log(ERR,"name_arr:" .. shits)
+local body = table.concat( title_arr , "\n")
+-- local body = cjson_safe.encode(message)
 ngx.say(body)
