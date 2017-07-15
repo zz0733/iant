@@ -14,7 +14,7 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 local to_date = ngx.time()
-local from_date = to_date - 24*60*60
+local from_date = to_date - 50*24*60*60
 local body = {
     _source = {"title","format","ctime"},
     query = {
@@ -54,15 +54,31 @@ function excludeName( title )
     end
     return false
 end
+function excludeFormat( format )
+    if not format then
+        return false
+    end
+    local excludeSet = {}
+    excludeSet["ppt"] = 1
+    excludeSet["mup"] = 1
+    excludeSet["exe"] = 1
+    if excludeSet[format] then
+        return true
+    end
+    return false
+end
 function addMsg(nameArr,msg_obj,source)
     local md5 = source.md5
-    if md5 and string.len(md5) > 1 and md5_set[md5] then
-      return
+    if md5 and string.len(md5) > 1 then
+       if md5_set[md5]  then
+         return
+       else
+         md5_set[md5] = 1
+       end
     end
     if name_set[msg_obj.title] then
         return
     end
-    md5_set[md5] = 1
     name_set[msg_obj.title] = 1
     table.insert(nameArr,msg_obj)
 end
@@ -102,7 +118,7 @@ while true do
              local source = v._source
              local title = source.title
              local format = source.format
-             if not excludeName(title) and (not format or 'ppt' ~=format) then
+             if not excludeName(title) and not excludeFormat(format) then
                   local msg_obj = {}
                   title = ngx.re.gsub(title, "★", "")
                   title = ngx.re.gsub(title, "【微博@.*?】", "")
