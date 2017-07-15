@@ -46,6 +46,7 @@ local index = 0
 local total = nil
 local begin = ngx.now()
 local md5_set = {}
+local name_set = {}
 local name_arr = {}
 function excludeName( title )
     if string.match(title,"分享群") then
@@ -110,9 +111,10 @@ while true do
                   msg_obj.time = near_time
                   local md5 = source.md5
                   if md5 and string.len(md5) > 1 then
-                      if not md5_set[md5] then
+                      if not md5_set[md5]  and not name_set[title] then
                         table.insert(name_arr,msg_obj)
                         md5_set[md5] = 1
+                        name_set[title] = 1
                       end
                   else
                     table.insert(name_arr,msg_obj)
