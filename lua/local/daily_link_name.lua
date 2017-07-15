@@ -59,11 +59,11 @@ function addMsg(nameArr,msg_obj,source)
     if md5 and string.len(md5) > 1 and md5_set[md5] then
       return
     end
-    if name_set[title] then
+    if name_set[msg_obj.title] then
         return
     end
     md5_set[md5] = 1
-    name_set[title] = 1
+    name_set[msg_obj.title] = 1
     table.insert(nameArr,msg_obj)
 end
 while true do
