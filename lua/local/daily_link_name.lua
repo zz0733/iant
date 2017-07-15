@@ -7,6 +7,8 @@ local client_utils = require("util.client_utils")
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 
+local string_match = string.match;
+local ngx_re_gsub = ngx.re.gsub;
 local message = {}
 message.code = 200
 
@@ -49,7 +51,10 @@ local md5_set = {}
 local name_set = {}
 local name_arr = {}
 function excludeName( title )
-    if string.match(title,"分享群") then
+    if not title then
+        return true
+    end
+    if string_match(title,"分享群") then
         return true
     end
     return false
@@ -120,8 +125,8 @@ while true do
              local format = source.format
              if not excludeName(title) and not excludeFormat(format) then
                   local msg_obj = {}
-                  title = ngx.re.gsub(title, "★", "")
-                  title = ngx.re.gsub(title, "【微博@.*?】", "")
+                  title = ngx_re_gsub(title, "★", "")
+                  title = ngx_re_gsub(title, "【微博@.*?】", "")
                   msg_obj.title = title
                   local now_time = ngx.time()
                   local near_time = source.ctime;
