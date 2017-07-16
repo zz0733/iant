@@ -58,6 +58,9 @@ function excludeName( title )
     end
     if string_match(title,"分享群") then
         return true
+    end 
+    if string_match(title,"随意赞助") then
+        return true
     end
     local mm = ngx_re_match(title,"[^0-9](19[0-9]{2}|2[0-9]{3})[^0-9]")
     if mm and mm[0] then
@@ -135,6 +138,7 @@ while true do
                   local msg_obj = {}
                   title = ngx_re_gsub(title, "★", "")
                   title = ngx_re_gsub(title, "【微博@.*?】", "")
+                  title = ngx_re_gsub(title, "速度。刪！", "")
                   msg_obj.title = title
                   local now_time = ngx.time()
                   local near_time = source.ctime;

@@ -216,4 +216,24 @@ function _M:save_docs( docs)
 	return self:bulk_docs(docs)
 end
 
+function _M:save_docs( docs)
+    if not docs then
+      return nil, 400
+    end
+    for _,v in ipairs(docs) do
+    	if v.issueds then
+    	  local issueds = v.issueds
+    	  for _,sv in ipairs(issueds) do
+    	  	 if sv.region then
+    	  	 	sv.region = self:to_synonym(sv.region, "issueds.region")
+    	  	 end
+    	  	 if sv.country then
+    	  	 	sv.country = self:to_synonym(sv.country, "issueds.country")
+    	  	 end
+    	  end
+    	end
+    end
+	return self:bulk_docs(docs)
+end
+
 return _M

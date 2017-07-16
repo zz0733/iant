@@ -211,6 +211,13 @@ function ESClient:delete_by_query(params, endpointParams)
   return response.body, response.statusCode
 end
 
+function ESClient:update_by_query(params)
+  params.index =  self.index;
+  params.type =  self.type;
+  local resp, status = self.client:search(params)
+  return resp, status
+end
+
 function ESClient:query_by_ids( ids, fields )
   if not ids or #ids < 1 then
     return nil, 400
