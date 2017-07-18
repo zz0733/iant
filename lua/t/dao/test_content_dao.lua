@@ -118,14 +118,23 @@ end
 --     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus))
    
 -- end
-function tb:test_6query_by_codes()
-    local codes = { "26984183","26590060"}
-    local sresp, sstatus = content_dao:query_by_codes(codes)
+-- function tb:test_6query_by_codes()
+--     local codes = { "26984183","26590060"}
+--     local sresp, sstatus = content_dao:query_by_codes(codes)
+--     local str_sresp = cjson_safe.encode(sresp)
+--     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus) )
+--     local index = math.random(1, 10)
+--     self:log("search.str_resp:" .. index)
+   
+-- end
+
+function tb:test_7update_link_channels()
+    local channel = {}
+    channel.index = ngx.time()
+    channel.epindex = 12
+    local sresp, sstatus = content_dao:update_link_channels("170251355",channel)
     local str_sresp = cjson_safe.encode(sresp)
     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus) )
-    local index = math.random(1, 10)
-    self:log("search.str_resp:" .. index)
-   
 end
 
 tb:run()

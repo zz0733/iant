@@ -146,6 +146,7 @@ function ESClient:bulk( body, configs )
     end
   end
   if #es_body >= 1 then
+    log(ERR,"dobulk.es_body" ..  cjson_safe.encode(es_body))
      resp, status = self:dobulk(es_body,  configs )
       if not resp then
         local count = #es_body / 2

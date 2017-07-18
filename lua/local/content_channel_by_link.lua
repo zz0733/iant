@@ -3,7 +3,7 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
-local channel_dao = require "dao.channel_dao"
+local content_dao = require "dao.content_dao"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -89,16 +89,25 @@ while true do
         local elements = {}
      
         local did_map = {}
+        local update_docs = {}
         for _,v in ipairs(hits) do
-            local targets = v._source.targets
+            local source = v._source;
+            local targets = source.targets
             if targets and #targets == 1 then
                 local tv = targets[1]
                 if (not tv.bury or tv.bury < 10) and not did_map[tv.id] then
                     did_map[tv.id] = 1
+                    local udoc = {}
+                    local channel = {}
+                    udoc.id = tv.id
+                    udoc.link_channel = channel
+                    channel.index = from_date
+                    channel.peindex = source.episode
+                    table.insert(update_docs,udoc);
                 end
             end
         end
-        
+        content_dao:update_link_channels(update_docs)
         scrollId = data["_scroll_id"]
      end
 end

@@ -236,4 +236,26 @@ function _M:save_docs( docs)
 	return self:bulk_docs(docs)
 end
 
+function _M:update_link_channels( id, channel )
+  local es_body = {}
+  local cmd = 'update'
+  local cmd_doc = {}
+   cmd_doc[cmd] = {
+	  ["_type"] = self.type,
+	  ["_id"] = id
+   }
+   table.insert(es_body,cmd_doc)
+  local up_doc = { utime = ngx.time(),channel = channel };
+  local new_doc = { 
+	    script = { 
+	      inline = "def newChannel=params.channel; ctx._source.channel_link=new HashMap(); if(ctx._source.channel_link == null){ ctx._source.channel_link=new HashMap();} def hasChannel=ctx._source.channel_link; hasChannel.epindex=newChannel.epindex; hasChannel.index=newChannel.index;", 
+	      lang = "painless", 
+	      params = up_doc
+	    }
+  }
+  table.insert(es_body,new_doc)
+  -- log(ERR,"incr_by_target.resp:" ..  cjson_safe.encode(new_doc) )
+  return self:bulk( es_body )
+end
+
 return _M
