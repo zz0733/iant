@@ -128,11 +128,12 @@ end
    
 -- end
 
-function tb:test_7update_link_channels()
-    local channel = {}
-    channel.index = ngx.time()
-    channel.epindex = 12
-    local sresp, sstatus = content_dao:update_link_channels("170251355",channel)
+function tb:test_7update_link_pipe()
+    local lpipe = {}
+    lpipe.time = ngx.time()
+    lpipe.index = 0
+    lpipe.epmax = 20
+    local sresp, sstatus = content_dao:update_link_pipe("170251355",lpipe)
     local str_sresp = cjson_safe.encode(sresp)
     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus) )
 end

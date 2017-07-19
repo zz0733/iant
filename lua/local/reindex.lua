@@ -15,32 +15,14 @@ local CRIT = ngx.CRIT
 local message = {}
 message.code = 200
 
-local to_date = ngx.time()
-local from_date = to_date - 1*60*60
-
-local timeby = from_date
-
-
-local must_array = {}
-table.insert(must_array,{match = { status = 1 }})
-
 local body = {
-    query = {
-        bool = {
-            filter = {
-              range = {
-                ctime ={
-                  gte = from_date
-                }
-              }
-            },
-            must = must_array
-        }
-    }
 }
 
 local sourceClient = client_utils.client()
-local sourceIndex = "link";
+local targetClient =  sourceClient
+local sourceIndex = "content_v2";
+local targetIndex = "content_v3";
+content_dao.index = targetIndex
 local scroll = "1m";
 local scanParams = {};
 scanParams.index = sourceIndex
@@ -49,7 +31,8 @@ scanParams.scroll = scroll
 scanParams.size = 100
 scanParams.body = body
 
-local lindex = 0;
+
+
 local scan_count = 0
 local scrollId = nil
 local index = 0
@@ -85,26 +68,25 @@ while true do
          ngx.update_time()
          local cost = (ngx.now() - start)
          cost = tonumber(string.format("%.3f", cost))
-         log(ERR,"timeby:"..timeby..",scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
+         log(ERR,"scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
                 .. ",scan:" .. tostring(scan_count)..",index:"..index..",cost:" .. cost)
         local elements = {}
      
+        local save_docs = {}
         for _,v in ipairs(hits) do
-            local source = v._source;
-            local targets = source.targets
-            if targets and #targets == 1 then
-                local tv = targets[1]
-                if (not tv.bury or tv.bury < 10) then
-                    local lpipe = {}
-                    lpipe.lid = tv.id
-                    lpipe.index = lindex
-                    lpipe.time = from_date
-                    lpipe.epmax = source.episode
-                    content_dao:update_link_pipe(tv.id, lpipe)
-                    lindex = lindex + 1;
-                end
+            local doc = v["_source"]
+            doc.id = v["_id"]
+            if doc.epcount then
+              doc.epcount = tonumber(doc.epcount)
             end
+            table.insert(save_docs, doc)
         end
+        local str_docs = cjson_safe.encode(save_docs)
+        local srep,serr = content_dao:save_docs(save_docs)
+        if srep then
+          save = save + #save_docs
+        end
+        log(ERR,"len:"..tostring(#save_docs)..",str_docs:" .. str_docs .. ",err:" .. tostring(serr))
         scrollId = data["_scroll_id"]
      end
 end

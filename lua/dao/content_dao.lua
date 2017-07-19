@@ -236,7 +236,7 @@ function _M:save_docs( docs)
 	return self:bulk_docs(docs)
 end
 
-function _M:update_link_channels( id, channel )
+function _M:update_link_pipe( id, lpipe )
   local es_body = {}
   local cmd = 'update'
   local cmd_doc = {}
@@ -245,10 +245,10 @@ function _M:update_link_channels( id, channel )
 	  ["_id"] = id
    }
    table.insert(es_body,cmd_doc)
-  local up_doc = { utime = ngx.time(),channel = channel };
+  local up_doc = { utime = ngx.time(),lpipe = lpipe };
   local new_doc = { 
 	    script = { 
-	      inline = "def newChannel=params.channel; ctx._source.channel_link=new HashMap(); if(ctx._source.channel_link == null){ ctx._source.channel_link=new HashMap();} def hasChannel=ctx._source.channel_link; hasChannel.epindex=newChannel.epindex; hasChannel.index=newChannel.index;", 
+	      inline = "def newPipe=params.lpipe; def upval=true; if(ctx._source.lpipe != null) { def hasPipe=ctx._source.lpipe; if(hasPipe.epmax !=null && ( newPipe.epmax==null || hasPipe.epmax > newPipe.epmax) ){ upval=false; } if(upval){ ctx._source.lpipe=newPipe; ctx._source.utime=params.utime;}}", 
 	      lang = "painless", 
 	      params = up_doc
 	    }
