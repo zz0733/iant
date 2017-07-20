@@ -248,7 +248,7 @@ function _M:update_link_pipe( id, lpipe )
   local up_doc = { utime = ngx.time(),lpipe = lpipe };
   local new_doc = { 
 	    script = { 
-	      inline = "def newPipe=params.lpipe; def upval=true; if(ctx._source.lpipe != null) { def hasPipe=ctx._source.lpipe; if(hasPipe.epmax !=null && ( newPipe.epmax==null || hasPipe.epmax > newPipe.epmax) ){ upval=false; } if(upval){ ctx._source.lpipe=newPipe; ctx._source.utime=params.utime;}}", 
+	      inline = "def newPipe=params.lpipe; def upval=true; if(ctx._source.lpipe != null) { def hasPipe=ctx._source.lpipe; if(hasPipe.epmax !=null && ( newPipe.epmax==null || hasPipe.epmax > newPipe.epmax) ){ upval=false; } if(ctx._source.article.epcount!=null && newPipe.epmax!=null && ctx._source.article.epcount<newPipe.epmax){ upval=false; } if(upval){ ctx._source.lpipe=newPipe; ctx._source.utime=params.utime;}}", 
 	      lang = "painless", 
 	      params = up_doc
 	    }

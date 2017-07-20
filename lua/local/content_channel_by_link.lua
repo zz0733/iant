@@ -16,7 +16,7 @@ local message = {}
 message.code = 200
 
 local to_date = ngx.time()
-local from_date = to_date - 1*60*60
+local from_date = to_date - 500*60*60
 
 local timeby = from_date
 
@@ -102,6 +102,7 @@ while true do
                     lpipe.epmax = source.episode
                     content_dao:update_link_pipe(tv.id, lpipe)
                     lindex = lindex + 1;
+                    save = save + 1;
                 end
             end
         end
