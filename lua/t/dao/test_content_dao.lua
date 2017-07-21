@@ -132,7 +132,7 @@ function tb:test_7update_link_pipe()
     local lpipe = {}
     lpipe.time = ngx.time()
     lpipe.index = 0
-    lpipe.epmax = 30
+    lpipe.epmax = 50
     local sresp, sstatus = content_dao:update_link_pipe("712763127",lpipe)
     local str_sresp = cjson_safe.encode(sresp)
     self:log("search.str_resp:" .. tostring(str_sresp) .. ",status:" .. tostring(sstatus) )
