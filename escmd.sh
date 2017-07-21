@@ -319,7 +319,7 @@ curl -X GET 'http://127.0.0.1:9200/task/table/_search?pretty' -d '
 curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   "from": 0,
-  "size": 50,
+  "size": 100,
   "_source":["title"],
   "query": {
     "bool": {
@@ -327,12 +327,19 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
         {
           "range": {
             "ctime": {
-              "gt": 1499787239
+              "gt": 1499957657
             }
           }
         }
       ]
     }
   }
+}
+'
+
+curl -XGET 'http://localhost:9200/link/_analyze?pretty' -d '
+{
+  "field" : "title",
+  "text" : "楚乔传【微博@影视李易疯】"
 }
 '

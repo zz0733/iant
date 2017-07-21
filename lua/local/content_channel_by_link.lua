@@ -16,7 +16,7 @@ local message = {}
 message.code = 200
 
 local to_date = ngx.time()
-local from_date = to_date - 500*60*60
+local from_date = to_date - 10*24*60*60
 
 local timeby = from_date
 
@@ -100,9 +100,13 @@ while true do
                     lpipe.index = lindex
                     lpipe.time = from_date
                     lpipe.epmax = source.episode
-                    content_dao:update_link_pipe(tv.id, lpipe)
+                    local lresp,lstauts = content_dao:update_link_pipe(tv.id, lpipe)
+                    if not lresp then
+                        log(ERR,"update_link_pipe["..tostring(tv.id).."],lpipe:" .. cjson_safe.encode(lpipe)..",status:" ..  cjson_safe.encode(lstauts))
+                    else
+                       save = save + 1;
+                    end
                     lindex = lindex + 1;
-                    save = save + 1;
                 end
             end
         end
