@@ -96,7 +96,7 @@ while true do
                 local tv = targets[1]
                 if (not tv.bury or tv.bury < 10) then
                     local lpipe = {}
-                    lpipe.lid = tv.id
+                    lpipe.lid = v._id
                     lpipe.index = lindex
                     lpipe.time = from_date
                     lpipe.epmax = source.episode
