@@ -263,6 +263,13 @@ a.login-btn {
     margin-right: 5px;
 }
 
+.tag-ep {
+     color: #d9534f;
+    font-weight: bolder;
+    padding: 1px;
+    margin-right: 5px;
+}
+
 .lbtn-tag {
 	border: 1px solid #eee;
     border-color: #87A5B5!important;

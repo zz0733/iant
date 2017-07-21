@@ -3,6 +3,7 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local context = require "util.context"
 local util_string = require "util.string"
+local util_time = require "util.time"
 
 local template = require "resty.template"
 
@@ -74,15 +75,40 @@ end
 
 local fields = {"article","digests","lcount","issueds","evaluates","genres"}
 
-local movie_ids  = getContentByChannel("all","newest",100)
-local resp =  content_dao:query_by_ids(movie_ids,fields);
+local year = util_time.year()
+local from = 0
+local size = 30
+local body = {
+	  from = from,
+	  size = size,
+	  sort = { ["lpipe.time"] = { order = "desc"},["article.year"] = { order = "desc"}},
+	  query = {
+	    bool = {
+		  filter = {
+		      range = {
+		        ["article.year"] = {
+		          lte = year
+		        }
+		      }
+		   },
+		   must = {
+		       range = {
+			      lcount = { gte = 0}
+			   }
+		   }
+	    }
+	  }
+	}
+local resp, status = content_dao:search(body)
 local contents = {}
 if resp then
 	contents = resp.hits
 else
+	log(ERR,"status:"..tostring(status))
 	contents.hits = {}
 	contents.total = 0
 end
+
 local randomWord = buildSearchWord(contents.hits)
 
 local content_doc = {}

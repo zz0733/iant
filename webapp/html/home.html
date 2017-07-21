@@ -35,6 +35,7 @@
                       local genres = source.genres;
                       local digests = source.digests;
                       local evaluates = source.evaluates;
+                      local lpipe = source.lpipe;
                       local rate
                       if evaluates and evaluates[1] then
                            rate = evaluates[1].rate
@@ -83,6 +84,9 @@
                                   {% end %}
                                   {%if rate then %}
                                   <span class="tag-score tag-size">评分{{rate}}</span>
+                                  {%end%}
+                                  {%if lpipe and lpipe.epmax then %}
+                                  <span class="tag-ep">第{{lpipe.epmax}}集</span>
                                   {%end%}
                                 </div>  
                             </div>

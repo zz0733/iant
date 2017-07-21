@@ -1123,6 +1123,13 @@ a.link-title {
     margin-right: 5px;
 }
 
+.tag-ep {
+	 color: #d9534f;
+    font-weight: bolder;
+    padding: 1px;
+    margin-right: 5px;
+}
+
 a.lbtn-tag:hover { 
 	text-decoration: none;
 	color: blue
@@ -1220,6 +1227,7 @@ body.home>div.main {
     border-bottom: 1px solid #e8e8e8;
     list-style: none;
     margin-top: 10px;
+    padding-left: 6px;
 }
 .playing-head {
 	color: #222;

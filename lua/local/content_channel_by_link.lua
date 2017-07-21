@@ -15,8 +15,10 @@ local CRIT = ngx.CRIT
 local message = {}
 message.code = 200
 
+local before  = tonumber(args.before)
+before = before or 1*24*60*60
 local to_date = ngx.time()
-local from_date = to_date - 10*24*60*60
+local from_date = to_date - before
 
 local timeby = from_date
 
