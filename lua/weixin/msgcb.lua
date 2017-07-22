@@ -90,18 +90,31 @@ if req_method == "POST" then
 			        }
 			    }
     		table.insert(shoulds, should)
+    		local sorts = {}
+    		local sort = {_score = {order = "desc"}}
+    		table.insert(sorts, sort)
+    		sort = {ctime = {order = "desc"}}
+    		table.insert(sorts, sort)
 			local body = {
 				from = from,
 				size = size,
-				sort = {_score = {order = "desc"}},
+				sort = sorts,
 				query = {
-				  bool = {
-				    should = shoulds,
-				    must_not = {
-			            match = { status = -1 }
-			        }
-				  }
+				   function_score = {
+						query = {
+						  bool = {
+						    should = shoulds,
+						    must_not = {
+					            match = { status = -1 }
+					        }
+						  }
+						},
+						script_score = {
+                           script = { inline = "Math.floor(_score)" }
+					    }
+				   }
 				}
+
 			}
 			local resp, status = link_dao:search(body)
 			return resp, status
