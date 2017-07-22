@@ -93,7 +93,7 @@ if req_method == "POST" then
 			local body = {
 				from = from,
 				size = size,
-				sort = {_score = {order = "desc"},ctime = {order = "desc"}},
+				sort = {_score = {order = "desc"}},
 				query = {
 				  bool = {
 				    should = shoulds,
