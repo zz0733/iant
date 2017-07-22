@@ -257,7 +257,7 @@ $document.ready(function() {
 	       var scrollTop = $this.scrollTop();
 	       var windowHeight = $this.height();
 	       var per = (scrollTop + windowHeight) / scrollHeight
-	    　　if(per >= 0.9){
+	    　　if(per >= 0.75){
 			    loadLinkPage();
 	    　　}
 	    });

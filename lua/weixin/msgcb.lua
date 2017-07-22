@@ -77,12 +77,36 @@ if req_method == "POST" then
 	local content = xml_node.Content:ownValue()
 	local resp
     if content then
-		local names = {}
-		local from = 0
-		local size = 5
-		local fields = nil
-		table.insert(names,content)
-		resp = link_dao:query_by_titles(names, from, size, fields)
+    	function query_by_content( content )
+    		if not content then
+    			return
+    		end
+    		local from = 0
+		    local size = 8
+    		local shoulds = {}
+    		local should = {
+			        match = {
+			          title = content
+			        }
+			    }
+    		table.insert(shoulds, should)
+			local body = {
+				from = from,
+				size = size,
+				sort = {_score = {order = "desc"},ctime = {order = "desc"}},
+				query = {
+				  bool = {
+				    should = shoulds,
+				    must_not = {
+			            match = { status = -1 }
+			        }
+				  }
+				}
+			}
+			local resp, status = link_dao:search(body)
+			return resp, status
+    	end
+		resp = query_by_content(content)
     end
 	local msg_content = ""
 	if resp and resp.hits and resp.hits.total > 0 then

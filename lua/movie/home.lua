@@ -93,7 +93,7 @@ local body = {
 		   },
 		   must = {
 		       range = {
-			      lcount = { gte = 0}
+			      lcount = { gte = 1}
 			   }
 		   }
 	    }
