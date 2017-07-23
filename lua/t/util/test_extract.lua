@@ -17,7 +17,8 @@ function tb:test_0find_episode()
         ["[摔跤吧！爸爸.2016"] = nil,
         ["爸爸好奇怪 아버지가 이상해‎ (2017)"] = nil,
         ["绯闻少女S03E10@圣城Lovebeans"] = 10,
-        ["爸爸好奇怪【更新至六集】"] = 6
+        ["爸爸好奇怪【更新至六集】"] = 6,
+        ["[我D前半生][2017][EP01-EP34][国语中字][MP4-MKV][720P]"] = 34
     }
     for t,v in pairs(title_episods) do
         local e = util_extract.find_episode(t)
@@ -27,21 +28,21 @@ function tb:test_0find_episode()
     end
 end
 
-function tb:test_2find_season()
-    local title_seasons = { 
-        ["头文字D第五部[第2话].mp4"] = 5,
-        ["20世纪少年：第一部DVD/20世纪少年：第一部cd2.rmvb"] = 1,
-        ["绯闻少女S03E14@中英双字幕"] = 3,
-        ["南国医恋第二季/南国医恋.第二季EP10.rmvb"] = 2,
-        ["进击的巨人第2季"] = 2
-    }
-    for t,v in pairs(title_seasons) do
-        local e = util_extract.find_season(t)
-        if e ~= v then
-            error(t .. ",seasons expect["..v.."],but[" .. tostring(e) .. "]")
-        end
-    end
-end
+-- function tb:test_2find_season()
+--     local title_seasons = { 
+--         ["头文字D第五部[第2话].mp4"] = 5,
+--         ["20世纪少年：第一部DVD/20世纪少年：第一部cd2.rmvb"] = 1,
+--         ["绯闻少女S03E14@中英双字幕"] = 3,
+--         ["南国医恋第二季/南国医恋.第二季EP10.rmvb"] = 2,
+--         ["进击的巨人第2季"] = 2
+--     }
+--     for t,v in pairs(title_seasons) do
+--         local e = util_extract.find_season(t)
+--         if e ~= v then
+--             error(t .. ",seasons expect["..v.."],but[" .. tostring(e) .. "]")
+--         end
+--     end
+-- end
 
 
 tb:run()
