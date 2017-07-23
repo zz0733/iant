@@ -18,7 +18,8 @@ function tb:test_0find_episode()
         ["爸爸好奇怪 아버지가 이상해‎ (2017)"] = nil,
         ["绯闻少女S03E10@圣城Lovebeans"] = 10,
         ["爸爸好奇怪【更新至六集】"] = 6,
-        ["[我D前半生][2017][EP01-EP34][国语中字][MP4-MKV][720P]"] = 34
+        ["[我D前半生][2017][EP01-EP34][国语中字][MP4-MKV][720P]"] = 34,
+        ["我の前半生.2017.国剧更新（24）"] = 24
     }
     for t,v in pairs(title_episods) do
         local e = util_extract.find_episode(t)

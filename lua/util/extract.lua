@@ -112,6 +112,11 @@ function _M.find_episode(title)
     if #numbers > 0 then
         return max_number(numbers)
     end
+    local it = gmatch(title, "[\\(（\\[【](?<num>["..STR_NUM_REG.."]+)[\\)）\\]】][\\W]*$","joi")
+    local numbers = iterator_numbers(it)
+    if #numbers > 0 then
+        return max_number(numbers)
+    end
     local it = gmatch(title, "[^a-z]S[0-9]+E(?<num>[0-9]+)","joi")
     local numbers = iterator_numbers(it)
     if #numbers > 0 then
