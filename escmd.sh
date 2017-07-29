@@ -340,6 +340,16 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 curl -XGET 'http://localhost:9200/link/_analyze?pretty' -d '
 {
   "field" : "title",
-  "text" : "楚乔传【微博@影视李易疯】"
+  "text" : "[网剧][逆袭之星途璀璨][全50集][1080P][度盘秒离].torrent"
+}
+'
+curl -XGET 'http://localhost:9200/link/_search?pretty' -d '
+{
+  "size": 0,
+  "aggs": {
+       "term": {
+           "field": "title"
+       }
+  }
 }
 '
