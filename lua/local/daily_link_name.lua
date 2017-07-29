@@ -250,7 +250,7 @@ local field = "title"
 local token_arr = {}
 for _,v in ipairs(name_arr) do
     local title = v.title
-    title = ngx_re_gsub(title,".[a-z0-9]{2,6}$","")
+    title = ngx_re_gsub(title,"\\.[a-z0-9]{2,6}$","")
     title = ngx_re_gsub(title,"【","[")
     title = ngx_re_gsub(title,"】","]")
     local resp = link_dao:analyze(title, field)
