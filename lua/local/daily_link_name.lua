@@ -283,7 +283,7 @@ for i=1,len-1 do
        local rtoken = token_arr[j]
        if not has_similar_map[rtoken.id] then
            local score = getJaccard(ltoken.tokens,rtoken.tokens)
-           if score >= 0.2 then
+           if score >= 0.3 then
               local similar_arr = similar_token_map[ltoken.id]
               table_insert(similar_arr,rtoken)
               has_similar_map[rtoken.id] = 1
