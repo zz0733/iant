@@ -4,6 +4,9 @@ local util_table = require "util.table"
 local link_dao = require "dao.link_dao"
 local context = require "util.context"
 
+local decodeURI = ngx.unescape_uri
+
+
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 local method = args.method
@@ -57,7 +60,7 @@ elseif method == "next_links" then
   if args.did and args.title then
      inputs = {}
      inputs.did = args.did;
-     inputs.title = args.title;
+     inputs.title = decodeURI(args.title);
   end
   -- local data = util_request.post_body(ngx.req)
   -- local inputs = cjson_safe.decode(data)
@@ -83,7 +86,7 @@ elseif method == "next_links" then
   local  size = context.link_page_size
   local  from = (cur_page - 1) * size
   local  fields = {"title","space","ctime","issueds"}
-  resp, status = link_dao:query_by_target_title(inputs.did, inputs.title1, from, size, fields)
+  resp, status = link_dao:query_by_target_title(inputs.did, inputs.title, from, size, fields)
   if resp and resp.hits then
     local hits = resp.hits
     message.data = hits

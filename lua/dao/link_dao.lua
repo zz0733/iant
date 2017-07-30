@@ -153,9 +153,9 @@ function _M:query_by_target( target_id, from , size, fields )
 end
 
 function _M:query_by_target_title( target_id,title , from , size, fields )
-  local shoulds = {}
-  if target_id then
-  	  table.insert(shoulds,{
+	local shoulds = {}
+	if target_id then
+		  table.insert(shoulds,{
 		   nested = {
 		        path = "targets",
 		         query ={
@@ -165,33 +165,45 @@ function _M:query_by_target_title( target_id,title , from , size, fields )
 		         }
 		      }
 	  })
-  end
-  if title then
-  	  table.insert(shoulds,{
+	end
+	if title then
+      table.insert(shoulds,{
 			match = { 
 			  title = title
 			}
 	  })
-  end
-  if #shoulds < 1 then
-  	return nil, 400
-  end
+	end
+	if #shoulds < 1 then
+		return nil, 400
+	end
 
+	local sorts = {}
+	local sort = {_score = {order = "desc"}}
+	table.insert(sorts, sort)
+	sort = {ctime = {order = "desc"}}
+	table.insert(sorts, sort)
+	local body = {
+		from = from,
+		size = size,
+		sort = sorts,
+		min_score = 10,
+		query = {
+		   function_score = {
+				query = {
+				  bool = {
+				    should = shoulds,
+				    must_not = {
+			            match = { status = -1 }
+			        }
+				  }
+				},
+				script_score = {
+	               script = { inline = "Math.floor(_score)" }
+			    }
+		   }
+		}
 
-  local  body = {
-    from = from,
-    size = size,
-    _source = fields,
-    sort = { _score = { order = "desc"}},
-    query = {
-      bool = {
-        should = shoulds,
-	    must_not = {
-            match = { status = -1 }
-        }
-	  }
-    }
-  }
+	}
   -- log(ERR,"query_by_target_title.resp:" ..  cjson_safe.encode(body) )
   return _M:search(body)
 end
