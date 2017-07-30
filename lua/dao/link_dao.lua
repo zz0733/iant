@@ -126,11 +126,14 @@ function _M:query_by_target( target_id, from , size, fields )
   if not target_id then
   	return 0
   end
+  local sorts = {}
+  -- table.insert(sorts, {_score = {order = "desc"}})
+  table.insert(sorts, {ctime = {order = "desc"}})
   local  body = {
     from = from,
     size = size,
     _source = fields,
-    sort = { _score = { order = "desc"}},
+    sort = sorts,
     query = {
       bool = {
         must = {
