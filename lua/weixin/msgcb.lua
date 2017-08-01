@@ -110,7 +110,7 @@ if req_method == "POST" then
 						  }
 						},
 						script_score = {
-                           script = { inline = "Math.floor(_score)" }
+                           script = { inline = "Math.floor(_score/10)*10" }
 					    }
 				   }
 				}
