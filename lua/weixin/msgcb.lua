@@ -122,6 +122,7 @@ if req_method == "POST" then
 		resp = query_by_content(content)
     end
 	local msg_content = ""
+	local msg_count = 0;
 	if resp and resp.hits and resp.hits.total > 0 then
 		local hits = resp.hits.hits
 		local msg_arr = {}
@@ -141,6 +142,7 @@ if req_method == "POST" then
 					msg = msg .. " 密码:" .. source.secret
 				end
 				table.insert(msg_arr,msg)
+				msg_count = msg_count + 1
 			end
 		end
 		local tips = "友情提示: 非百度云链接，可以复制链接，前往百度云离线下载或迅雷下载获取资源哟"
@@ -152,7 +154,8 @@ if req_method == "POST" then
 	log(ERR,"from_user:",from_user)
 	log(ERR,"to_user:",to_user)
 	log(ERR,"msgid:",msgid)
-	log(ERR,"content:",content)
+	log(ERR,"req.content:",content)
+	log(ERR,"resp.msg_count:",tostring(msg_count))
 	local timestamp = ngx.time()
 	local xml_msg = context.WX_REPLY_TEMPLATE;
 	xml_msg = ngx_re_sub(xml_msg, "{MsgType}", "text");
