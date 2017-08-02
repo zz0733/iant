@@ -17,7 +17,7 @@ local task_level_size = {5,10,20}
 local check
 
 local importVersions = function ( task )
-    local importKey = "import:" .. task.type
+    -- local importKey = "import:" .. task.type
     local importVal, _ = shared_dict:get(importKey)
     local imports = {}
     if importVal then
@@ -30,7 +30,7 @@ local importVersions = function ( task )
         local ver = 1
         if scriptVal then
            script_obj = cjson_safe.decode(scriptVal)
-           log(ERR,"script["..key .. "]:" .. tostring(script_obj.version))
+           -- log(ERR,"script["..key .. "]:" .. tostring(script_obj.version))
            if script_obj.version then
                ver = script_obj.version
            end
@@ -39,7 +39,7 @@ local importVersions = function ( task )
         end
         import_verions[key] = ver
     end
-    log(ERR,"import_verions["..task.type .. "]:" .. cjson_safe.encode(import_verions))
+    -- log(ERR,"import_verions["..task.type .. "]:" .. cjson_safe.encode(import_verions))
     task.scripts = import_verions
 end
 

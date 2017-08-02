@@ -100,7 +100,7 @@ while true do
                     local lpipe = {}
                     lpipe.lid = v._id
                     lpipe.index = lindex
-                    lpipe.time = from_date
+                    lpipe.time = source.ctime
                     lpipe.epmax = source.episode
                     log(ERR,"tv.id:" .. tv.id .. ",lpipe:" .. cjson_safe.encode(lpipe))
                     local lresp,lstauts = content_dao:update_link_pipe(tv.id, lpipe)
