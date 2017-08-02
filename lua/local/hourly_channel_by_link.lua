@@ -135,9 +135,9 @@ while true do
         scrollId = data["_scroll_id"]
      end
 end
-if not scroll_id then
+if not scrollId then
     local params = {}
-    params.scroll_id = scroll_id
+    params.scroll_id = scrollId
     sourceClient:clearScroll(params)
 end
 

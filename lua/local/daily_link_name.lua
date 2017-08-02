@@ -162,6 +162,11 @@ while true do
          scrollId = data["_scroll_id"]
      end
 end
+if not scrollId then
+    local params = {}
+    params.scroll_id = scrollId
+    sourceClient:clearScroll(params)
+end
 function cmp( a, b )
     return b.time < a.time
 end
@@ -226,10 +231,10 @@ function getGroup( tokens )
     return group
   end
   local group_map = {
-     ["大陆"] = {"中国","大陆","国剧"},
+     ["大陆"] = {"中国","大陆","国剧","中剧"},
      ["日剧"] = {"日剧","日本","日语"},
      ["韩剧"] = {"韩剧","韩国","韩语"},
-     ["欧美"] = {"欧美","美剧","英剧","美国","英国"},
+     ["欧美"] = {"欧美","美剧","英剧","美国","英国","中英"},
      ["泰剧"] = {"泰剧","泰国","泰语","泰版"},
      ["港剧"] = {"港剧","香港","港版"}
   }
@@ -253,6 +258,8 @@ for _,v in ipairs(name_arr) do
     title = ngx_re_gsub(title,"\\.[a-z0-9]{2,6}$","")
     title = ngx_re_gsub(title,"【","[")
     title = ngx_re_gsub(title,"】","]")
+    title = ngx_re_gsub(title,"《","[")
+    title = ngx_re_gsub(title,"》","]")
     local resp = link_dao:analyze(title, field)
     if resp and resp.tokens then
        local tokens = keep_tokens(resp.tokens)
@@ -318,5 +325,4 @@ for k,garr in pairs(group_map) do
     body = group_body
   end
 end
-
 ngx.say(body)
