@@ -81,8 +81,8 @@ while true do
      else
          total = data.hits.total
          local hits = data.hits.hits
-         local shits = cjson_safe.encode(hits)
-         log(ERR,"hits:" .. shits)
+         -- local shits = cjson_safe.encode(hits)
+         -- log(ERR,"hits:" .. shits)
          scan_count = scan_count + #hits
          ngx.update_time()
          local cost = (ngx.now() - start)
@@ -102,6 +102,7 @@ while true do
                     lpipe.index = lindex
                     lpipe.time = from_date
                     lpipe.epmax = source.episode
+                    log(ERR,"tv.id:" .. tv.id .. ",lpipe:" .. cjson_safe.encode(lpipe))
                     local lresp,lstauts = content_dao:update_link_pipe(tv.id, lpipe)
                     if not lresp then
                         log(ERR,"update_link_pipe["..tostring(tv.id).."],lpipe:" .. cjson_safe.encode(lpipe)..",status:" ..  cjson_safe.encode(lstauts))

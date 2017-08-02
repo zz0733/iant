@@ -135,5 +135,11 @@ while true do
         scrollId = data["_scroll_id"]
      end
 end
+if not scroll_id then
+    local params = {}
+    params.scroll_id = scroll_id
+    sourceClient:clearScroll(params)
+end
+
 local body = cjson_safe.encode(message)
 ngx.say(body)
