@@ -98,7 +98,7 @@ if method == "home" then
         content.media = media_name
         content.rate = rate
         if lpipe and lpipe.epmax then
-          content.epmax = epmax
+          content.epmax = lpipe.epmax
         end
         if lpipe and lpipe.time and lpipe.time < mintime then
            mintime = lpipe.time

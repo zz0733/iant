@@ -80,6 +80,7 @@ end
 local message = cjson_safe.decode(resp.body)
 local data = message.data
 local randomWord = buildSearchWord(data.contents)
+log(ERR,"data:"..tostring(cjson_safe.encode(data)))
 log(ERR,"randomWord:"..tostring(randomWord))
 
 local content_doc = {}
