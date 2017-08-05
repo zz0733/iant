@@ -20,70 +20,41 @@
       <div class="container-fluid">
         <div class="row">
               <div class="feedBox"> 
-               
+               <input type="hidden" id="ltime" name="{{data.ltime}}">
+               <input type="hidden" id="offset" name="offset" value="{{data.offset}}">
+               <input type="hidden" id="hasmore" name="hasmore" value="{{data.hasmore}}">
                <ul class="feed-ul">
- 
                {%
-                for i,v in ipairs(hits.hits) do
-                  local source = v._source;
-                  local article = source.article;
-                  local genres = source.genres;
-                  local digests = source.digests;
-                  local evaluates = source.evaluates;
-                  local lpipe = source.lpipe;
-                  local rate
-                  if evaluates and evaluates[1] then
-                       rate = evaluates[1].rate
-                  end
-                  local str_cost
-                  if article.cost then
-                     local lcost = article.cost / 60
-                     str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
-                  end
-                  local str_img
-                  if digests then
-                     for _,v in ipairs(digests) do
-                        if v.sort == 'img' then
-                           str_img = v.content
-                           str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                           break
-                        end
-                     end
-                  end
-                  local media_names = { 
-                     tv = "电视剧",
-                     movie = "电影"
-                  }
-                  local meida_name = media_names[article.media]
-                  %}
+                for i,v in ipairs(data.contents) do
+                %}
                   <li class="item-box">
                    <div class="item-inner">
-                      <a  href="/m/movie/detail/{{v._id}}.html"> 
+                      <a  href="/m/movie/detail/{{v.id}}.html"> 
                         <div class="lbox">
-                            <img class="img-wrap" alt="{{article.title}}" src="{{str_img}}" /> 
-                            {%if str_cost then%}
-                            <i class="ftype video"> <span>{{str_cost}}</span> </i>
+                            <img class="img-wrap" alt="{{v.title}}" src="{{v.img}}" /> 
+                            {%if v.cost then%}
+                            <i class="ftype video"> <span>{{v.cost}}</span> </i>
                             {%end%}
                         </div>
                         <div class="rbox ">
                               <div class="rbox-inner"> 
                                   <div class="title-box"> 
-                                      {{article.title}}
+                                      {{v.title}}
                                   </div>
                               </div>
                         </div>
                       </a> 
                       <span class="item-tag-box">
-                        {%if meida_name then %}
-                        <span class="tag-txt tag-size">{{meida_name}}</span>
+                        {%if v.media then %}
+                        <span class="tag-txt tag-size">{{v.media}}</span>
                         {%end%}
-                        {%if rate then %}
+                        {%if v.rate then %}
                         <span class="tag-txt tag-size">评分
-                           <strong class="tag-score">{{rate}}</strong>
+                           <strong class="tag-score">{{v.rate}}</strong>
                         </span>
                         {%end%}
-                        {%if lpipe and lpipe.epmax then %}
-                        <span class="tag-ep">第{{lpipe.epmax}}集</span>
+                        {%if v.epmax then %}
+                        <span class="tag-ep">第{{v.epmax}}集</span>
                         {%end%}
                     </span>  
                    </div>
@@ -98,5 +69,5 @@
     </div>
   </div>
 </div>
-
+<script src="{{static_host}}/assets/js/mobile/home.js?v={{version}}"></script>
 {(mobile/decorator/footer.html)}

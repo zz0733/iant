@@ -58,8 +58,7 @@ function buildSearchWord( hits )
 	local channel_index = math.random(1, #hits)
 	if hits[channel_index] then
 		local channle_doc = hits[channel_index]
-		local article = channle_doc._source.article
-		return article.title
+		return channle_doc.title
 	end
 end
 function getContentByChannel( media, channel, maxChannel )
@@ -73,48 +72,20 @@ function getContentByChannel( media, channel, maxChannel )
 	return movie_codes;
 end
 
-local fields = {"article","digests","lcount","issueds","evaluates","genres"}
 
-local year = util_time.year()
-local from = 0
-local size = 30
-local body = {
-	  from = from,
-	  size = size,
-	  sort = { ["lpipe.time"] = { order = "desc"},["article.year"] = { order = "desc"}},
-	  query = {
-	    bool = {
-		  filter = {
-		      range = {
-		        ["article.year"] = {
-		          lte = year
-		        }
-		      }
-		   },
-		   must = {
-		       range = {
-			      lcount = { gte = 1}
-			   }
-		   }
-	    }
-	  }
-	}
-local resp, status = content_dao:search(body)
-local contents = {}
-if resp then
-	contents = resp.hits
-else
-	log(ERR,"status:"..tostring(status))
-	contents.hits = {}
-	contents.total = 0
+local resp = ngx.location.capture("/api/movie/scroll.json?metho=home")
+if resp and resp.status ~= 200 then
+	return ngx.exit(resp.status)
 end
-
-local randomWord = buildSearchWord(contents.hits)
+local message = cjson_safe.decode(resp.body)
+local data = message.data
+local randomWord = buildSearchWord(data.contents)
+log(ERR,"randomWord:"..tostring(randomWord))
 
 local content_doc = {}
 content_doc.header = buildHeader()
 content_doc.version = context.version()
-content_doc.hits  = contents
+content_doc.data  = data
 content_doc.qWord  = randomWord
 
 template.render("mobile/home.html", content_doc)
