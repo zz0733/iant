@@ -36,13 +36,14 @@ $document.ready(function() {
 		    }
 			var ltime = $ltime.val();
 			var offset = $offset.val();
+			// console.log('ltime:'+ltime+',offset:'+offset)
 			var sBase = window.location.origin;
 			var sUrl = sBase+"/api/movie/scroll.json?method=home";
 			return $.getJSON(sUrl, {
 				'ltime' : ltime,
 				'offset' : offset
 			}, function(result) {
-			   console.log('result:'+JSON.stringify(result))
+			   // console.log('result:'+JSON.stringify(result))
 			   if(result && result.data ) {
 			   	   var data = result.data;
 			   	   var contents = data.contents;
@@ -83,7 +84,6 @@ $document.ready(function() {
 	       var scrollTop = $this.scrollTop();
 	       var windowHeight = $this.height();
 	       var per = (scrollTop + windowHeight) / scrollHeight
-	       // console.log("per:"+per)
 	    　　if(per >= 0.75){
 			   scrollMore();
 	    　　}
