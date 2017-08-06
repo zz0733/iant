@@ -7,28 +7,28 @@ $document.ready(function() {
 	    var template =''
 		template +='<li class="item-box">'
 		template +=' <div class="item-inner">'
-		template +='    <a  href="/m/movie/detail/{{id}}.html"> '
-		template +='      <div class="lbox">'
-		template +='          <img class="img-wrap" alt="{{title}}" src="{{str_img}}" /> '
-		template +='          <i class="ftype video"> <span>{{str_cost}}</span> </i>'
-		template +='      </div>'
-		template +='      <div class="rbox ">'
-		template +='            <div class="rbox-inner"> '
-		template +='                <div class="title-box"> '
-		template +='                    {{title}}'
-		template +='                </div>'
-		template +='            </div>'
-		template +='      </div>'
-		template +='    </a> '
-		template +='    <span class="item-tag-box">'
-		template +='      <span class="tag-txt tag-size">{{media_name}}</span>'
-		template +='      <span class="tag-txt tag-size">'
-		template +='         评分<strong class="tag-score">{{rate}}</strong>'
-		template +='      </span>'
-		template +='      <span class="tag-ep">第{{epmax}}集</span>'
-		template +='  </span>  '
+		template +='    <div class="lbox">'
+		template +='      <a class="img-wrap" target="_blank" href="/movie/detail/{{id}}.html"> '
+		template +='        <img alt="{{title}}" src="{{str_img}}" /> '
+		template +='        <i class="ftype video"> <span>{{str_cost}}</span> </i>'
+		template +='      </a> '
+		template +='    </div>'
+		template +='    <div class="rbox ">'
+		template +='          <div class="rbox-inner"> '
+		template +='              <div class="title-box"> '
+		template +='                  <a class="atitle" target="_blank" href="/movie/detail/{{id}}.html"> {{title}}'
+		template +='                  </a> '
+		template +='              </div>'
+		template +='              <div class="tag-box">'
+		template +='                {{genre_html}}'
+		template +='                <span class="tag-score tag-size">评分{{rate}}</span>'
+		template +='                <span class="tag-ep">第{{epmax}}集</span>'
+		template +='              </div>  '
+		template +='          </div>'
+		template +='    </div>'
 		template +=' </div>'
 		template +='</li>'
+		var template_genre = '<a target="_blank" class="lbtn-tag tag-size" href="/movie/genre/{{vencode}}.html">{{v}}</a>'
 		var scrolling = false
 		function scrollMore() {
 			if (scrolling) {
@@ -57,16 +57,29 @@ $document.ready(function() {
 				   $ltime.val(data.ltime)
 				   $hasmore.val(data.hasmore)
 		   	       if(hasData) {
-						for (var i = 0; i < contents.length; i++) {
-							var content = contents[i]
-							var destHtml = template
-							destHtml = destHtml.replace('{{id}}',content.id)
+						for (var ci = 0; ci < contents.length; ci++) {
+							var content = contents[ci]
+							var destHtml = template;
+							var genre_html = ""
+							if(content.genres) {
+								var genres = content.genres
+								for (var gi = 0; gi < genres.length; gi++) {
+									var genre = genres[gi]
+									var cur_genre = template_genre
+									cur_genre = cur_genre.replace(/{{v}}/gm,genre)
+									var vencode = encodeURIComponent(genre)
+									cur_genre = cur_genre.replace(/{{vencode}}/gm,vencode)
+									genre_html += cur_genre +"\n"
+								}
+							}
 							destHtml = destHtml.replace(/{{title}}/gm,content.title)
+							destHtml = destHtml.replace(/{{id}}/gm,content.id)
 							destHtml = destHtml.replace('{{str_img}}',content.img)
 							destHtml = destHtml.replace('{{str_cost}}',content.cost)
 							destHtml = destHtml.replace('{{media_name}}',content.media)
 							destHtml = destHtml.replace('{{rate}}',content.rate)
 							destHtml = destHtml.replace('{{epmax}}',content.epmax)
+							destHtml = destHtml.replace('{{genre_html}}',genre_html)
 							var newLi = $(destHtml)
 							if (!content.media_name) {
 								newLi.find('span.tag-txt:contains("undefined")').remove()

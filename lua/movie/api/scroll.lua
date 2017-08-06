@@ -103,6 +103,14 @@ if method == "home" then
         if lpipe and lpipe.time and lpipe.time < mintime then
            mintime = lpipe.time
         end
+        if genres then
+          local link_genres = {}
+          local toIndex = math.min(3,#genres)
+          for i=1,toIndex do
+             table.insert(link_genres,genres[i])
+          end
+          content.genres = link_genres
+        end
         table.insert(contents,content)
     end
     local content_size = #hits.hits

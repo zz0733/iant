@@ -22,71 +22,44 @@
         <div class="row">
               <div class="col-md-2"> </div>
               <div class="col-md-6 feedBox"> 
-               
-               <ul>
+               <input type="hidden" id="ltime" name="ltime" value="{{data.ltime}}">
+               <input type="hidden" id="offset" name="offset" value="{{data.offset}}">
+               <input type="hidden" id="hasmore" name="hasmore" value="{{data.hasmore}}">
+               <ul class="feed-ul">
  
-               {% if not hits or not hits.total or hits.total < 1 then %}
+               {% if not data or not data.contents or #data.contents < 1 then %}
                   <li class="item-box">暂无内容推荐</li>
-
                {% else
-                    for i,v in ipairs(hits.hits) do
-                      local source = v._source;
-                      local article = source.article;
-                      local genres = source.genres;
-                      local digests = source.digests;
-                      local evaluates = source.evaluates;
-                      local lpipe = source.lpipe;
-                      local rate
-                      if evaluates and evaluates[1] then
-                           rate = evaluates[1].rate
-                      end
-                      local str_cost
-                      if article.cost then
-                         local lcost = article.cost / 60
-                         str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
-                      end
-                      local str_img
-                      if digests then
-                         for _,v in ipairs(digests) do
-                            if v.sort == 'img' then
-                               str_img = v.content
-                               str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                               break
-                            end
-                         end
-                      end
+                    for i,v in ipairs(data.contents) do
                   %}
                   <li class="item-box">
                    <div class="item-inner">
                       <div class="lbox">
-                        <a class="img-wrap" target="_blank" href="/movie/detail/{{v._id}}.html"> 
-                          <img alt="{{article.title}}" src="{{str_img}}" /> 
-                          {%if str_cost then%}
-                          <i class="ftype video"> <span>{{str_cost}}</span> </i>
+                        <a class="img-wrap" target="_blank" href="/movie/detail/{{v.id}}.html"> 
+                          <img alt="{{v.title}}" src="{{v.img}}" /> 
+                          {%if v.cost then%}
+                          <i class="ftype video"> <span>{{v.cost}}</span> </i>
                           {%end%}
                         </a> 
                       </div>
                       <div class="rbox ">
                             <div class="rbox-inner"> 
                                 <div class="title-box"> 
-                                    <a class="atitle" target="_blank" href="/movie/detail/{{v._id}}.html"> {{article.title}}
+                                    <a class="atitle" target="_blank" href="/movie/detail/{{v.id}}.html"> {{v.title}}
                                     </a> 
                                 </div>
                                 <div class="tag-box">
-                                 {% if genres then %}
-                                    {% for i,v in ipairs(genres) do  %}
-                                      {%if i > 3 then%}
-                                      {% break;%}
-                                      {%end%}
+                                 {% if v.genres then %}
+                                    {% for i,v in ipairs(v.genres) do  %}
                                       <a target="_blank" class="lbtn-tag tag-size" 
                                       href="/movie/genre/{*string.encodeURI(v)*}.html">{{v}}</a>
                                     {% end  %}
                                   {% end %}
-                                  {%if rate then %}
-                                  <span class="tag-score tag-size">评分{{rate}}</span>
+                                  {%if v.rate then %}
+                                  <span class="tag-score tag-size">评分{{v.rate}}</span>
                                   {%end%}
-                                  {%if lpipe and lpipe.epmax then %}
-                                  <span class="tag-ep">第{{lpipe.epmax}}集</span>
+                                  {%if v.epmax then %}
+                                  <span class="tag-ep">第{{v.epmax}}集</span>
                                   {%end%}
                                 </div>  
                             </div>
@@ -100,7 +73,6 @@
                 </ul>
               </div>
               <div class="col-md-4 "> 
-      
                 <div class="wx-mp-box">
                     <h4 class="wx-mp-txt">微信<span style="color: blue;">扫一扫</span>下方二维码</span><br/>关注微信公众号<br/>最新热门资源及时获取</h4>
                     <div class="wx-mp-img">
@@ -172,5 +144,5 @@
     </div>
   </div>
 </div>
-
+<script src="{{static_host}}/assets/js/movie/home.js?v={{version}}"></script>
 {(decorator/footer.html)}

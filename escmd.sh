@@ -75,17 +75,17 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
 # '
 # exit 0
 
-# curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
-# {
-#   "from": 0,
-#   "size": 1,
-#   "query": {
-#       "match": {
-#         "title":"巴霍巴利王2"
-#       }
-#   }
-# }
-# '
+curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "from": 0,
+  "size": 1,
+  "query": {
+      "match": {
+        "_id":"m0483652730"
+      }
+  }
+}
+'
 # exit 0
 curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
@@ -187,13 +187,41 @@ curl -XPOST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
     "nested":{
       "path" : "targets",
       "query":{
-        "match": {"targets.id":"25580021"}
+        "match": {"targets.id":"57991420"}
       }
     }
     
   },
   "from": 0,
   "size": 2
+}
+ '
+
+ curl -XPOST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "nested": {
+            "path": "issueds",
+            "query": {
+              "match": {
+                "issueds.region": "4026763474"
+              }
+            }
+          }
+        },
+        {
+          "match": {
+            "title": "魔弦传说"
+          }
+        }
+      ]
+    }
+  },
+  "from": 0,
+  "size": 20
 }
  '
 #  exit 0
@@ -340,7 +368,7 @@ curl -XGET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 curl -XGET 'http://localhost:9200/link/_analyze?pretty' -d '
 {
   "field" : "title",
-  "text" : "[网剧][逆袭之星途璀璨][全50集][1080P][度盘秒离].torrent"
+  "text" : "海贼王800"
 }
 '
 curl -XGET 'http://localhost:9200/link/_search?pretty' -d '
@@ -353,3 +381,13 @@ curl -XGET 'http://localhost:9200/link/_search?pretty' -d '
   }
 }
 '
+
+curl -XGET "http://localhost:9200/link/_search?pretty" -d'
+{  
+    "size" : 10,  
+    "query": {
+       "match":{
+        "title" : "美国田园下的罪恶 An American Crime‎ (2007)"
+       }
+    }
+}'
