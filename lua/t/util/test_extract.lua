@@ -19,7 +19,8 @@ function tb:test_0find_episode()
         ["绯闻少女S03E10@圣城Lovebeans"] = 10,
         ["爸爸好奇怪【更新至六集】"] = 6,
         ["[我D前半生][2017][EP01-EP34][国语中字][MP4-MKV][720P]"] = 34,
-        ["我の前半生.2017.国剧更新（24）"] = 24
+        ["我の前半生.2017.国剧更新（24）"] = 24,
+        ["境界之轮回第二季[第04话].mkv"] = 4
     }
     for t,v in pairs(title_episods) do
         local e = util_extract.find_episode(t)

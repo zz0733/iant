@@ -101,7 +101,7 @@ function _M.find_episode(title)
     if not title then
         return
     end
-    local it = gmatch(title, "(更新至|连载至|EP)(?<num>["..STR_NUM_REG.."]+)[集]?","joi")
+    local it = gmatch(title, "(更新至|连载至|EP|第)(?<num>["..STR_NUM_REG.."]+)[集话]?","joi")
     local numbers = iterator_numbers(it)
     if #numbers > 0 then
         return max_number(numbers)
