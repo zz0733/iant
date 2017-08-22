@@ -7,10 +7,11 @@ curl -X POST 'http://127.0.0.1:9200/script/table/douban-movie-link/_update?prett
 '
 exit 0
 
-curl -X POST 'http://127.0.0.1:9200/channel/_delete_by_query?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/content/_delete_by_query?pretty' -d '
 {
   "query": {
-      "match_all": {
+      "match": {
+        "_id":"80040824"
       }
   }
 }
@@ -47,9 +48,9 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
   "size":10,
   "query": {
     "bool": {
-      "must_not": {
+      "must": {
         "exists": {
-          "field": "ctime"
+          "field": "scecret"
         }
       }
     }

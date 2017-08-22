@@ -327,6 +327,9 @@ curl -XPUT 'http://localhost:9200/content_v3/_mapping/table?pretty' -d '
     "lcount": {
       "type": "integer"
     },
+    "imagick": {
+      "type": "integer"
+    },
     "ctime": {
       "type": "date"
     },
