@@ -117,7 +117,7 @@ local message = ""
 for k,_ in ipairs(name_set) do
     message = message .. k .. "\n"
 end
-local file, err = io_open("nameout.txt", "w") 
+local file, err = io.open("nameout.txt", "w") 
 if file == nil then
     log(ERR,"saveFile["..path .. "] fail,cause:"..err)
 else
