@@ -113,16 +113,17 @@ if not scrollId then
     sourceClient:clearScroll(params)
 end
 
-local message = ""
-for k,_ in ipairs(name_set) do
-    message = message .."片名" .. "\t" .. k .. "\n"
-end
+
 local path = "/apps/deploy/iant/logs/names.txt"
 local file, err = io.open(path, "w") 
 if file == nil then
     log(ERR,"saveFile["..path .. "] fail,cause:"..err)
 else
-    file:write(message)
+    for kname,_ in ipairs(name_set) do
+        local line = "片名" .. "\t" .. tostring(kname)
+        log(ERR,"nameline:" .. line)
+        file:write(line, "\n")
+    end
     file:close()
 end
 ngx.say(message)
