@@ -119,7 +119,7 @@ local file, err = io.open(path, "w")
 if file == nil then
     log(ERR,"saveFile["..path .. "] fail,cause:"..err)
 else
-    for kname,_ in ipairs(name_set) do
+    for kname,_ in pairs(name_set) do
         local line = "片名" .. "\t" .. tostring(kname)
         log(ERR,"nameline:" .. line)
         file:write(line, "\n")
