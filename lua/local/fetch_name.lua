@@ -113,7 +113,7 @@ if not scrollId then
     sourceClient:clearScroll(params)
 end
 
-
+message = ""
 local path = "/apps/deploy/iant/logs/names.txt"
 local file, err = io.open(path, "w") 
 if file == nil then
