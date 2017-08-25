@@ -34,7 +34,8 @@ function handleData(hits,name_set)
             local title = article.title
             if title then
                 local titles= string.split(title, ' ')
-                title = titles[0]
+                title = titles[1]
+                log(ERR,"title:" .. tostring(title) .. ",len:" .. tostring(#titles))
                 if title then
                     name_set[title] = 1
                 end
@@ -111,8 +112,17 @@ if not scrollId then
     params.scroll_id = scrollId
     sourceClient:clearScroll(params)
 end
+
 local message = ""
 for k,_ in ipairs(name_set) do
     message = message .. k .. "\n"
 end
+local file, err = io_open("nameout.txt", "w") 
+if file == nil then
+    log(ERR,"saveFile["..path .. "] fail,cause:"..err)
+else
+    file:write(message)
+    file:close()
+end
 ngx.say(message)
+
