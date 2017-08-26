@@ -74,7 +74,7 @@ function handleData(hits)
     for _,v in ipairs(hits) do
         local _source = v._source
         local digests = _source.digests
-        -- log(ERR,"handle doc:" .. tostring(v._id))
+        log(ERR,"handle doc:" .. tostring(v._id) .. ",digests:" .. tostring(cjson_safe.encode(digests)))
         if digests then
             local bUpdate = false
             for _,dv in ipairs(digests) do
@@ -94,7 +94,7 @@ function handleData(hits)
                             suffix = m[0]
                         end
                         local name =   digest .. suffix
-                        dv.content =  'http://cdn.lezomao.com/img/' .. name
+                        dv.content =  'http://www.lezomao.com/img/' .. name
 
                         local img = magick.load_image_from_blob(imgBytes)
                         if img then
