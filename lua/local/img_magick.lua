@@ -54,6 +54,7 @@ function getImageByURL( url )
        ['Referer'] = 'https://movie.douban.com/',
        ['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36'
     }
+    local lastCode;
     for i=1,3 do
         local t = {}
         local params = {
@@ -63,15 +64,15 @@ function getImageByURL( url )
         params.headers = headers
         local _, code = http.request(params)
         if code == 200 then
-            return table.concat(t)
+            return table.concat(t),code
         elseif code == 404 then
-            log(ERR,"imgURL:"..tostring(url) .. ",code:" .. tostring(code) ..",retry:" .. tostring(i))
-            return nil
+            return nil,code
         else
             log(ERR,"imgURL:"..tostring(url) .. ",code:" .. tostring(code) ..",retry:" .. tostring(i))
         end
+        lastCode = code
     end
-    return nil
+    return nil,lastCode
 end
 function saveFile( path, bytes )
    local file, err = io_open(path, "w") 
@@ -92,14 +93,17 @@ function handleData(hits)
     for _,v in ipairs(hits) do
         local _source = v._source
         local digests = _source.digests
-        log(ERR,"handle doc:" .. tostring(v._id) .. ",digests:" .. tostring(cjson_safe.encode(digests)))
+        -- log(ERR,"handle doc:" .. tostring(v._id) .. ",digests:" .. tostring(cjson_safe.encode(digests)))
         if digests then
             local bUpdate = false
             for _,dv in ipairs(digests) do
                 if dv.sort == "img" then
                     local str_img = dv.content
                     str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                    local strBody = getImageByURL(str_img)
+                    local strBody, code = getImageByURL(str_img)
+                    if code == 404 then
+                        log(ERR,"id:"..tostring(v._id)..",imgURL:"..tostring(url) .. ",code:" .. tostring(code) )
+                    end
                     if strBody and string.len(strBody) > 0 then
                         local md5 = resty_md5:new()
                         md5:update(strBody)
@@ -169,6 +173,7 @@ local to_date = ngx.time()
 local from_date = to_date - 1*60*60
 local body = {
     _source = {"digests"},
+    sort = { ['article.year'] = { order = "desc"}},
     query = {
         bool = {
             must_not = {
