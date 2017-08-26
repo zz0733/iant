@@ -13,6 +13,8 @@ local args = ngx.req.get_uri_args()
 local http = require("socket.http")
 local magick = require("magick.gmwand")
 local lfs = require("lfs")
+local ltn12 = require("ltn12")
+
 
 local io_open = io.open
 local table_insert = table.insert
@@ -48,12 +50,28 @@ end
 
 
 function getImageByURL( url )
+    local headers  = { 
+       ['Referer'] = 'https://movie.douban.com/',
+       ['User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36'
+    }
     for i=1,3 do
-        local body, code = http.request(url)
+        local t = {}
+        local params = {
+            url = url,
+            sink = ltn12.sink.table(t)
+        }
+        params.headers = headers
+        local _, code = http.request(params)
         if code == 200 then
-            return body
+            return table.concat(t)
+        elseif code == 404 then
+            log(ERR,"imgURL:"..tostring(url) .. ",code:" .. tostring(code) ..",retry:" .. tostring(i))
+            return nil
+        else
+            log(ERR,"imgURL:"..tostring(url) .. ",code:" .. tostring(code) ..",retry:" .. tostring(i))
         end
     end
+    return nil
 end
 function saveFile( path, bytes )
    local file, err = io_open(path, "w") 
@@ -81,10 +99,10 @@ function handleData(hits)
                 if dv.sort == "img" then
                     local str_img = dv.content
                     str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                    local imgBytes = getImageByURL(str_img)
-                    if imgBytes then
+                    local strBody = getImageByURL(str_img)
+                    if strBody and string.len(strBody) > 0 then
                         local md5 = resty_md5:new()
-                        md5:update(imgBytes)
+                        md5:update(strBody)
                         local digest = md5:final()
                         digest = resty_string.to_hex(digest)
                         digest = string_sub(digest,9, 24)
@@ -96,7 +114,7 @@ function handleData(hits)
                         local name =   digest .. suffix
                         dv.content =  'http://www.lezomao.com/img/' .. name
 
-                        local img = magick.load_image_from_blob(imgBytes)
+                        local img = magick.load_image_from_blob(strBody)
                         if img then
                             -- log(ERR,"width:" .. img:get_width() .. ",height:" .. img:get_height());
                             for _,sv in ipairs(size_arr) do
