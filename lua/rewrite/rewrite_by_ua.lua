@@ -18,6 +18,9 @@ end
 if string.match(uri, "^/auth/") then
 	return
 end
+if string.match(uri, "^/img/") then
+	return
+end
 if string.match(uri, "\\.(xml|txt)$") then
 	return
 end

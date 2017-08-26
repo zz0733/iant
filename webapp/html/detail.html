@@ -43,6 +43,9 @@
 				                        end
 				                     end
 				                  end
+				                  if str_img and not string.match(str_img,"^http") then
+		                            str_img = '/img/' .. str_img
+		                          end
 						       %}
 						       <img src="{{str_img}}" 
 						       class="img-thumbnail movie-img" alt="{*_source.article.title*}"/>

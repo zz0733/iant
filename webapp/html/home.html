@@ -30,7 +30,10 @@
                {% if not data or not data.contents or #data.contents < 1 then %}
                   <li class="item-box">暂无内容推荐</li>
                {% else
-                    for i,v in ipairs(data.contents) do
+                  for i,v in ipairs(data.contents) do
+                     if v.img and not string.match(v.img,"^http") then
+                         v.img = '/img/154x100/' .. v.img
+                     end
                   %}
                   <li class="item-box">
                    <div class="item-inner">
@@ -110,6 +113,9 @@
                                    break
                                 end
                              end
+                          end
+                          if str_img and not string.match(str_img,"^http") then
+                            str_img = '/img/154x100/' .. str_img
                           end
                           local lcount = source.lcount or 0
                       %}

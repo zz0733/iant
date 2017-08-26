@@ -26,6 +26,9 @@
                <ul class="feed-ul">
                {%
                 for i,v in ipairs(data.contents) do
+                   if v.img and not string.match(v.img,"^http") then
+                      v.img = '/img/130x90/' .. v.img
+                   end
                 %}
                   <li class="item-box">
                    <div class="item-inner">
