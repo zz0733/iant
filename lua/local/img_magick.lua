@@ -87,7 +87,8 @@ function getImageByURL( url )
         local httpc = http.new()
         local resp, err = httpc:request_uri(url, {
             method = "GET",
-            headers = headers
+            headers = headers,
+            ssl_verify = false
           })
         if not resp then
             log(ERR,"imgURL:"..tostring(url) .. ",cause:" .. tostring(err) ..",retry:" .. tostring(i))
