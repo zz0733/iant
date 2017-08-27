@@ -232,7 +232,7 @@ local scrollId = nil
 local index = 0
 local total = nil
 local begin = ngx.now()
-while false do
+while true do
      index = index + 1;
      local data,err;
      local start = ngx.now()
@@ -270,15 +270,15 @@ if not scrollId then
     params.scroll_id = scrollId
     sourceClient:clearScroll(params)
 end
-local hits = {}
-local digests = {}
-local digest = { sort = "img", content = "https://img1.doubanio.com/view/movie_poster_cover/lpst/public/p2424225097.webp"}
--- local digest = { sort = "img", content = "https://holmesian.org/usr/themes/Holmesian/image/avatar.jpg"}
-table_insert(digests,digest)
-local hit = { _id = 1, _source = {
-    digests = digests
-}}
-table_insert(hits,hit)
-handleData(hits)
+-- local hits = {}
+-- local digests = {}
+-- local digest = { sort = "img", content = "https://img1.doubanio.com/view/movie_poster_cover/lpst/public/p2424225097.webp"}
+-- -- local digest = { sort = "img", content = "https://holmesian.org/usr/themes/Holmesian/image/avatar.jpg"}
+-- table_insert(digests,digest)
+-- local hit = { _id = 1, _source = {
+--     digests = digests
+-- }}
+-- table_insert(hits,hit)
+-- handleData(hits)
 local body = cjson_safe.encode(message)
 ngx.say(body)
