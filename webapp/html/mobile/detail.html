@@ -96,6 +96,7 @@
 		                          local str_img = ngx.re.sub(v.content, "[%.]webp", ".jpg")
 		                          if str_img and not string.match(str_img,"^http") then
 		                            str_img = "/img/" .. str_img
+		                            str_img = ngx.re.sub(str_img, "http:", "https:")
 		                          end
 		                          local str_title = v.title
 							      %}  <img src="{{str_img}}" class="digest-img" alt="{{str_title}}" >  {%
@@ -116,6 +117,7 @@
 		                          local str_img = ngx.re.sub(v.content, "[%.]webp", ".jpg")
 		                          if str_img and not string.match(str_img,"^http") then
 		                            str_img = '/img/' .. str_img
+		                            str_img = ngx.re.sub(str_img, "http:", "https:")
 		                          end
 		                          local str_title = v.text or ""
 							      %}  <img src="{{str_img}}" class="content-img" alt="{{str_title}}" > {%

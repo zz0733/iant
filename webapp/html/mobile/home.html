@@ -28,6 +28,7 @@
                 for i,v in ipairs(data.contents) do
                    if v.img and not string.match(v.img,"^http") then
                       v.img = '/img/130x90/' .. v.img
+                      v.img = ngx.re.sub(v.img, "http:", "https:")
                    end
                 %}
                   <li class="item-box">

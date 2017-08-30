@@ -8,7 +8,7 @@ local decodeURI = ngx.unescape_uri
 
 local content_dao = require "dao.content_dao"
 
-
+local ngx_re_sub = ngx.re.sub
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -79,7 +79,8 @@ if method == "home" then
            for _,v in ipairs(digests) do
               if v.sort == 'img' then
                  str_img = v.content
-                 str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                 str_img = ngx_re_sub(str_img, "[%.]webp", ".jpg")
+                 str_img = ngx_re_sub(str_img, "http:", "https:")
                  break
               end
            end

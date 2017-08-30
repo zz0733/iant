@@ -45,6 +45,7 @@
                         if v.sort == 'img' then
                            str_img = v.content
                            str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                           str_img = ngx.re.sub(str_img, "http:", "https:")
                            break
                         end
                      end
