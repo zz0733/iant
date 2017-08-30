@@ -31,8 +31,8 @@
                   <li class="item-box">暂无内容推荐</li>
                {% else
                   for i,v in ipairs(data.contents) do
-                     if v.img and not string.match(v.img,"^http") then
-                         v.img = '/img/154x100/' .. v.img
+                     if v.img then
+                         v.img = ngx.re.sub(v.img, "/img/", "/img/154x100/")
                          v.img = ngx.re.sub(v.img, "http:", "https:")
                      end
                   %}
@@ -115,8 +115,9 @@
                                 end
                              end
                           end
-                          if str_img and not string.match(str_img,"^http") then
-                            str_img = '/img/154x100/' .. str_img
+                          if str_img then
+                            str_img = ngx.re.sub(str_img, "/img/", "/img/154x100/")
+                            str_img = ngx.re.sub(str_img, "http:", "https:")
                           end
                           local lcount = source.lcount or 0
                       %}
