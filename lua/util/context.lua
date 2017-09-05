@@ -22,6 +22,7 @@ _M.AUTH_WX_MSG_AESKEY = os.getenv("AUTH_WX_MSG_AESKEY")
 _M.AUTH_WX_MSG_AESKEY_LAST = os.getenv("AUTH_WX_MSG_AESKEY_LAST")
 
 _M.IMG_DIR = os.getenv("IMG_DIR")
+_M.CDN_URI = os.getenv("CDN_URI")
 
 
 _M.AUTH_WX_MSG_AESKEY = decode_base64(_M.AUTH_WX_MSG_AESKEY .. "=")

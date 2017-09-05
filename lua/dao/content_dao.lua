@@ -1,6 +1,7 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
+local util_context = require "util.context"
 local ESClient = require "es.ESClient"
 
 
@@ -10,6 +11,32 @@ local CRIT = ngx.CRIT
 
 local _M = ESClient:new({index = "content", type = "table"})
 _M._VERSION = '0.01'
+
+-- local origin_search = _M:search;
+
+function _M:search(body)
+ local resp, status = _M.client:search{
+    index = _M.index,
+    type = _M.type,
+    body = body
+  }
+  if resp and resp.hits and resp.hits.hits then
+  	local hits = resp.hits.hits
+  	for i,v in ipairs(hits) do
+  		local _source = v._source
+  		if _source.digests then
+  			local digests = _source.digests
+  			for _,dv in ipairs(digests) do
+  				-- dv.content = '/img/a9130b4f2d5e7acd.jpg'
+  				if dv.sort == 'img' and string.match(dv.content,"^/img/") then
+  					dv.content = util_context.CDN_URI .. dv.content
+  				end
+  			end
+  		end
+  	end
+  end
+  return resp, status
+end
 
 function _M:query_by_codes(from, size, codes, fields )
   if not codes then

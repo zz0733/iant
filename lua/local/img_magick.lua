@@ -148,7 +148,7 @@ function handleData(hits)
                             suffix = m[0]
                         end
                         local name =   digest .. suffix
-                        dv.content =  'http://www.lezomao.com/img/' .. name
+                        dv.content =  '/img/' .. name
 
                         local img = magick.load_image_from_blob(strBody)
                         log(ERR,"load_image:"..tostring(img)..",bodyLen:"..tostring(string.len(strBody)))
@@ -160,7 +160,9 @@ function handleData(hits)
                                     sizeDir = util_context.IMG_DIR .."/origin"
                                  else
                                     sizeDir = util_context.IMG_DIR .."/" .. tostring(sv.w) .."x"..tostring(sv.h)
-                                    img:resize(sv.w, sv.h)
+                                    -- img:resize(sv.w, sv.h)
+                                    -- img:crop(sv.w, sv.h, x, y)
+                                    img:resize_and_crop(sv.w, sv.h)
                                  end
                                  lfs.mkdir(sizeDir)
                                  local newPath = sizeDir.."/".. name
@@ -272,7 +274,7 @@ if not scrollId then
 end
 -- local hits = {}
 -- local digests = {}
--- local digest = { sort = "img", content = "https://img1.doubanio.com/view/movie_poster_cover/lpst/public/p2424225097.webp"}
+-- local digest = { sort = "img", content = "https://www.lezomao.com/img/a9130b4f2d5e7acd.jpg"}
 -- -- local digest = { sort = "img", content = "https://holmesian.org/usr/themes/Holmesian/image/avatar.jpg"}
 -- table_insert(digests,digest)
 -- local hit = { _id = 1, _source = {
