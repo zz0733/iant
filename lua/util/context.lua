@@ -43,4 +43,11 @@ function _M.version(new_ver)
    return ver or _M.version(ngx.time())
 end
 
+function _M.withGlobal(ctx)
+   ctx = ctx or {}
+   ctx.version = _M.version()
+   ctx.static_host = _M.CDN_URI
+   return ctx
+end
+
 return _M

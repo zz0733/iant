@@ -46,7 +46,7 @@ header.title = qWord .. "-搜索结果,为你所用，才是资讯 - 狸猫资�
 
 local content_doc = {}
 content_doc.header = header
-content_doc.version = context.version()
+context.withGlobal(content_doc)
 content_doc.qWord  = qWord
 content_doc.hits  = hits
 content_doc.base_uri  = ngx.var.uri .. "?q=" .. string.encodeURI(qWord)

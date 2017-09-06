@@ -85,7 +85,7 @@ local randomWord = buildSearchWord(data.contents)
 
 local content_doc = {}
 content_doc.header = buildHeader()
-content_doc.version = context.version()
+context.withGlobal(content_doc)
 content_doc.data  = data
 content_doc.qWord  = randomWord
 

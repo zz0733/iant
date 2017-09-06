@@ -87,7 +87,7 @@ if issueds then
 end
 crumbs[#crumbs + 1] = {name = year, link1 = "/movie/year/" .. tostring(year)  ..".html"}
 content_doc.header = dochtml.detail_header(content_doc)
-content_doc.version = context.version()
+context.withGlobal(content_doc)
 content_doc.crumbs   = crumbs
 -- content_doc.link_hits  = link_hits
 content_doc.recmd_map  = recmd_map

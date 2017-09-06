@@ -78,9 +78,9 @@ if resp and resp.status ~= 200 then
 end
 local message = cjson_safe.decode(resp.body)
 local data = message.data
-local randomWord = buildSearchWord(data.contents)
--- log(ERR,"data:"..tostring(cjson_safe.encode(data)))
+log(ERR,"data:"..tostring(cjson_safe.encode(data)))
 -- log(ERR,"randomWord:"..tostring(randomWord))
+local randomWord = buildSearchWord(data.contents)
 
 local movie_codes  = getContentByChannel("movie","正在热播",30)
 local from = 0
@@ -98,7 +98,7 @@ end
 
 local content_doc = {}
 content_doc.header = buildHeader()
-content_doc.version = context.version()
+context.withGlobal(content_doc)
 content_doc.data  = data
 content_doc.playing_movie = playing_movie
 content_doc.qWord  = randomWord

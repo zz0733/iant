@@ -42,7 +42,7 @@ log(ERR,"cjson_safe:" .. cjson_safe.encode(link_doc))
 content_doc.header = {
    title = "正在前往百度云"
 }
-content_doc.version = context.version()
+context.withGlobal(content_doc)
 content_doc.link_doc  = cjson_safe.encode(link_doc)
 
 template.render("jumper.html", content_doc)

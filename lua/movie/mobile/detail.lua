@@ -120,7 +120,7 @@ end
 crumbs[#crumbs + 1] = {name = year, link1 = "/year/" .. tostring(year)}
 content_doc.header = dochtml.detail_header(content_doc)
 content_doc.header.canonical = "http://www.lezomao.com/m/movie/detail/"..tostring(id) .. ".html"
-content_doc.version = context.version()
+context.withGlobal(content_doc)
 content_doc.crumbs   = crumbs
 content_doc.link_hits  = link_hits
 content_doc.recmd_map  = recmd_map

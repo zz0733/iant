@@ -21,7 +21,7 @@ end
 if string.match(uri, "^/img/") then
 	return
 end
-if string.match(uri, "\\.(xml|txt)$") then
+if string.match(uri, "\\.(xml|txt|ico)$") then
 	return
 end
 local user_agent = ngx.req.get_headers().user_agent
