@@ -80,7 +80,10 @@ local message = cjson_safe.decode(resp.body)
 local data = message.data
 -- log(ERR,"data:"..tostring(cjson_safe.encode(data)))
 -- log(ERR,"randomWord:"..tostring(randomWord))
-local randomWord = buildSearchWord(data.contents)
+local randomWord
+if data and  data.contents then
+	buildSearchWord(data.contents)
+end
 
 local movie_codes  = getContentByChannel("movie","正在热播",30)
 local from = 0

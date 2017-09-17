@@ -59,6 +59,11 @@ $document.ready(function() {
 		   	       if(hasData) {
 						for (var ci = 0; ci < contents.length; ci++) {
 							var content = contents[ci]
+							var idPath = 'a[href*="/'+content.id+'.html"]'
+							var oEls = $(idPath);
+							if (oEls.length > 0) {
+								continue
+							}
 							var destHtml = template;
 							var genre_html = ""
 							if(content.genres) {
