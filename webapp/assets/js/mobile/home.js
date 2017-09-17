@@ -59,6 +59,11 @@ $document.ready(function() {
 		   	       if(hasData) {
 						for (var i = 0; i < contents.length; i++) {
 							var content = contents[i]
+							var idPath = '.item-inner a[href*="/'+content.id+'.html"]'
+							var oEls = $(idPath);
+							if (oEls.length > 0) {
+								continue
+							}
 							var destHtml = template
 							destHtml = destHtml.replace('{{id}}',content.id)
 							destHtml = destHtml.replace(/{{title}}/gm,content.title)
