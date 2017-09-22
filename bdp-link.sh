@@ -14,7 +14,7 @@ TASK_URL=$1
 PARAMS="{\"retry\":{\"total\":10}}"
 LEVEL=2
 if [[ $# -gt 1 ]]; then
-	PARAMS="{\"retry\":{\"total\":5},\"secret\":$2}" 2
+	PARAMS="{\"retry\":{\"total\":5},\"secret\":$2}"
 fi
 if [[ $# -gt 2 ]]; then
 	LEVEL=$3
