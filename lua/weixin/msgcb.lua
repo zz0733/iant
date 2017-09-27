@@ -90,6 +90,14 @@ if req_method == "POST" then
 			        }
 			    }
     		table.insert(shoulds, should)
+    		local must_not_arr = {} 
+    		table.insert(must_not_arr, {
+	            match = { status = -1 }
+	        })
+			table.insert(must_not_arr, {
+	            regexp = { link = "ftp:.*" }
+	        })
+
     		local sorts = {}
     		local sort = {_score = {order = "desc"}}
     		table.insert(sorts, sort)
@@ -104,9 +112,7 @@ if req_method == "POST" then
 						query = {
 						  bool = {
 						    should = shoulds,
-						    must_not = {
-					            match = { status = -1 }
-					        }
+						    must_not = must_not_arr
 						  }
 						},
 						script_score = {

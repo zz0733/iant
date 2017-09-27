@@ -1,0 +1,100 @@
+{(decorator/header.html)}
+
+<link rel="canonical" href="{*context.header.canonical*}"/>
+<meta name="description" content="{*context.header.description*}"/>
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+<link rel="stylesheet" href="{{static_host}}/assets/css/primer-tips.css?v={{version}}">
+<!-- <script type="text/javascript" src="{{static_host}}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
+ -->
+</head>
+
+<body class="torrent-body">
+
+{(decorator/navbar.html)}
+{(decorator/blankbar.html)}
+
+
+<div id="main-container" class="container clearfix">
+  <div class="post-left">
+    <div class="post-main">
+      <div class="post-share">
+          {%
+            local content =  "《" .. link_doc.title .."》"
+            content = content .. "，免费资源为你所用.©狸猫资讯lezomao.com"
+            local encode_title = string.encodeURI(content)
+          %}
+          <a href="http://service.weibo.com/share/share.php?appkey={*config.weibo_app_key*}&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;ralateUid={*config.weibo_uid*}&amp;source=狸猫资讯&amp;sourceUrl=http%3A%2F%2Fwww.lezomao.com&amp;content=utf8&amp;searchPic=false&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_sina.png"></a>
+          <a href="http://www.jiathis.com/send/?webid=tqq&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_tengwb.png"></a>
+          <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_wx.png"></a>
+          <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_friend.png"></a>
+          <a href="http://www.jiathis.com/send/?webid=renren&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_renren.png"></a>
+      </div>
+      <h1 class="post-title">
+          {{link_doc.title}}
+      </h1>
+      <div class="post-con">
+        
+      </div>
+      <div class="post-body">
+        <input type="hidden"  id="link" value="{{link_doc.link}}">
+        <div class="msg-body" >
+          {%
+            local link =  link_doc.link
+            local maxLen = 80
+            local linkHtml = ''
+            if link_doc.secret then
+               if string.len(link) > maxLen then
+                   link =  string.sub(link,1, maxLen)
+                   link = link .. '...'
+               end
+               linkHtml = link .. '<span>&nbsp;密码:<strong id="post-copy">'..link_doc.secret .. '</strong></span>'
+            else 
+               linkHtml = '<span id="post-copy">'.. link .. '</span>'
+            end
+          %}
+           <div class="post-msg">
+               {*linkHtml*}
+           </div>
+           <button class="btn-clipboard" data-clipboard-action="copy" data-clipboard-target="#post-copy">
+            {%
+                local clipName = '复制链接'
+                if link_doc.secret then
+                   clipName = '复制密码'
+                end
+            %}
+            {{clipName}}
+           </button>
+        </div>
+
+        <div class="btn-list">
+          {%
+              local btnHtml;
+              if string.match(link_doc.id,"^b[0-9]+") then
+                  btnHtml = '<button class="btn-down" >百度云盘</button>'
+              else
+                  btnHtml = ''
+                  btnHtml = btnHtml .. '<button class="btn-down" >百度离线</button>'
+                  btnHtml = btnHtml .. '<button class="btn-down" >迅雷离线</button>'
+                  btnHtml = btnHtml .. '<button class="btn-down" >迅雷下载</button>'
+              end
+          %}
+          {*btnHtml*}
+        </div>
+      </div>
+      <div class="post-tag">
+        
+      </div>
+
+    </div>
+  </div>
+  <div class="post-right">
+
+  </div>
+</div>
+<script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/clipboard.min.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/movie/torrent.js?v={{version}}"></script>
+
+
+{(decorator/footer.html)}
