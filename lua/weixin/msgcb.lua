@@ -97,6 +97,10 @@ if req_method == "POST" then
 			table.insert(must_not_arr, {
 	            regexp = { link = "ftp:.*" }
 	        })
+	        table.insert(must_not_arr, {
+	            regexp = { link = "ed2k:.*" }
+	        })
+	        
 
     		local sorts = {}
     		local sort = {_score = {order = "desc"}}

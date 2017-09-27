@@ -82,14 +82,15 @@ $(document).ready(function() {
 							str_index += curIndex;
 			                var icon_cls = "icon10";
 			                var str_time = "2017-05-03";
-			                var btn_txt = "迅雷下载";
+			                var btn_txt = "链接资源";
 			                var id = hit._id;
 			                var v_source = hit._source;
 			                var update_time = v_source.ctime
 			                var link_tempate = '<button type="button" class="btn target-btn" tid= "{{v._id}}">{{btn_txt}}</button>'
+			                var link_tempate = '<a href="/movie/torrent/{{v._id}}.html" rel="nofollow" target="_blank" role="button" class="btn target-btn" >{{btn_txt}}</a>'
 				            if(/^b[0-9]+$/.test(id)){
 								 btn_txt = "百度云盘";
-								 link_tempate = '<a href="/movie/jumper/{{v._id}}.html" rel="nofollow" target="_blank" role="button" class="btn target-btn" >{{btn_txt}}</a>'
+								 link_tempate = '<a href="/movie/torrent/{{v._id}}.html" rel="nofollow" target="_blank" role="button" class="btn target-btn" >{{btn_txt}}</a>'
 								 if (v_source.space && (v_source.space ==0 || v_source.space == 1024)){
  					                  icon_cls = "icon61"
 								 }
