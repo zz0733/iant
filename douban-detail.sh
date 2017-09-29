@@ -11,7 +11,7 @@ if [[ -f $SOURCE_FILE ]]; then
 	source $SOURCE_FILE
 fi
 TASK_URL=$1
-PARAMS="{\"retry\":{\"total\":10}}"
+PARAMS="{\"retry\":{\"total\":10},\"_doc_cmd\":\"update\"}"
 LEVEL=2
 if [[ $# -gt 1 ]]; then
 	PARAMS=$1
