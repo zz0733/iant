@@ -518,7 +518,7 @@ a.tag-name:hover {
     background-color: #fff;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
     margin-bottom: 25px;
-    padding: 20px 30px 30px;
+    padding: 10px 15px 15px;
 }
 .post-share {
     height: 34px;
@@ -527,17 +527,24 @@ a.tag-name:hover {
 }
 
 h1.post-title {
-    padding-left: 30px;
+    padding-left: 8px;
     border-left: 4px solid #2689ff;
     color: #393939;
-    font-size: 24px;
-    line-height: 32px;
-    margin-top: 0px;
+    font-size: 20px;
+    line-height: 1.5em;
+
+    margin-top: 1px;
     margin-bottom: 15px;
-    margin-left: -32px;
-    margin-right: 184px;
-    padding-bottom: 6px;
-    padding-top: 6px;
+    padding-top: 1px;
+    padding-bottom: 1px;
+    max-width: 280px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    word-break:break-all;
+    word-wrap: break-word;
 }
 
 .post-msg {
@@ -554,7 +561,7 @@ h1.post-title {
     color: #333;
     word-break: break-all;
     background-color: #f5f5f5;
-    max-width: 50%;
+    max-width: 240px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
