@@ -5,8 +5,9 @@
 <meta name="keywords" content="{*context.header.keywords*}" />
 <meta name="title" content="{*context.header.title*}" />
 <link rel="stylesheet" href="{{static_host}}/assets/css/primer-tips.css?v={{version}}">
-<!-- <script type="text/javascript" src="{{static_host}}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
- -->
+<link rel="stylesheet" href="{{static_host}}/assets/css/bootstrap-tour.min.css?v={{version}}">
+<script src="//cdn.bootcss.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+ 
 </head>
 
 <body class="torrent-body">
@@ -36,7 +37,7 @@
       <div class="post-con">
         
       </div>
-      <div class="post-body">
+      <div class="post-body" >
         <input type="hidden"  id="link" value="{{link_doc.link}}">
         <div class="msg-body" >
           {%
@@ -56,7 +57,7 @@
            <div class="post-msg">
                {*linkHtml*}
            </div>
-           <button class="btn-clipboard" data-clipboard-action="copy" data-clipboard-target="#post-copy">
+           <button class="btn-clipboard" data-clipboard-action="copy" data-clipboard-target="#post-copy" id="btn-copy">
             {%
                 local clipName = '复制链接'
                 if link_doc.secret then
@@ -67,7 +68,7 @@
            </button>
         </div>
 
-        <div class="btn-list">
+        <div class="btn-list" id="btn-list">
           {%
               local btnHtml;
               if string.match(link_doc.id,"^b[0-9]+") then
@@ -91,10 +92,17 @@
   <div class="post-right">
 
   </div>
+  <div id="content">
+    Hello, World!
 </div>
+<br><br><br>
+<div id="content1">
+    Another Hello, World!
+</div>
+</div>
+<script src="{{static_host}}/assets/js/bootstrap-tour.min.js?v={{version}}"></script>
 <script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
 <script src="{{static_host}}/assets/js/clipboard.min.js?v={{version}}"></script>
 <script src="{{static_host}}/assets/js/movie/torrent.js?v={{version}}"></script>
-
 
 {(decorator/footer.html)}
