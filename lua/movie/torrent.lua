@@ -53,4 +53,8 @@ content_doc.config  = {
 	weibo_uid = context.weibo_uid,
 	weibo_app_key = context.weibo_app_key
 }
-template.render("torrent.html", content_doc)
+if string.match(uri,"^/m/") then
+	template.render("mobile/torrent.html", content_doc)
+else
+	template.render("torrent.html", content_doc)
+end
