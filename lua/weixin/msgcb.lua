@@ -145,12 +145,13 @@ if req_method == "POST" then
 				if string.match(v._id,"^b") and not string.match(link,"^http")  then
 					link = "https://pan.baidu.com/s/" .. link;
 				else
-					link = string.encodeURI(link)
+					-- link = string.encodeURI(link)
+					link = "https://lezomao.com/movie/torrent/" ..v._id ..".html"
 				end
-				msg = msg .. "\n" .. link
 				if source.secret then
 					msg = msg .. " 密码:" .. source.secret
 				end
+				msg = msg .. "\n" .. link
 				table.insert(msg_arr,msg)
 				msg_count = msg_count + 1
 			end

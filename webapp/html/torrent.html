@@ -57,7 +57,8 @@
            <div class="post-msg">
                {*linkHtml*}
            </div>
-           <button class="btn-clipboard" data-clipboard-action="copy" data-clipboard-target="#post-copy" id="btn-copy">
+           <button class="btn-clipboard" data-clipboard-action="copy" data-clipboard-target="#post-copy" 
+            id="btn-copy">
             {%
                 local clipName = '复制链接'
                 if link_doc.secret then
@@ -92,13 +93,6 @@
   <div class="post-right">
 
   </div>
-  <div id="content">
-    Hello, World!
-</div>
-<br><br><br>
-<div id="content1">
-    Another Hello, World!
-</div>
 </div>
 <script src="{{static_host}}/assets/js/bootstrap-tour.min.js?v={{version}}"></script>
 <script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>

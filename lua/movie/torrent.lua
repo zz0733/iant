@@ -41,7 +41,7 @@ local return_obj = cjson_safe.decode(resp.body)
 local link_doc = return_obj.data
 
 -- log(ERR,"cjson_safe:" .. cjson_safe.encode(link_doc))
-
+-- link_doc.secret = 'secret21e'
 local content_doc = {}
 content_doc.header = {
    title = '免费下载:' .. link_doc.title .. ",为你所用才是资讯"

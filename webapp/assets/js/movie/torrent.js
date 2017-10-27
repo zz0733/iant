@@ -1,22 +1,25 @@
 var $document = $(document);
 $document.ready(function() {
-     	initClipboard()
-
+     initClipboard()
 		$('.btn-down:contains(百度离线)').on('click',function(){
              var self = this
              var toURL= 'http://pan.baidu.com/disk/home'
-             // window.open(toURL)
-                  		 initTour()
-
+             doCopy()
+             window.open(toURL)
+        		 // initTour()
 		})
 		$('.btn-down:contains(百度云盘)').on('click',function(){
              var self = this
              var toURL= $('#link').val()
+             if($('#btn-copy:contains("复制密码")').size() > 0){
+               doCopy()
+             }
              window.open(toURL)
 		})
 		$('.btn-down:contains(迅雷离线)').on('click',function(){
              var self = this
              var toURL= 'http://lixian.xunlei.com/xl9/space.html'
+             doCopy()
              window.open(toURL)
 		})
 		$('.btn-down:contains(迅雷下载)').on('click',function(){
@@ -25,9 +28,15 @@ $document.ready(function() {
              var toURL = urlcodesc.encode(toURL, "thunder");
              window.location.href = toURL
 		})
-
-
+    if(/\/movie\/torrent\/b[0-9]+\.html$/.test(location.pathname) 
+        && $('#btn-copy:contains("复制密码")').size() < 1){
+             $('.btn-down:contains(百度云盘)').click()
+    }
 });
+
+function doCopy(){
+  $('#btn-copy').select().click()
+}
 
 function initClipboard(){
 	var btnClips = document.querySelectorAll('.btn-clipboard');
@@ -101,7 +110,7 @@ var tour = new Tour({
   onResume: function (tour, duration) {},
   onRedirectError: function (tour) {}
 });
-tour.addStep({
+  tour.addStep({
     element: "#btn-copy",
     placement: "right",
     title: "第一步",
@@ -114,9 +123,9 @@ tour.addStep({
     content: "②获取资源"
   })
     console.log('init.......')
-	// Initialize the tour
-	tour.init();
-console.log('start.......')
-	// Start the tour
-	tour.start(true);
+  // Initialize the tour
+  tour.init();
+  console.log('start.......')
+  // Start the tour
+  tour.start(true);
 }
