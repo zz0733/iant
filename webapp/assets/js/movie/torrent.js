@@ -5,7 +5,7 @@ $document.ready(function() {
              var self = this
              var toURL= 'http://pan.baidu.com/disk/home'
              doCopy()
-             window.open(toURL)
+             openPage(toURL)
         		 // initTour()
 		})
 		$('.btn-down:contains(百度云盘)').on('click',function(){
@@ -20,7 +20,7 @@ $document.ready(function() {
              var self = this
              var toURL= 'http://lixian.xunlei.com/xl9/space.html'
              doCopy()
-             window.open(toURL)
+             openPage(toURL)
 		})
 		$('.btn-down:contains(迅雷下载)').on('click',function(){
              var self = this
@@ -33,6 +33,18 @@ $document.ready(function() {
              $('.btn-down:contains(百度云盘)').click()
     }
 });
+
+function openPage(toURL){
+  if (isMobile()) {
+      window.location.href = toURL
+  } else {
+      window.open(toURL)
+  }
+}
+
+function isMobile(){
+  return /^\/m\/movie/.test(location.pathname) 
+}
 
 function doCopy(){
   $('#btn-copy').select().click()

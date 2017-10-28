@@ -499,18 +499,16 @@ a.tag-name:hover {
     min-height: 220px;
     margin-left: auto;
     margin-right: auto;
-    min-height: 600px;
     padding-bottom: 30px;
     padding-top: 30px;
     position: relative;
-    width: 1180px;
+    width: 100%;
     z-index: 1;
 }
 
 
 .post-left {
     float: left;
-    width: 860px;
     margin: 0;
     padding: 0;
 }
