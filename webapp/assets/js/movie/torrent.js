@@ -13,8 +13,11 @@ $document.ready(function() {
              var toURL= $('#link').val()
              if($('#btn-copy:contains("复制密码")').size() > 0){
                doCopy()
+               window.open(toURL)
+             } else {
+               window.location.href = toURL
              }
-             window.open(toURL)
+            
 		})
 		$('.btn-down:contains(迅雷离线)').on('click',function(){
              var self = this
