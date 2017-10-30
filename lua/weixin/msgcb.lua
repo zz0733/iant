@@ -192,7 +192,7 @@ if req_method == "POST" then
 		end
 		validateLink(content, resp)
 		local msg_arr = toMessageArr(resp.hits.hits, 8)
-		local tips = "友情提示: 非百度云链接，可以复制链接，前往百度云离线下载或迅雷下载获取资源哟"
+		local tips = "友情提示: 如果链接失效，请留言或过会再来看看，也可以点击下面链接到官网获取资源哟\nhttps://lezomao.com"
 		table.insert(msg_arr,tips)
 		msg_content = table.concat(msg_arr, "\n\n")
 	else
