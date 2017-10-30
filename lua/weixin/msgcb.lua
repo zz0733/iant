@@ -162,7 +162,7 @@ if req_method == "POST" then
 		end
 		function toMessageArr( hits, maxCount )
 			local msg_arr = {}
-			if hits then
+			if not hits then
 				return msg_arr
 			end
 			maxCount = maxCount or 8
