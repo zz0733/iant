@@ -148,10 +148,13 @@ if req_method == "POST" then
 				local level = 3
 				local retry = 5
 				local resp, status, count = task_service:create_task_by_links(hits, level, retry)
-				local sresp = cjson_safe.encode(resp)
+				local sresp = "OK"
+				if resp.errors then
+					sresp = cjson_safe.encode(resp)
+				end
 				log(ERR,"create_task,query:" .. tostring(query) 
 					.. ",hits:" .. tostring(#hits) .. ",task:" .. tostring(count) 
-					.. ",resp:" .. tostring(sresp) .. ",status:" .. tostring(status))
+					.. ",status:" .. tostring(status) .. ",resp:" .. tostring(sresp))
 			end
 			-- seconds
 			local ttl = 24 * 60 * 60
