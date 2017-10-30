@@ -84,12 +84,12 @@ if req_method == "POST" then
 	local content = xml_node.Content:ownValue()
 	local resp
     if content then
-    	function query_by_content( content )
+    	function query_by_content( content, total )
     		if not content then
     			return
     		end
     		local from = 0
-		    local size = 8
+		    local size = total
     		local shoulds = {}
     		local should = {
 			        match = {
@@ -136,7 +136,7 @@ if req_method == "POST" then
 			local resp, status = link_dao:search(body)
 			return resp, status
     	end
-		resp = query_by_content(content)
+		resp = query_by_content(content, 20)
     end
 	local msg_content = ""
 	local msg_count = 0;
@@ -160,29 +160,38 @@ if req_method == "POST" then
 			local ttl = 24 * 60 * 60
 			wx_msg_dict:set(query, 1, ttl) 
 		end
-		validateLink(content, resp)
-		local hits = resp.hits.hits
-		local msg_arr = {}
-		for _,v in ipairs(hits) do
-			local source = v._source;
-			local link = source.link
-			if link then
-				local msg = "("..(#msg_arr + 1)..")."
-				msg = msg .. source.title
-				if string.match(v._id,"^b") and not string.match(link,"^http")  then
-					link = "https://pan.baidu.com/s/" .. link;
-				else
-					-- link = string.encodeURI(link)
-					link = "https://lezomao.com/movie/torrent/" ..v._id ..".html"
-				end
-				if source.secret then
-					msg = msg .. " 密码:" .. source.secret
-				end
-				msg = msg .. "\n" .. link
-				table.insert(msg_arr,msg)
-				msg_count = msg_count + 1
+		function toMessageArr( hits, maxCount )
+			local msg_arr = {}
+			if hits then
+				return msg_arr
 			end
+			maxCount = maxCount or 8
+			for _,v in ipairs(hits) do
+				local source = v._source;
+				local link = source.link
+				if link then
+					local msg = "("..(#msg_arr + 1)..")."
+					msg = msg .. source.title
+					if string.match(v._id,"^b") and not string.match(link,"^http")  then
+						link = "https://pan.baidu.com/s/" .. link;
+					else
+						-- link = string.encodeURI(link)
+						link = "https://lezomao.com/movie/torrent/" ..v._id ..".html"
+					end
+					if source.secret then
+						msg = msg .. " 密码:" .. source.secret
+					end
+					msg = msg .. "\n" .. link
+					table.insert(msg_arr,msg)
+					if #msg_arr >= maxCount then
+						return msg_arr
+					end
+				end
+			end
+			return msg_arr
 		end
+		validateLink(content, resp)
+		local msg_arr = toMessageArr(resp.hits.hits, 8)
 		local tips = "友情提示: 非百度云链接，可以复制链接，前往百度云离线下载或迅雷下载获取资源哟"
 		table.insert(msg_arr,tips)
 		msg_content = table.concat(msg_arr, "\n\n")
