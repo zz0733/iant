@@ -157,7 +157,7 @@ if req_method == "POST" then
 					.. ",status:" .. tostring(status) .. ",resp:" .. tostring(sresp))
 			end
 			-- seconds
-			local ttl = 24 * 60 * 60
+			local ttl = 2 * 60 * 60
 			wx_msg_dict:set(query, 1, ttl) 
 		end
 		function toMessageArr( hits, maxCount )
