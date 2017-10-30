@@ -17,7 +17,7 @@ function _M:create_task_by_links( hits, level, retryCount )
 	if hits then
 		 retryCount = retryCount or 3
          for _,lv in ipairs(hits) do
-            if not lid_map[lv._id] and string_match(v._id,"^b") then
+            if not lid_map[lv._id] and string_match(lv._id,"^b") then
                 local str_url = lv._source.link
                 if not string_match(str_url, "^http") then
                     str_url = "https://pan.baidu.com/s/" .. str_url;
