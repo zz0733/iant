@@ -1,4 +1,5 @@
 local cjson_safe = require "cjson.safe"
+local util_table = require "util.table"
 local task_dao = require "dao.task_dao"
 
 local log = ngx.log
@@ -6,6 +7,9 @@ local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
 local string_match = string.match
+
+local _M = util_table.new_table(0, 1)
+_M._VERSION = '0.01'
 
 function _M:create_task_by_links( hits, level, retryCount )
 	local task_docs = {}
