@@ -19,15 +19,8 @@ local client = elasticsearch.client{
   }
 }
 
-local lrucache = require "resty.lrucache"
-local cache, err = lrucache.new(1000)
-
 function _M.client()
     return client
-end
-
-function _M.cache(ip_addr)
-    return cache
 end
 
 return _M

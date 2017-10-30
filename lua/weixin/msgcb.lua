@@ -6,6 +6,7 @@ local xml = require("3th.samplexml")
 local xmlParser = xml.newParser()
 
 local link_dao = require "dao.link_dao"
+local task_service = require "service.task_service"
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -14,6 +15,7 @@ local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 
 local ngx_re_sub = ngx.re.sub;
+local wx_msg_dict = ngx.shared.wx_msg_dict
 
 if req_method == "POST" then
 	local post_body = util_request.post_body(ngx.req)
@@ -31,7 +33,12 @@ if req_method == "POST" then
 			local from_user = xml_node.FromUserName:ownValue()
 			local to_user = xml_node.ToUserName:ownValue()
 			if event == "subscribe" then
-				msg_content = "感谢您关注「笑点科技」🌹，免费获取最新最全资源，回复剧名即可获取。如：神偷奶爸"
+				local keys = wx_msg_dict:get_keys(1)
+				local hotest = "战狼2"
+				if keys and keys[1] then
+					hotest = keys[1]
+				end
+				msg_content = "感谢您关注「笑点科技」🌹，免费获取最新最全资源，回复剧名即可获取。如：" .. hotest
 				if xml_node.EventKey then
 					local eventKey = xml_node.EventKey:ownValue()
 					local ticket = nil
@@ -134,6 +141,22 @@ if req_method == "POST" then
 	local msg_content = ""
 	local msg_count = 0;
 	if resp and resp.hits and resp.hits.total > 0 then
+		function validateLink( query, resp )
+			local hasVal = wx_msg_dict:get_stale(query)
+			if not hasVal then
+				local hits = resp.hits.hits
+				local level = 3
+				local retry = 5
+				local resp, status, count = task_service:create_task_by_links(hits, level, retry)
+				log(ERR,"create_task,query:" .. tostring(query) 
+					.. ",hits:" .. tostring(#hits) .. ",task:" .. tostring(count) 
+					.. ",resp:" .. tostring(resp))
+			end
+			-- seconds
+			local ttl = 24 * 60 * 60
+			wx_msg_dict:set(query, 1, ttl) 
+		end
+		validateLink(content, resp)
 		local hits = resp.hits.hits
 		local msg_arr = {}
 		for _,v in ipairs(hits) do
