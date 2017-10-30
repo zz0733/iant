@@ -145,7 +145,7 @@ if req_method == "POST" then
 			local hasVal = wx_msg_dict:get_stale(query)
 			if not hasVal then
 				local hits = resp.hits.hits
-				local level = 3
+				local level = 2
 				local retry = 5
 				local resp, status, count = task_service:create_task_by_links(hits, level, retry)
 				local sresp = "OK"
