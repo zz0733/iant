@@ -388,7 +388,7 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
     "size" : 10,  
     "query": {
        "match":{
-        "title" : "美国田园下的罪恶 An American Crime‎ (2007)"
+        "title" : "白夜追凶1-22集"
        }
     }
 }'
