@@ -78,7 +78,7 @@ if resp and resp.status ~= 200 then
 end
 local message = cjson_safe.decode(resp.body)
 local data = message.data
-log(ERR,"data:"..tostring(cjson_safe.encode(message)))
+-- log(ERR,"data:"..tostring(cjson_safe.encode(message)))
 -- log(ERR,"randomWord:"..tostring(randomWord))
 local randomWord
 if data and  data.contents then
