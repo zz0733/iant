@@ -3,5 +3,7 @@ Disallow: /assets/
 
 User-agent: MJ12bot
 Disallow: /
+User-agent: YandexBot
+Disallow: /
 
 Sitemap: http://www.lezomao.com/sitemap.xml
