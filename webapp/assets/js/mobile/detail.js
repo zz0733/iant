@@ -1,33 +1,33 @@
 var $document = $(document);
 $document.ready(function() {
 	    var $linkmore = $("#linkmore");
-		$linkmore.delegate(".link-left > a.link-href[tid]",'click', function(e) {
-			var self = $(this);
-			// self.attr('disabled',"disabled");
-			var tid = self.attr('tid');
-			var sBase = window.location.origin;
-			var sUrl = sBase+"/api/movie/link.json";
-			console.log('sUrl:'+sUrl+',tid:'+tid)
-			$.getJSON(sUrl, {
-				'id' : tid
-			}, function(result) {
-			   console.log('result:'+JSON.stringify(result))
-			   if(result && result.data ) {
-			   	   var data = result.data
-			   	   var link = data.link;
-			   	   if (/^b/ig.test(tid)) {
-			   	   	    // console.log('link:' + link)
-						window.location.href= link
-			   	   } else {
-				   	   var thunder = urlcodesc.encode(link, "thunder");
-	                   // console.log('thunder:' + thunder)
-	                   location.href= thunder
-                       return false;
-			   	   }
+		// $linkmore.delegate(".link-left > a.link-href[tid]",'click', function(e) {
+		// 	var self = $(this);
+		// 	// self.attr('disabled',"disabled");
+		// 	var tid = self.attr('tid');
+		// 	var sBase = window.location.origin;
+		// 	var sUrl = sBase+"/api/movie/link.json";
+		// 	console.log('sUrl:'+sUrl+',tid:'+tid)
+		// 	$.getJSON(sUrl, {
+		// 		'id' : tid
+		// 	}, function(result) {
+		// 	   console.log('result:'+JSON.stringify(result))
+		// 	   if(result && result.data ) {
+		// 	   	   var data = result.data
+		// 	   	   var link = data.link;
+		// 	   	   if (/^b/ig.test(tid)) {
+		// 	   	   	    // console.log('link:' + link)
+		// 				window.location.href= link
+		// 	   	   } else {
+		// 		   	   var thunder = urlcodesc.encode(link, "thunder");
+	 //                   // console.log('thunder:' + thunder)
+	 //                   location.href= thunder
+  //                      return false;
+		// 	   	   }
                    
-			   }
-			});
-		});
+		// 	   }
+		// 	});
+		// });
 
 		$linkmore.delegate("div.up:has(.link-digg)",'click', function(e) {
 			var self = $(this);
@@ -149,7 +149,7 @@ $document.ready(function() {
 				   	    var template =''
 						template +='<div class="link-box">'
 						template +='   <div class="link-left">'
-						template +='    <a href="javascript:void(0)" class="{{link_class}}" tid="{{v._id}}">'
+						template +='    <a href="{{link_url}}" class="{{link_class}}" tid="{{v._id}}">'
 						template +='	   	<div class="link-tip">'
 						template +='		    <span class="badge link-index">{{str_index}}</span>'
 						template +='		    {{str_space_html}}'
@@ -184,7 +184,7 @@ $document.ready(function() {
 							str_index += curIndex;
 			                var icon_cls = "icon10";
 			                var str_time = "2017-05-03";
-			                var btn_txt = "迅雷下载";
+			                var btn_txt = "离线下载";
 			                var id = hit._id;
 			                var v_source = hit._source;
 			                var update_time = v_source.ctime
@@ -233,6 +233,7 @@ $document.ready(function() {
 							var title = hit._source.title
 							title = title.trim()
 							destHtml = destHtml.replace('{{link_class}}',link_class)
+							destHtml = destHtml.replace('{{link_url}}', '/movie/torrent/'+ hit._id +'.html')
 							destHtml = destHtml.replace('{{v._id}}', hit._id)
 							destHtml = destHtml.replace('{{str_index}}',str_index)
 							destHtml = destHtml.replace('{{str_space_html}}',str_space_html)

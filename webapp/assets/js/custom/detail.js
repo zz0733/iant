@@ -82,7 +82,7 @@ $(document).ready(function() {
 							str_index += curIndex;
 			                var icon_cls = "icon10";
 			                var str_time = "2017-05-03";
-			                var btn_txt = "链接资源";
+			                var btn_txt = "离线下载";
 			                var id = hit._id;
 			                var v_source = hit._source;
 			                var update_time = v_source.ctime
