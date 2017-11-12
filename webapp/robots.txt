@@ -1,4 +1,7 @@
 User-agent: *
 Disallow: /assets/
 
+User-agent: MJ12bot
+Disallow: /
+
 Sitemap: http://www.lezomao.com/sitemap.xml
