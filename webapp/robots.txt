@@ -5,5 +5,7 @@ User-agent: MJ12bot
 Disallow: /
 User-agent: YandexBot
 Disallow: /
+User-agent: AhrefsBot
+Disallow: /
 
 Sitemap: http://www.lezomao.com/sitemap.xml
