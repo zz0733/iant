@@ -17,7 +17,7 @@ local task_level_size = {5,10,20}
 local check
 
 local importVersions = function ( task )
-    -- local importKey = "import:" .. task.type
+    local importKey = "import:" .. task.type
     local importVal, _ = shared_dict:get(importKey)
     local imports = {}
     if importVal then
