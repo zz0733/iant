@@ -7,5 +7,7 @@ User-agent: YandexBot
 Disallow: /
 User-agent: AhrefsBot
 Disallow: /
+User-agent: netEstate NE Crawler
+Disallow: /
 
 Sitemap: http://www.lezomao.com/sitemap.xml
