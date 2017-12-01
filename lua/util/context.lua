@@ -14,7 +14,7 @@ _M.weibo_uid = "1766676277"
 _M.search_page_size = 30
 _M.search_max_page = 100
 _M.link_page_size = 10
-_M.link_max_page = 100
+_M.link_max_page = 20
 
 _M.AUTH_WX_MSG_APPID = os.getenv("AUTH_WX_MSG_APPID")
 _M.AUTH_WX_MSG_TOKEN = os.getenv("AUTH_WX_MSG_TOKEN")

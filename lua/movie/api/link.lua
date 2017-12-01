@@ -56,6 +56,7 @@ elseif method == "query_by_ids" then
     end
   end
 elseif method == "next_links" then
+
   local inputs = nil
   if args.did and args.title then
      inputs = {}
@@ -86,50 +87,14 @@ elseif method == "next_links" then
   local  size = context.link_page_size
   local  from = (cur_page - 1) * size
   local  fields = {"title","space","ctime","issueds"}
-  resp, status = link_dao:query_by_target(inputs.did, from, size, fields)
-  if resp and resp.hits and resp.hits.total < 1 then
-    local shoulds = {}
-    table.insert(shoulds,{
-      match = { 
-        title = inputs.title
-      }
-    })
-    local sorts = {}
-    local sort = {_score = {order = "desc"}}
-    table.insert(sorts, sort)
-    sort = {ctime = {order = "desc"}}
-    table.insert(sorts, sort)
-    local body = {
-      from = from,
-      size = size,
-      sort = sorts,
-      min_score = 15,
-      query = {
-         function_score = {
-            query = {
-              bool = {
-                should = shoulds,
-                must_not = {
-                      match = { status = -1 }
-                  }
-              }
-            },
-            script_score = {
-                     script = { inline = "Math.floor(_score)" }
-            }
-         }
-      }
-
-    }
-     resp, status = link_dao:search(body)
-  end
+  resp, status = link_dao:latest_by_title(inputs.title, from, size, fields)
   if resp and resp.hits then
     local hits = resp.hits
     -- log(ERR,"query_by_target_title.resp:" ..  cjson_safe.encode(hits) )
     message.data = hits
     message.data.curPage = cur_page
     message.data.hasMore = false
-    if hits.total > from + #hits.hits then
+    if hits.total > from + #hits.hits and cur_page < context.link_max_page then
       message.data.hasMore = true
     end
   end
