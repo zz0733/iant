@@ -279,4 +279,56 @@ function _M:incr_bury_digg( id, target_id, bury, digg )
   return self:bulk( es_body )
 end
 
+function _M:latest_by_title( title, from, size, fields )
+	if not title then
+		return
+	end
+	local shoulds = {}
+	local should = {
+	        match = {
+	          title = title
+	        }
+	    }
+	table.insert(shoulds, should)
+	local must_not_arr = {} 
+	table.insert(must_not_arr, {
+        match = { status = -1 }
+    })
+	-- table.insert(must_not_arr, {
+ --        regexp = { link = "ftp:.*" }
+ --    })
+ --    table.insert(must_not_arr, {
+ --        regexp = { link = "ed2k:.*" }
+ --    })
+   
+	local sorts = {}
+	local sort = {_score = {order = "desc"}}
+	table.insert(sorts, sort)
+	-- sort = {["issueds.time"] = {order = "desc", mode = "max"}}
+	sort = {ctime = {order = "desc"}}
+	table.insert(sorts, sort)
+	local body = {
+		from = from,
+		size = size,
+		sort = sorts,
+		_source = fields,
+		min_score = 10.5,
+		query = {
+		   function_score = {
+				query = {
+				  bool = {
+				    should = shoulds,
+				    must_not = must_not_arr
+				  }
+				},
+				script_score = {
+                   script = { inline = "Math.floor(_score/10)*10" }
+			    }
+		   }
+		}
+
+	}
+	local resp, status = self:search(body)
+	return resp, status
+end
 return _M
