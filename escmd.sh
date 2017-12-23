@@ -258,7 +258,7 @@ curl -XPOST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
       },
       "must":{
         "terms":{
-          "type":["utils-movie","douban-movie-detail","bdp-dynamic-list","douban-movie-link"]
+          "type":["ed2000-movie-torrent"]
         }
       }
     }
@@ -385,10 +385,11 @@ curl -XGET 'http://localhost:9200/link/_search?pretty' -d '
 
 curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 {  
-    "size" : 10,  
+    "size" : 20,  
+    "sort" : {"_score":"desc","ctime":"desc"},  
     "query": {
        "match":{
-        "title" : "白夜追凶1-22集"
+        "title" : "虎啸龙吟"
        }
     }
 }'

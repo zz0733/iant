@@ -78,7 +78,7 @@ curl -XPUT 'http://localhost:9200/meta_v1/_mapping/table?pretty' -d '
     "id": {
       "type": "keyword"
     },
-    "code": {
+    "albumId": {
       "type": "keyword"
     },
     "title": {
@@ -108,6 +108,9 @@ curl -XPUT 'http://localhost:9200/meta_v1/_mapping/table?pretty' -d '
     "imdb": {
       "type": "keyword"
     }, 
+    "directors": {
+      "type": "keyword"
+    },
     "season": {
       "type": "integer"
     },
