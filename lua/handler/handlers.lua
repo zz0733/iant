@@ -1,6 +1,7 @@
 local content_dao = require("dao.content_dao")
 local link_dao = require("dao.link_dao")
 local channel_dao = require "dao.channel_dao"
+local meta_dao = require "dao.meta_dao"
 
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
@@ -69,6 +70,35 @@ _M.content = function(id, source)
    return content_dao:save_docs(docs)
 end
 
+
+_M.meta = function(id, source)
+   if not source then
+     return nil, "source is nil"
+   elseif not source.data then
+     return nil, "source.data is nil"
+   end
+   local str_date = decode_base64(source.data)
+   local data = cjson_safe.decode(str_date)
+   log(ERR,"handle[meta],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
+   if not data then
+     return nil, "es[source.data] is not json"
+   elseif not data.data then
+     return nil, "content[data] is nil"
+   elseif not data.data.docs  then
+   return nil, "content[data].docs is nil"
+   end
+   local docs = data.data.docs
+   local type = source.type
+   for _,v in ipairs(docs) do
+      if not v.id then
+        v.id = tostring(type) .. tostring(id)
+      end
+      ensure_doc(v)
+   end
+   log(ERR,"handle[meta],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   return meta_dao:bulk_docs(docs)
+end
+
 _M.link = function(id, source)
    if not source then
        return nil, "source is nil"
@@ -128,6 +158,7 @@ local commands = {}
 commands[#commands + 1] = "link"
 commands[#commands + 1] = "content"
 commands[#commands + 1] = "channel"
+commands[#commands + 1] = "meta"
 _M.commands = commands
 
 return _M
