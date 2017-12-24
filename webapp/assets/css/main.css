@@ -1429,3 +1429,6 @@ h1.post-title {
     text-decoration: none;
 }
 
+#iframepage {
+    min-height: 450px;
+}

@@ -144,5 +144,9 @@ $(document).ready(function() {
 		var moreEle = $(".link-no-more");
 		moreEle.attr('class',"link-more")
 		moreEle.click();
+        var videoURL = 'https://aikanapi.duapp.com/odflv1217/index.php?url=http://www.iqiyi.com/v_19rrf3gvu8.html'
+		var videoHtml = '<iframe id="iframepage" allowfullscreen="ture" marginwidth="0" marginheight="0" hspace="0" vspace="0" frameborder="0" scrolling="no" src="VIDEO_URL" height="100%" width="100%"></iframe>'
+        videoHtml = videoHtml.replace('VIDEO_URL', videoURL)
+		// $('.container-fluid > div.row').replaceWith(videoHtml)
 
 });

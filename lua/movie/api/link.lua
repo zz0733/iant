@@ -2,6 +2,7 @@ local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
 local link_dao = require "dao.link_dao"
+local meta_dao = require "dao.meta_dao"
 local context = require "util.context"
 
 local decodeURI = ngx.unescape_uri
@@ -87,6 +88,28 @@ elseif method == "next_links" then
   local  from = (cur_page - 1) * size
   local  fields = {"title","space","ctime","issueds"}
   resp, status = link_dao:query_by_target(inputs.did, from, size, fields)
+  function findVides( title, from, size )
+    local body = {
+      from = from,
+      size = size,
+      sort = sorts,
+      min_score = 15,
+      query = {
+         match = {
+            title = {
+               query = title,
+               minimum_should_match = "90%"
+            }
+         }
+      }
+
+    }
+     return meta_dao:search(body)
+  end
+  if '0254603' == inputs.did then
+     local vresp, vstatus = findVides(inputs.title, 0 , 2)
+     log(ERR,"findVides.resp:" ..  cjson_safe.encode(vresp) )
+  end
   if resp and resp.hits and resp.hits.total < 1 then
     local shoulds = {}
     table.insert(shoulds,{
@@ -123,6 +146,7 @@ elseif method == "next_links" then
     }
      resp, status = link_dao:search(body)
   end
+ 
   if resp and resp.hits then
     local hits = resp.hits
     -- log(ERR,"query_by_target_title.resp:" ..  cjson_safe.encode(hits) )
