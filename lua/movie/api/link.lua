@@ -98,9 +98,15 @@ elseif method == "next_links" then
         }
       }
     })
+    local sorts = {}
+    local sort = {_score = {order = "desc"}}
+    table.insert(sorts, sort)
+    sort = {epindex = {order = "desc"}}
+    table.insert(sorts, sort)
     local body = {
       from = from,
       size = size,
+      sort = sorts,
       query = {
           bool = {
             should = shoulds,
