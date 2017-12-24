@@ -88,23 +88,30 @@ elseif method == "next_links" then
   local  from = (cur_page - 1) * size
   local  fields = {"title","space","ctime","issueds"}
   resp, status = link_dao:query_by_target(inputs.did, from, size, fields)
-  function findVides( title, from, size )
+  function findVides( search, from, size )
+    local shoulds = {}
+    table.insert(shoulds,{
+      match = { 
+        title = {
+           query = search,
+           minimum_should_match = "90%"
+        }
+      }
+    })
     local body = {
       from = from,
       size = size,
-      sort = sorts,
-      min_score = 15,
       query = {
-         match = {
-            title = {
-               query = title,
-               minimum_should_match = "90%"
+          bool = {
+            should = shoulds,
+            must_not = {
+              match = { status = 0 }
             }
-         }
+          }
       }
 
     }
-     return meta_dao:search(body)
+    return meta_dao:search(body)
   end
   if '0254603' == inputs.did then
      local vresp, vstatus = findVides(inputs.title, 0 , 2)
