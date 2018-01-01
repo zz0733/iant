@@ -1,9 +1,9 @@
 #!/bin/bash
 #创建索引
-curl -XPUT http://localhost:9200/collect_v1
+curl -XPUT http://localhost:9200/collect_v2
 
 #取别名
-curl -XPUT http://localhost:9200/collect_v1/_alias/collect 
+curl -XPUT http://localhost:9200/collect_v2/_alias/collect 
 
 
 curl -XPUT http://localhost:9200/collect/_settings?pretty -d '

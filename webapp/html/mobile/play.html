@@ -1,0 +1,60 @@
+{(mobile/decorator/header.html)}
+
+<link rel="canonical" href="{*context.header.canonical*}"/>
+<meta name="description" content="{*context.header.description*}"/>
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+<!-- <link rel="stylesheet" href="{{static_host}}/assets/css/primer-tips.css?v={{version}}">
+<link rel="stylesheet" href="{{static_host}}/assets/css/bootstrap-tour.min.css?v={{version}}"> -->
+<script src="//cdn.bootcss.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+ 
+</head>
+
+<body class="torrent-body">
+{(mobile/decorator/navbar.html)}
+
+
+<div id="main-container" class="container clearfix">
+  <div class="post-left">
+    <div class="post-main">
+      <div class="post-share">
+          {%
+            local content =  "《" .. link_doc.title .."》"
+            content = content .. "，免费资源为你所用.©狸猫资讯lezomao.com"
+            local encode_title = string.encodeURI(content)
+          %}
+          <a href="http://service.weibo.com/share/share.php?appkey={*config.weibo_app_key*}&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;ralateUid={*config.weibo_uid*}&amp;source=狸猫资讯&amp;sourceUrl=http%3A%2F%2Fwww.lezomao.com&amp;content=utf8&amp;searchPic=false&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_sina.png"></a>
+          <a href="http://www.jiathis.com/send/?webid=tqq&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_tengwb.png"></a>
+          <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_wx.png"></a>
+          <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_friend.png"></a>
+          <a href="http://www.jiathis.com/send/?webid=renren&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_renren.png"></a>
+      </div>
+      <h1 class="post-title">
+          {{link_doc.title}} (请PC端观看)
+      </h1>
+      <div class="post-con">
+        
+      </div>
+      <div class="post-body" >
+        {%
+            VIDEO_URL= link_doc.link
+        %}
+        <iframe id="iframepage" allowfullscreen="ture" marginwidth="0" marginheight="0" hspace="0" vspace="0" frameborder="0" scrolling="no" src="{{VIDEO_URL}}" height="100%" width="100%"></iframe>
+        
+      </div>
+      <div class="post-tag">
+        
+      </div>
+
+    </div>
+  </div>
+  <div class="post-right">
+
+  </div>
+</div>
+<script src="{{static_host}}/assets/js/bootstrap-tour.min.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/clipboard.min.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/movie/torrent.js?v={{version}}"></script>
+
+{(mobile/decorator/footer.html)}

@@ -84,6 +84,7 @@ $(document).ready(function() {
 			                var str_time = "2017-05-03";
 			                var btn_txt = "离线下载";
 			                var id = hit._id;
+			                id = 'v0476600749'
 			                var v_source = hit._source;
 			                var update_time = v_source.ctime
 			                var link_tempate = '<button type="button" class="btn target-btn" tid= "{{v._id}}">{{btn_txt}}</button>'
@@ -102,6 +103,12 @@ $(document).ready(function() {
 								 			update_time = issused.time
 								 		}
 								 	}
+								 }
+				            } else if(/^v[0-9]+$/.test(id)){
+				            	 btn_txt = "在线播放";
+								 link_tempate = '<a href="/movie/play/{{v._id}}.html" rel="nofollow" target="_blank" role="button" class="btn target-btn" >{{btn_txt}}</a>'
+								 if (v_source.space && (v_source.space ==0 || v_source.space == 1024)){
+ 					                  icon_cls = "icon61"
 								 }
 				            }
 				            if(update_time) {
