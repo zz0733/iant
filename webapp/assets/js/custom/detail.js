@@ -84,7 +84,7 @@ $(document).ready(function() {
 			                var str_time = "2017-05-03";
 			                var btn_txt = "离线下载";
 			                var id = hit._id;
-			                id = 'v0476600749'
+			                // id = 'v0476600749'
 			                var v_source = hit._source;
 			                var update_time = v_source.ctime
 			                var link_tempate = '<button type="button" class="btn target-btn" tid= "{{v._id}}">{{btn_txt}}</button>'
