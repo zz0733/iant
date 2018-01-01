@@ -66,7 +66,10 @@ function _M:query_by_titles(names, from, size,fields )
 	for _,v in ipairs(names) do
 		local should = {
 	        match = {
-	          title = v
+	          title = {
+                 query = v,
+                 minimum_should_match = "80%"
+	          }
 	        }
 	    }
 		shoulds[#shoulds + 1] = should

@@ -383,13 +383,79 @@ curl -XGET 'http://localhost:9200/link/_search?pretty' -d '
 }
 '
 
-curl -XGET "http://localhost:9200/link/_search?pretty" -d'
+curl -XGET "http://localhost:9200/meta/_search?pretty" -d'
 {  
     "size" : 20,  
-    "sort" : {"_score":"desc","ctime":"desc"},  
+    "sort" : {"epindex":"desc"},  
     "query": {
        "match":{
-        "title" : "虎啸龙吟"
+        "title" : "琅琊榜"
        }
     }
 }'
+
+
+curl -XGET "http://localhost:9200/link/_search?pretty" -d'
+{  
+    "size" : 20,  
+    "sort" : {"ctime":"desc"},  
+    "query": {
+       "match":{
+        "format" : "vmeta"
+       }
+    }
+}'
+
+
+curl -XGET "http://localhost:9200/link/_search?pretty" -d'
+{
+  "size": 20,
+  "sort": {
+    "episode": "desc"
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "format": "vmeta"
+          }
+        },
+        {
+          "match": {
+            "code": "216248401"
+          }
+        }
+      ]
+    }
+  }
+}
+'
+
+curl -XGET "http://localhost:9200/link/_search?pretty" -d'
+{
+  "size": 20,
+  "sort": {
+    "ctime": "desc"
+  },
+  "query": {
+    "match": {
+       "_id":"v357865148"
+    }
+  }
+}
+'
+
+curl -XGET "http://localhost:9200/link/_search?pretty" -d'
+{
+  "size": 20,
+  "sort": {
+    "ctime": "desc"
+  },
+  "query": {
+    "match": {
+       "_id":"v357865148"
+    }
+  }
+}
+'
