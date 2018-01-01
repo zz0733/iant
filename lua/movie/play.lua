@@ -38,6 +38,9 @@ if resp and resp.status ~= 200 then
 	return ngx.exit(resp.status)
 end
 function queryVMetas( sCode, from, size )
+	if not sCode then
+		return nil
+	end
     local shoulds = {}
     table.insert(shoulds,{
       match = { 
@@ -68,10 +71,9 @@ end
 local return_obj = cjson_safe.decode(resp.body)
 local link_doc = return_obj.data
 local sCode = link_doc.code
-local vResp = queryVMetas(sCode ,0 , 10)
+local vResp = queryVMetas(sCode ,0 , 100)
 
-log(ERR,"cjson_safe:" .. cjson_safe.encode(link_doc))
-log(ERR,"sCode:" .. sCode)
+-- log(ERR,"cjson_safe:" .. cjson_safe.encode(link_doc))
 
 if link_doc.link then
 	local parserArr = {}
