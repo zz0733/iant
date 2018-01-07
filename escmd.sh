@@ -389,7 +389,7 @@ curl -XGET "http://localhost:9200/meta/_search?pretty" -d'
     "sort" : {"epindex":"desc"},  
     "query": {
        "match":{
-        "title" : "琅琊榜"
+        "title" : "十三省"
        }
     }
 }'
@@ -440,9 +440,21 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
   },
   "query": {
     "match": {
-       "_id":"v357865148"
+       "_id":"v01010998464"
     }
   }
+}
+'
+
+curl -XGET "http://localhost:9200/link/_search?pretty" -d'
+{
+    "query": {
+        "bool" : {
+           "must" : {
+             "match" : { "format":"vmeta"}
+           }
+        }
+    }
 }
 '
 
@@ -454,7 +466,10 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
   },
   "query": {
     "match": {
-       "_id":"v357865148"
+      "title" :{
+        "query":"海贼王800",
+        "minimum_should_match":"80%"
+      }
     }
   }
 }
