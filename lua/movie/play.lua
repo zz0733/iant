@@ -77,8 +77,9 @@ local vResp = queryVMetas(sCode ,0 , 100)
 
 if link_doc.link then
 	local parserArr = {}
-	table.insert(parserArr, 'https://aikanapi.duapp.com/odflv1217/index.php?url={URL}')
-	table.insert(parserArr, 'https://odflvapi.duapp.com/odflv/index.php?url={URL}')
+	-- table.insert(parserArr, 'https://aikanapi.duapp.com/odflv1217/index.php?url={URL}') --error
+	-- table.insert(parserArr, 'https://odflvapi.duapp.com/odflv/index.php?url={URL}')  -- ban
+	table.insert(parserArr, 'http://aikan-tv.com/?url={URL}')
 	-- table.insert(parserArr, 'https://vipflv.duapp.com/x1/tong.php?url={URL}')
 	-- table.insert(parserArr, 'https://jx.maoyun.tv/index.php?id={URL}') --2
 	-- table.insert(parserArr, 'http://api.xfsub.com/index.php?url={URL}') --recheck
