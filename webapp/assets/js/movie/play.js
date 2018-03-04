@@ -7,3 +7,11 @@ $document.ready(function() {
          window.location.href = sTargetURL
 		})
 });
+
+// function open_without_referrer(link){
+//    document.body.appendChild(document.createElement('iframe')).src='javascript:"<script>top.location.replace(\''+link+'\')<\/script>"';
+// }
+
+// function open_new_window(full_link){ 
+//     window.open('javascript:window.name;', '<script>location.replace("'+full_link+'")<\/script>');
+// }

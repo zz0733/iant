@@ -423,7 +423,7 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
         },
         {
           "match": {
-            "code": "216248401"
+            "title": "虎啸龙吟"
           }
         }
       ]
@@ -440,7 +440,21 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
   },
   "query": {
     "match": {
-       "_id":"v01010998464"
+       "_id":"v1051433666"
+    }
+  }
+}
+'
+
+curl -XPOST "http://localhost:9200/link/_delete_by_query?pretty" -d'
+{
+  "size": 20,
+  "sort": {
+    "ctime": "desc"
+  },
+  "query": {
+    "match": {
+       "_id":"v0585527237"
     }
   }
 }
@@ -448,6 +462,7 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 
 curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 {
+    "size":10000,
     "query": {
         "bool" : {
            "must" : {
