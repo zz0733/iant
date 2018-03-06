@@ -120,7 +120,7 @@ while true do
              local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
              local analyze_arr = {}
              if aresp and aresp.tokens then
-                for _,tv in ipairs(resp.tokens) do
+                for _,tv in ipairs(aresp.tokens) do
                     add2Arr(analyze_arr, tv.token)
                 end
              end
