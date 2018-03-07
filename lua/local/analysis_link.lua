@@ -1,6 +1,7 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
+local util_table = require "util.table"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require("dao.content_dao")
@@ -114,11 +115,11 @@ while true do
                 add2Arr(text_arr, source.genres)
              end
              local code = source.code
-             if code and code.startsWith('imdbtt') then
+             if code and string.startsWith(code, 'imdbtt') then
                  code = ngx.re.sub(code, "imdbtt", "")
                  add2Arr(text_arr, "IMDB")
                  add2Arr(text_arr, code)
-             elseif code and code.startsWith('imdb') then
+             elseif code and string.startsWith(code, 'imdb') then
                  code = ngx.re.sub(code, "imdb", "")
                  add2Arr(text_arr, "IMDB")
                  add2Arr(text_arr, code)
