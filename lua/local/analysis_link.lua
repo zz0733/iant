@@ -1,6 +1,7 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
+local util_table = require "util.table"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require("dao.content_dao")
@@ -21,7 +22,6 @@ local CRIT = ngx.CRIT
 local to_date = ngx.time()
 local from_date = to_date - 1*24*60*60
 local body = {
-    _source = {"names","article","directors","actors","genres","issueds"},
     query = {
         match_all = {
         }
@@ -29,7 +29,7 @@ local body = {
 }
 
 local sourceClient = client_utils.client()
-local sourceIndex = "content";
+local sourceIndex = "link";
 local scroll = "1m";
 local scanParams = {};
 scanParams.index = sourceIndex
@@ -100,12 +100,11 @@ while true do
          for _,v in ipairs(hits) do
              local source = v._source
              local text_arr = {}
-             add2Arr(text_arr, source.article.year)
-             add2Arr(text_arr, source.article.title)
-             add2Arr(text_arr, source.names)
+             
+             add2Arr(text_arr, source.title)
              if source.directors then
                 add2Arr(text_arr, "导演")
-                add2Arr(text_arr, source.directors)
+                add2Arr(text_arr, source.directors) --todo
              end
              if source.actors then
                 add2Arr(text_arr, "主演")
@@ -115,17 +114,17 @@ while true do
                 add2Arr(text_arr, "类型")
                 add2Arr(text_arr, source.genres)
              end
-             if source.article.imdb then
-                add2Arr(text_arr, "IMDB")
-                add2Arr(text_arr, source.article.imdb)
+             local code = source.code
+             if code and string.startsWith(code, 'imdbtt') then
+                 code = ngx.re.sub(code, "imdbtt", "")
+                 add2Arr(text_arr, "IMDB")
+                 add2Arr(text_arr, code)
+             elseif code and string.startsWith(code, 'imdb') then
+                 code = ngx.re.sub(code, "imdb", "")
+                 add2Arr(text_arr, "IMDB")
+                 add2Arr(text_arr, code)
              end
-             local issueds = source.issueds
-             if issueds then
-                add2Arr(text_arr, "国家")
-                add2Arr(text_arr, issueds.country)
-                add2Arr(text_arr, "地区")
-                add2Arr(text_arr, issueds.region)
-             end
+       
              local splitor = " "
              local all_txt = table.concat( text_arr , splitor)
              local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')

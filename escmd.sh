@@ -81,8 +81,7 @@ curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
   "from": 0,
   "size": 1,
   "query": {
-      "match": {
-        "_id":"m0483652730"
+      "match_all": {
       }
   }
 }
