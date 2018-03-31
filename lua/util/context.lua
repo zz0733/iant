@@ -24,6 +24,9 @@ _M.AUTH_WX_MSG_AESKEY_LAST = os.getenv("AUTH_WX_MSG_AESKEY_LAST")
 _M.IMG_DIR = os.getenv("IMG_DIR")
 _M.CDN_URI = os.getenv("CDN_URI")
 
+_M.SSDB_HOST = os.getenv("SSDB_HOST") or '127.0.0.1'
+_M.SSDB_PORT = os.getenv("SSDB_PORT") or 8888
+
 
 _M.AUTH_WX_MSG_AESKEY = decode_base64(_M.AUTH_WX_MSG_AESKEY .. "=")
 _M.AUTH_WX_MSG_AESKEY_LAST = decode_base64(_M.AUTH_WX_MSG_AESKEY_LAST .. "=")

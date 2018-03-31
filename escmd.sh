@@ -383,13 +383,11 @@ curl -XGET 'http://localhost:9200/link/_search?pretty' -d '
 }
 '
 
-curl -XGET "http://localhost:9200/meta/_search?pretty" -d'
+curl -XGET "http://localhost:9200/content/_search?pretty" -d'
 {  
     "size" : 20,  
-    "sort" : {"epindex":"desc"},  
     "query": {
-       "match":{
-        "title" : "十三省"
+       "match_all":{
        }
     }
 }'
@@ -448,13 +446,10 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 
 curl -XPOST "http://localhost:9200/link/_delete_by_query?pretty" -d'
 {
-  "size": 20,
-  "sort": {
-    "ctime": "desc"
-  },
+  "size": 100,
   "query": {
     "match": {
-       "_id":"v0585527237"
+       "status":"-1"
     }
   }
 }
