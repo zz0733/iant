@@ -19,9 +19,6 @@ local client = elasticsearch.client{
   }
 }
 
-local ssdb = require "resty.ssdb"
-local ssdbClient = ssdb:new()
-
 function _M.client()
     return client
 end
