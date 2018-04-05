@@ -122,8 +122,10 @@ while true do
              end
              local contents = source.contents
              if contents then
-                for _,cv in pairs(contents) do
-                    add2Arr(text_arr, cv.text)
+                for _ , page in ipairs(contents) do
+                    if page.sort == "text" then
+                        add2Arr(text_arr, page.text)
+                    end
                 end
              end
              local splitor = " "
