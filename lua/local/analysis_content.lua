@@ -104,27 +104,27 @@ while true do
              add2Arr(text_arr, source.article.title)
              add2Arr(text_arr, source.names)
              if source.directors then
-                add2Arr(text_arr, "导演")
                 add2Arr(text_arr, source.directors)
              end
              if source.actors then
-                add2Arr(text_arr, "主演")
                 add2Arr(text_arr, source.actors)
              end
              if source.genres then
-                add2Arr(text_arr, "类型")
                 add2Arr(text_arr, source.genres)
              end
              if source.article.imdb then
-                add2Arr(text_arr, "IMDB")
                 add2Arr(text_arr, source.article.imdb)
              end
              local issueds = source.issueds
              if issueds then
-                add2Arr(text_arr, "国家")
                 add2Arr(text_arr, issueds.country)
-                add2Arr(text_arr, "地区")
                 add2Arr(text_arr, issueds.region)
+             end
+             local contents = source.contents
+             if contents then
+                for ci,cv in ipairs(contents) do
+                    add2Arr(text_arr, cv.text)
+                end
              end
              local splitor = " "
              local all_txt = table.concat( text_arr , splitor)
