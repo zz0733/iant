@@ -153,7 +153,11 @@ while true do
                 end
              end
              local analyze_txt = table.concat( analyze_arr , splitor)
-             log(CRIT,"id:"..v._id ..",Analysis:".. analyze_txt)
+             if not analyze_txt or analyze_txt == '' then
+                log(ERR, "empty analyze_txt:" .. v._id)
+             else
+                log(CRIT, "STARTBODY:" .. v._id .."=".. analyze_txt .. ":ENDBODY")
+             end
              aCount = aCount + 1
          end
          scrollId = data["_scroll_id"]
