@@ -21,7 +21,7 @@ local CRIT = ngx.CRIT
 local to_date = ngx.time()
 local from_date = to_date - 1*24*60*60
 local body = {
-    _source = {"names","article","directors","actors","genres","issueds"},
+    _source = {"names","article","directors","actors","genres","issueds","contents"},
     query = {
         match_all = {
         }
