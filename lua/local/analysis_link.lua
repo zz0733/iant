@@ -53,14 +53,28 @@ function add2Arr(text_arr, source )
    if not source then
       return
    end
+   function doFilter( token )
+       if not token then
+           return true
+       end
+       if string.match(token, "[0-9]{1,4}") then
+          return true
+       end
+       if string.match(token, "\\.com$") then
+          return true
+       end
+       return false
+   end
    if util_table.is_table(source) then
       for k,v in pairs(source) do
-        if v then
+        if v and not doFilter(v) then
            table.insert(text_arr, v)
         end
       end
    else
-      table.insert(text_arr, source)
+      if source and not doFilter(source) then
+         table.insert(text_arr, source)
+      end
    end
    
 end
@@ -101,7 +115,11 @@ while true do
              local source = v._source
              local text_arr = {}
              
-             add2Arr(text_arr, source.title)
+             if source.title then
+                local title = source.title
+                title = ngx.re.sub(title, "[0-9]\\.[a-z4]{1,4}", "")
+                add2Arr(text_arr, title)
+             end
              if source.directors then
                 add2Arr(text_arr, "导演")
                 add2Arr(text_arr, source.directors) --todo

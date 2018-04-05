@@ -136,7 +136,7 @@ while true do
                 end
              end
              local analyze_txt = table.concat( analyze_arr , splitor)
-             log(CRIT,"id:"..v._id ..",Analysis:".. analyze_txt)
+             log(CRIT, v._id .."=".. analyze_txt)
              aCount = aCount + 1
          end
          scrollId = data["_scroll_id"]
