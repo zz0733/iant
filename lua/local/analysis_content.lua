@@ -122,7 +122,7 @@ while true do
              end
              local contents = source.contents
              if contents then
-                for ci,cv in ipairs(contents) do
+                for _,cv in pairs(contents) do
                     add2Arr(text_arr, cv.text)
                 end
              end
