@@ -124,14 +124,14 @@ while true do
                 add2Arr(text_arr, "导演")
                 add2Arr(text_arr, source.directors) --todo
              end
-             if source.actors then
-                add2Arr(text_arr, "主演")
-                add2Arr(text_arr, source.actors)
-             end
-             if source.genres then
-                add2Arr(text_arr, "类型")
-                add2Arr(text_arr, source.genres)
-             end
+             -- if source.actors then
+             --    add2Arr(text_arr, "主演")
+             --    add2Arr(text_arr, source.actors)
+             -- end
+             -- if source.genres then
+             --    add2Arr(text_arr, "类型")
+             --    add2Arr(text_arr, source.genres)
+             -- end
              local code = source.code
              if code and string.startsWith(code, 'imdbtt') then
                  code = ngx.re.sub(code, "imdbtt", "")
