@@ -62,7 +62,9 @@ function add2Arr(text_arr, source )
    end
    
 end
-
+local function isEmpty(s)
+  return s == nil or s == ''
+end
 while true do
      index = index + 1;
      local data,err;
@@ -98,28 +100,31 @@ while true do
          for _,v in ipairs(hits) do
              local source = v._source
              if  source and source.article then
-                for ni,nv in ipairs(source.names) do
-                     local text_arr = {}
-                     add2Arr(text_arr, source.article.year)
-                     add2Arr(text_arr, source.nv)
-                     if source.directors then
-                        add2Arr(text_arr, source.directors)
-                     end
-                     if source.article.imdb then
-                        add2Arr(text_arr, "imdb" .. source.article.imdb)
-                     end
-                   
-                     local splitor = " "
-                     local all_txt = table.concat( text_arr , splitor)
-                     local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
-                     local analyze_arr = {}
-                     if aresp and aresp.tokens then
-                        for _,tv in ipairs(aresp.tokens) do
-                            add2Arr(analyze_arr, tv.token)
+                names = source.names or {}
+                table.insert(names, source.article.title)
+                for ni,nv in ipairs(names) do
+                    if not isEmpty(nv) then
+                        local text_arr = {}
+                        add2Arr(text_arr, source.article.year)
+                        add2Arr(text_arr, nv)
+                        if source.directors then
+                           add2Arr(text_arr, source.directors)
                         end
-                     end
-                     local analyze_txt = table.concat( analyze_arr , splitor)
-                     log(CRIT, "STARTBODY:" .. v._id .."_" .. ni .. "=".. analyze_txt .. ":ENDBODY")
+                        if source.article.imdb then
+                           add2Arr(text_arr, "imdb" .. source.article.imdb)
+                        end
+                        local splitor = " "
+                        local all_txt = table.concat( text_arr , splitor)
+                        local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
+                        local analyze_arr = {}
+                        if aresp and aresp.tokens then
+                           for _,tv in ipairs(aresp.tokens) do
+                               add2Arr(analyze_arr, tv.token)
+                           end
+                        end
+                        local analyze_txt = table.concat( analyze_arr , splitor)
+                        log(CRIT, "STARTBODY:" .. v._id .."_" .. ni .. "=".. analyze_txt .. ":ENDBODY")
+                    end
                 end
              else
                  log(ERR, "sourceErr:" .. v._id .. ",hit:" .. cjson_safe.encode(v))

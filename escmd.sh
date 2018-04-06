@@ -76,7 +76,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
 # '
 # exit 0
 
-curl -X GET 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+curl -X GET 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "from": 0,
   "size": 1,
@@ -167,6 +167,16 @@ exit 0
 # }
 # '
 # exit 0
+
+curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+{
+  "query": {
+      "match": {
+        "_id":"01359877942"
+      }
+  }
+}
+'
 
  curl -XPOST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
@@ -384,7 +394,7 @@ curl -XGET 'http://localhost:9200/link/_search?pretty' -d '
 
 curl -XGET "http://localhost:9200/content/_search?pretty" -d'
 {  
-    "size" : 20,  
+    "size" : 1,  
     "query": {
        "match_all":{
        }
@@ -404,23 +414,15 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 }'
 
 
-curl -XGET "http://localhost:9200/link/_search?pretty" -d'
+curl -XGET "http://localhost:9200/content/_search?pretty" -d'
 {
-  "size": 20,
-  "sort": {
-    "episode": "desc"
-  },
+  "size": 5,
   "query": {
     "bool": {
       "must": [
         {
           "match": {
-            "format": "vmeta"
-          }
-        },
-        {
-          "match": {
-            "title": "虎啸龙吟"
+            "title": "血色 苍穹"
           }
         }
       ]
@@ -437,7 +439,7 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
   },
   "query": {
     "match": {
-       "_id":"v1051433666"
+       "title":"v1051433666"
     }
   }
 }
