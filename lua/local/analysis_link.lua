@@ -135,12 +135,10 @@ while true do
              local code = source.code
              if code and string.startsWith(code, 'imdbtt') then
                  code = ngx.re.sub(code, "imdbtt", "")
-                 add2Arr(text_arr, "IMDB")
-                 add2Arr(text_arr, code)
+                 add2Arr(text_arr, "imdb" .. code)
              elseif code and string.startsWith(code, 'imdb') then
                  code = ngx.re.sub(code, "imdb", "")
-                 add2Arr(text_arr, "IMDB")
-                 add2Arr(text_arr, code)
+                 add2Arr(text_arr, "imdb" .. code)
              end
        
              local splitor = " "
