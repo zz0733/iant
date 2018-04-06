@@ -30,7 +30,7 @@ local body = {
 
 local sourceClient = client_utils.client()
 local sourceIndex = "link";
-local scroll = "1m";
+local scroll = "2m";
 local scanParams = {};
 scanParams.index = sourceIndex
 scanParams.scroll = scroll
@@ -56,9 +56,6 @@ function add2Arr(text_arr, source )
    function doFilter( token )
        if not token then
            return true
-       end
-       if string.match(token, "[0-9]{1,4}") then
-          return true
        end
        if string.match(token, "\\.com$") then
           return true

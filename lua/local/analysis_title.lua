@@ -18,8 +18,6 @@ message.code = 200
 local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
-local to_date = ngx.time()
-local from_date = to_date - 1*24*60*60
 local body = {
     _source = {"names","article","directors","actors","genres","issueds"},
     query = {
@@ -30,7 +28,7 @@ local body = {
 
 local sourceClient = client_utils.client()
 local sourceIndex = "content";
-local scroll = "1m";
+local scroll = "2m";
 local scanParams = {};
 scanParams.index = sourceIndex
 scanParams.scroll = scroll
