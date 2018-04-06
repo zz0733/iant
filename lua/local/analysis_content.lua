@@ -18,8 +18,6 @@ message.code = 200
 local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
-local to_date = ngx.time()
-local from_date = to_date - 1*24*60*60
 local body = {
     _source = {"names","article","directors","actors","genres","issueds","contents"},
     query = {
@@ -99,47 +97,52 @@ while true do
          -- match_handler.build_similars(hits)
          for _,v in ipairs(hits) do
              local source = v._source
-             local text_arr = {}
-             add2Arr(text_arr, source.article.year)
-             add2Arr(text_arr, source.article.title)
-             add2Arr(text_arr, source.names)
-             if source.directors then
-                add2Arr(text_arr, source.directors)
-             end
-             if source.actors then
-                add2Arr(text_arr, source.actors)
-             end
-             if source.genres then
-                add2Arr(text_arr, source.genres)
-             end
-             if source.article.imdb then
-                add2Arr(text_arr, source.article.imdb)
-             end
-             local issueds = source.issueds
-             if issueds then
-                add2Arr(text_arr, issueds.country)
-                add2Arr(text_arr, issueds.region)
-             end
-             local contents = source.contents
-             if contents then
-                for _ , page in ipairs(contents) do
-                    if page.sort == "text" then
-                        add2Arr(text_arr, page.text)
+             if  source and source.article then
+                 local text_arr = {}
+                 add2Arr(text_arr, source.article.year)
+                 add2Arr(text_arr, source.article.title)
+                 add2Arr(text_arr, source.names)
+                 if source.directors then
+                    add2Arr(text_arr, source.directors)
+                 end
+                 if source.actors then
+                    add2Arr(text_arr, source.actors)
+                 end
+                 if source.genres then
+                    add2Arr(text_arr, source.genres)
+                 end
+                 if source.article.imdb then
+                    add2Arr(text_arr, source.article.imdb)
+                 end
+                 local issueds = source.issueds
+                 if issueds then
+                    add2Arr(text_arr, issueds.country)
+                    add2Arr(text_arr, issueds.region)
+                 end
+                 -- local contents = source.contents
+                 -- if contents then
+                 --    for _ , page in ipairs(contents) do
+                 --        if page.sort == "text" then
+                 --            add2Arr(text_arr, page.text)
+                 --        end
+                 --    end
+                 -- end
+                 local splitor = " "
+                 local all_txt = table.concat( text_arr , splitor)
+                 local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
+                 local analyze_arr = {}
+                 if aresp and aresp.tokens then
+                    for _,tv in ipairs(aresp.tokens) do
+                        add2Arr(analyze_arr, tv.token)
                     end
-                end
+                 end
+                 local analyze_txt = table.concat( analyze_arr , splitor)
+                 log(CRIT, "STARTBODY:" .. v._id .."=".. analyze_txt .. ":ENDBODY")
+                 
+             else
+                log(ERR, "sourceErr:" .. v._id .. ",hit:" .. cjson_safe.encode(v))
              end
-             local splitor = " "
-             local all_txt = table.concat( text_arr , splitor)
-             local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
-             local analyze_arr = {}
-             if aresp and aresp.tokens then
-                for _,tv in ipairs(aresp.tokens) do
-                    add2Arr(analyze_arr, tv.token)
-                end
-             end
-             local analyze_txt = table.concat( analyze_arr , splitor)
-             log(CRIT, "STARTBODY:" .. v._id .."=".. analyze_txt .. ":ENDBODY")
-             aCount = aCount + 1
+            aCount = aCount + 1
          end
          scrollId = data["_scroll_id"]
      end
