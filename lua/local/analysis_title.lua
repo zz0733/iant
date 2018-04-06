@@ -97,29 +97,33 @@ while true do
          -- match_handler.build_similars(hits)
          for _,v in ipairs(hits) do
              local source = v._source
-             local text_arr = {}
-             add2Arr(text_arr, source.article.year)
-             add2Arr(text_arr, source.article.title)
-             add2Arr(text_arr, source.names)
-             if source.directors then
-                add2Arr(text_arr, source.directors)
+             if  source then
+                 local text_arr = {}
+                 add2Arr(text_arr, source.article.year)
+                 add2Arr(text_arr, source.article.title)
+                 add2Arr(text_arr, source.names)
+                 if source.directors then
+                    add2Arr(text_arr, source.directors)
+                 end
+                 if source.article.imdb then
+                    add2Arr(text_arr, "imdb" .. source.article.imdb)
+                 end
+               
+                 local splitor = " "
+                 local all_txt = table.concat( text_arr , splitor)
+                 local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
+                 local analyze_arr = {}
+                 if aresp and aresp.tokens then
+                    for _,tv in ipairs(aresp.tokens) do
+                        add2Arr(analyze_arr, tv.token)
+                    end
+                 end
+                 local analyze_txt = table.concat( analyze_arr , splitor)
+                 log(CRIT, "STARTBODY:" .. v._id .."=".. analyze_txt .. ":ENDBODY")
+                 aCount = aCount + 1
+             else
+                 log(ERR, "sourceErr:" .. v._id .. ",hit:" .. cjson_safe.encode(v))
              end
-             if source.article.imdb then
-                add2Arr(text_arr, "imdb" .. source.article.imdb)
-             end
-           
-             local splitor = " "
-             local all_txt = table.concat( text_arr , splitor)
-             local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
-             local analyze_arr = {}
-             if aresp and aresp.tokens then
-                for _,tv in ipairs(aresp.tokens) do
-                    add2Arr(analyze_arr, tv.token)
-                end
-             end
-             local analyze_txt = table.concat( analyze_arr , splitor)
-             log(CRIT, "STARTBODY:" .. v._id .."=".. analyze_txt .. ":ENDBODY")
-             aCount = aCount + 1
          end
          scrollId = data["_scroll_id"]
      end
