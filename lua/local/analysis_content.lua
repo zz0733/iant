@@ -112,7 +112,7 @@ while true do
                     add2Arr(text_arr, source.genres)
                  end
                  if source.article.imdb then
-                    add2Arr(text_arr, source.article.imdb)
+                    add2Arr(text_arr, "imdb" ..source.article.imdb)
                  end
                  local issueds = source.issueds
                  if issueds then
