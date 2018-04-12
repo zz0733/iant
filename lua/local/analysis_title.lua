@@ -125,10 +125,9 @@ while true do
                         end
                         local analyze_txt = table.concat( analyze_arr , splitor)
                         local match_data = {}
-                        match_data.id = v._id
+                        match_data.id = v._id .. "_" .. ni
                         match_data.year = article.year
                         match_data.imdb = article.imdb
-                        match_data.name = ni
                         match_data.analyze = analyze_txt
                         match_data.epcount = 1
                         if article.epcount then
