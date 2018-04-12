@@ -129,13 +129,17 @@ while true do
              --    add2Arr(text_arr, "类型")
              --    add2Arr(text_arr, source.genres)
              -- end
+             local match_data = {}
+             match_data.id = v._id
              local code = source.code
              if code and string.startsWith(code, 'imdbtt') then
                  code = ngx.re.sub(code, "imdbtt", "")
                  add2Arr(text_arr, "imdb" .. code)
+                 match_data.imdb = code
              elseif code and string.startsWith(code, 'imdb') then
                  code = ngx.re.sub(code, "imdb", "")
                  add2Arr(text_arr, "imdb" .. code)
+                 match_data.imdb = code
              end
        
              local splitor = " "
@@ -151,7 +155,8 @@ while true do
              if not analyze_txt or analyze_txt == '' then
                 log(ERR, "empty analyze_txt:" .. v._id)
              else
-                log(CRIT, "STARTBODY:" .. v._id .."=".. analyze_txt .. ":ENDBODY")
+                match_data.analyze = analyze_txt
+                log(CRIT, "STARTBODY:" .. cjson_safe.encode(match_data) .. ":ENDBODY")
              end
              aCount = aCount + 1
          end

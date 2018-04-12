@@ -101,6 +101,7 @@ while true do
              local source = v._source
              if  source and source.article then
                 names = source.names or {}
+                local article = source.article
                 table.insert(names, source.article.title)
                 for ni,nv in ipairs(names) do
                     if not isEmpty(nv) then
@@ -123,7 +124,18 @@ while true do
                            end
                         end
                         local analyze_txt = table.concat( analyze_arr , splitor)
-                        log(CRIT, "STARTBODY:" .. v._id .."_" .. ni .. "=".. analyze_txt .. ":ENDBODY")
+                        local match_data = {}
+                        match_data.id = v._id
+                        match_data.year = article.year
+                        match_data.imdb = article.imdb
+                        match_data.name = ni
+                        match_data.analyze = analyze_txt
+                        match_data.epcount = 1
+                        if article.epcount then
+                            match_data.epcount = article.epcount
+                        elseif article.media == 'tv' then
+                            match_data.epcount = 99999
+                        log(CRIT, "STARTBODY:" .. cjson_safe.encode(match_data) .. ":ENDBODY")
                     end
                 end
              else
