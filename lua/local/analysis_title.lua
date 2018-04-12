@@ -134,6 +134,7 @@ while true do
                             match_data.epcount = article.epcount
                         elseif article.media == 'tv' then
                             match_data.epcount = 99999
+                        end
                         log(CRIT, "STARTBODY:" .. cjson_safe.encode(match_data) .. ":ENDBODY")
                     end
                 end
