@@ -43,7 +43,8 @@ curl -XPUT 'http://localhost:9200/match_v1/_mapping/table?pretty' -d '
   "properties": {
     "season": {
       "type": "short"
-    },"episode": {
+    },
+    "episode": {
       "type": "integer"
     },
     "title": {
