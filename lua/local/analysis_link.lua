@@ -89,6 +89,18 @@ function knnContents( title )
              local source = v._source
              if  source and source.article then
                 names = source.names or {}
+                local match_data = {}
+                match_data.id = v._id
+                match_data.year = article.year
+                match_data.imdb = article.imdb
+                match_data.analyzes = {}
+                match_data.epcount = 1
+                if article.epcount then
+                    match_data.epcount = article.epcount
+                elseif article.media == 'tv' then
+                    match_data.epcount = 99999
+                end
+                table_insert(contents, match_data)
                 local article = source.article
                 table_insert(names, source.article.title)
                 for ni,nv in ipairs(names) do
@@ -112,18 +124,8 @@ function knnContents( title )
                            end
                         end
                         local analyze_txt = table.concat( analyze_arr , splitor)
-                        local match_data = {}
-                        match_data.id = v._id .. "_" .. ni
-                        match_data.year = article.year
-                        match_data.imdb = article.imdb
-                        match_data.analyze = analyze_txt
-                        match_data.epcount = 1
-                        if article.epcount then
-                            match_data.epcount = article.epcount
-                        elseif article.media == 'tv' then
-                            match_data.epcount = 99999
-                        end
-                        table_insert(contents, match_data)
+                   
+                        table_insert(match_data.analyzes, analyze_txt)
                     end
                 end
              end
