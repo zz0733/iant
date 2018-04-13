@@ -187,6 +187,7 @@ while true do
              -- end
              local match_data = {}
              match_data.id = v._id
+             match_data.title = source.title
              match_data.episode = util_extract.find_episode(link_title)
              match_data.season = util_extract.find_season(link_title)
              local code = source.code
