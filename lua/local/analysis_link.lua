@@ -88,6 +88,7 @@ function knnContents( title )
         for _,v in ipairs(resp.hits.hits) do
              local source = v._source
              if  source and source.article then
+                article = source.article
                 names = source.names or {}
                 local match_data = {}
                 match_data.id = v._id
