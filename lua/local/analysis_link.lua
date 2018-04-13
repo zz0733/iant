@@ -90,18 +90,7 @@ function knnContents( title )
              if  source and source.article then
                 article = source.article
                 names = source.names or {}
-                local match_data = {}
-                match_data.id = v._id
-                match_data.year = article.year
-                match_data.imdb = article.imdb
-                match_data.analyzes = {}
-                match_data.epcount = 1
-                if article.epcount then
-                    match_data.epcount = article.epcount
-                elseif article.media == 'tv' then
-                    match_data.epcount = 99999
-                end
-                table_insert(contents, match_data)
+               
                 local article = source.article
                 table_insert(names, source.article.title)
                 for ni,nv in ipairs(names) do
@@ -125,8 +114,18 @@ function knnContents( title )
                            end
                         end
                         local analyze_txt = table.concat( analyze_arr , splitor)
-                   
-                        table_insert(match_data.analyzes, analyze_txt)
+                        local match_data = {}
+                        match_data.id = v._id
+                        match_data.year = article.year
+                        match_data.imdb = article.imdb
+                        match_data.analyze = analyze_txt
+                        match_data.epcount = 1
+                        if article.epcount then
+                            match_data.epcount = article.epcount
+                        elseif article.media == 'tv' then
+                            match_data.epcount = 99999
+                        end
+                        table_insert(contents, match_data)
                     end
                 end
              end
@@ -217,9 +216,12 @@ while true do
              if not analyze_txt or analyze_txt == '' then
                 log(ERR, "empty analyze_txt:" .. v._id)
              else
-                match_data.contents = knnContents(link_title)
                 match_data.analyze = analyze_txt
-                log(CRIT, "STARTBODY:" .. cjson_safe.encode(match_data) .. ":ENDBODY")
+                local contents = knnContents(link_title)
+                for i,v in ipairs(contents) do
+                    match_data.content = v
+                    log(CRIT, "STARTBODY:" .. cjson_safe.encode(match_data) .. ":ENDBODY")
+                end
              end
              aCount = aCount + 1
          end
