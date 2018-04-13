@@ -76,6 +76,10 @@ function add2Arr(text_arr, source )
    
 end
 
+local function isEmpty(s)
+  return s == nil or s == ''
+end
+
 function knnContents( title )
     local fields = {"names","article","directors","actors","genres","issueds"}
     local resp = content_dao:query_by_name(0, 10, title, fields)
