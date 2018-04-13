@@ -3,16 +3,9 @@
 curl -XPUT http://localhost:9200/match_v1
 
 #取别名
-curl -XPUT http://localhost:9200/match_v1/_alias/link 
+curl -XPUT http://localhost:9200/match_v1/_alias/match 
 
 
-curl -XPOST 'localhost:9200/match_v1/_close'
-
-curl -XPUT http://localhost:9200/match_v1/_settings?pretty -d '
-{
-}
-'
-curl -XPOST 'localhost:9200/match_v1/_open'
 curl -XPUT http://localhost:9200/match_v1/_settings?pretty -d '
 {
   "index": {

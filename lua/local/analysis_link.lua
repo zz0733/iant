@@ -1,7 +1,7 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
-local util_table = require "util.table"
+local util_extract = require "util.extract"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require("dao.content_dao")
@@ -76,6 +76,58 @@ function add2Arr(text_arr, source )
    
 end
 
+function knnContents( title )
+    local fields = {"names","article","directors","actors","genres","issueds"}
+    local resp = content_dao:query_by_name(0, 10, title, fields)
+    local contents = {}
+    if resp and resp.hits and resp.hits.hits then
+        for _,v in ipairs(resp.hits.hits) do
+             local source = v._source
+             if  source and source.article then
+                names = source.names or {}
+                local article = source.article
+                table_insert(names, source.article.title)
+                for ni,nv in ipairs(names) do
+                    if not isEmpty(nv) then
+                        local text_arr = {}
+                        add2Arr(text_arr, source.article.year)
+                        add2Arr(text_arr, nv)
+                        if source.directors then
+                           add2Arr(text_arr, source.directors)
+                        end
+                        if source.article.imdb then
+                           add2Arr(text_arr, "imdb" .. source.article.imdb)
+                        end
+                        local splitor = " "
+                        local all_txt = table.concat( text_arr , splitor)
+                        local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
+                        local analyze_arr = {}
+                        if aresp and aresp.tokens then
+                           for _,tv in ipairs(aresp.tokens) do
+                               add2Arr(analyze_arr, tv.token)
+                           end
+                        end
+                        local analyze_txt = table.concat( analyze_arr , splitor)
+                        local match_data = {}
+                        match_data.id = v._id .. "_" .. ni
+                        match_data.year = article.year
+                        match_data.imdb = article.imdb
+                        match_data.analyze = analyze_txt
+                        match_data.epcount = 1
+                        if article.epcount then
+                            match_data.epcount = article.epcount
+                        elseif article.media == 'tv' then
+                            match_data.epcount = 99999
+                        end
+                        table_insert(contents, match_data)
+                    end
+                end
+             end
+         end
+     end
+     return contents
+end
+
 while true do
      index = index + 1;
      local data,err;
@@ -111,12 +163,12 @@ while true do
          for _,v in ipairs(hits) do
              local source = v._source
              local text_arr = {}
-             
+             local link_title = ''
              if source.title then
-                local title = source.title
-                title = ngx.re.sub(title, "[0-9]\\.[a-z4]{1,4}", "")
-                add2Arr(text_arr, title)
+                link_title = source.title
+                link_title = ngx.re.sub(link_title, "[0-9]\\.[a-z4]{1,4}", "")
              end
+             add2Arr(text_arr, link_title)
              if source.directors then
                 add2Arr(text_arr, "导演")
                 add2Arr(text_arr, source.directors) --todo
@@ -131,6 +183,8 @@ while true do
              -- end
              local match_data = {}
              match_data.id = v._id
+             match_data.episode = util_extract.find_episode(link_title)
+             match_data.season = util_extract.find_season(link_title)
              local code = source.code
              if code and string.startsWith(code, 'imdbtt') then
                  code = ngx.re.sub(code, "imdbtt", "")
@@ -155,6 +209,7 @@ while true do
              if not analyze_txt or analyze_txt == '' then
                 log(ERR, "empty analyze_txt:" .. v._id)
              else
+                match_data.contents = knnContents(link_title)
                 match_data.analyze = analyze_txt
                 log(CRIT, "STARTBODY:" .. cjson_safe.encode(match_data) .. ":ENDBODY")
              end
