@@ -107,6 +107,8 @@ function _M.find_episode(title)
     if not title then
         return
     end
+    title = ngx.re.gsub(title, "mp4", "","ijo")
+    title = ngx.re.gsub(title, "[0-9]{3,4}x[0-9]{3,4}", "","ijo")
     -- local link_title = title
     -- link_title = ngx.re.gsub(link_title, "[\\[【][%W]*[】\\]]", "","ijou")
     -- log(ERR,"link_title:" .. link_title .. ",old:" .. title)
@@ -116,13 +118,7 @@ function _M.find_episode(title)
     if #numbers > 0 then
         return max_number(numbers)
     end
-
     local it = gmatch(title, "(?<num>["..STR_NUM_REG.."]+)\\.[a-zA-Z0-9]{1,4}$","joi")
-    local numbers = iterator_numbers(it,max_num)
-    if #numbers > 0 then
-        return max_number(numbers)
-    end
-    local it = gmatch(title, "[\\(（\\[【](?<num>["..STR_NUM_REG.."]+)[\\)）\\]】][\\W]*$","joi")
     local numbers = iterator_numbers(it,max_num)
     if #numbers > 0 then
         return max_number(numbers)
@@ -132,8 +128,12 @@ function _M.find_episode(title)
     if #numbers > 0 then
         return max_number(numbers)
     end
-    title = ngx.re.gsub(title, "mp4", "","ijo")
-    title = ngx.re.gsub(title, "[0-9]{3,4}x[0-9]{3,4}", "","ijo")
+ 
+    local it = gmatch(title, "[\\(（\\[【](?<num>["..STR_NUM_REG.."]+)[\\)）\\]】][\\W]*$","joi")
+    local numbers = iterator_numbers(it,max_num)
+    if #numbers > 0 then
+        return max_number(numbers)
+    end
     local it = gmatch(title, "(?<num>[0-9]+)","ijo")
     local numbers = iterator_numbers(it,max_num)
     if #numbers > 0 then
