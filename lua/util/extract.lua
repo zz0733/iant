@@ -132,7 +132,9 @@ function _M.find_episode(title)
     if #numbers > 0 then
         return max_number(numbers)
     end
-    local it = gmatch(title, "(?<num>[0-9]+)","joi")
+    title = ngx.re.gsub(title, "mp4", "","ijo")
+    title = ngx.re.gsub(title, "[0-9]{3,4}x[0-9]{3,4}", "","ijo")
+    local it = gmatch(title, "(?<num>[0-9]+)","ijo")
     local numbers = iterator_numbers(it,max_num)
     if #numbers > 0 then
         return max_number(numbers)
