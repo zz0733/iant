@@ -107,11 +107,9 @@ function _M.find_episode(title)
     if not title then
         return
     end
-    local link_title = title
-    link_title = ngx.re.gsub(link_title, "(www\\.[a-z0-9\\.\\-]+)|([a-z0-9\\.\\-]+?\\.com)", "","ijou")
-    link_title = ngx.re.gsub(link_title, "(电影天堂|久久影视|阳光影视|阳光电影|人人影视|外链影视|笨笨影视|390影视|转角影视|微博@影视李易疯|66影视|高清影视交流|大白影视|听风影视|BD影视分享|影视后花园|BD影视|新浪微博@笨笨高清影视|笨笨高清影视)", "","ijou")
-    link_title = ngx.re.gsub(link_title, "(小调网|阳光电影|寻梦网)", "","ijou")
-    log(ERR,"link_title:" .. link_title .. ",old:" .. title)
+    -- local link_title = title
+    -- link_title = ngx.re.gsub(link_title, "[\\[【][%W]*[】\\]]", "","ijou")
+    -- log(ERR,"link_title:" .. link_title .. ",old:" .. title)
     local max_num = 1000
     local it = gmatch(title, "(更新至|连载至|EP|第)(?<num>["..STR_NUM_REG.."]+)[集话]?","joi")
     local numbers = iterator_numbers(it,max_num)
