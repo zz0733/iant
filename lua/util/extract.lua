@@ -107,8 +107,6 @@ function _M.find_episode(title)
     if not title then
         return
     end
-    local link_title = ngx.re.sub(title, "[0-9]\\.[a-z4]{1,4}", "")
-    log(ERR,"link_title:" .. link_title .. ",old:" .. title)
     local max_num = 1000
     local it = gmatch(title, "(更新至|连载至|EP|第)(?<num>["..STR_NUM_REG.."]+)[集话]?","joi")
     local numbers = iterator_numbers(it,max_num)

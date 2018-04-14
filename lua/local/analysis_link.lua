@@ -170,6 +170,9 @@ while true do
              local source = v._source
              local text_arr = {}
              local link_title = source.title
+             if link_title then
+                link_title = ngx.re.sub(link_title, "(www\\.[a-z0-9\\.\\-]+)|([a-z0-9\\.\\-]+?\\.com)", "")
+             end
              add2Arr(text_arr, link_title)
              if source.directors then
                 add2Arr(text_arr, "导演")
