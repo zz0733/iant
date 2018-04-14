@@ -169,11 +169,7 @@ while true do
          for _,v in ipairs(hits) do
              local source = v._source
              local text_arr = {}
-             local link_title = ''
-             if source.title then
-                link_title = source.title
-                link_title = ngx.re.sub(link_title, "[0-9]\\.[a-z4]{1,4}", "")
-             end
+             local link_title = source.title
              add2Arr(text_arr, link_title)
              if source.directors then
                 add2Arr(text_arr, "导演")
