@@ -54,7 +54,7 @@ local cn_maps = {
     return t
 end
 
-function iterator_numbers( iterator )
+function iterator_numbers( iterator, max_num )
     local numbers = {}
     if not iterator then
         return numbers
@@ -68,14 +68,20 @@ function iterator_numbers( iterator )
          local num = m.num or m[0]
          num = convert_number_safe(num)
          if num then
-             table.insert(numbers,num)
+             if max_num then
+                if num <= max_num then
+                    table.insert(numbers,num)
+                end
+             else
+                table.insert(numbers,num)
+             end
          end
       end
     end
     return numbers
 end
 
-function max_number( numbers )
+function max_number( numbers, max )
     if #numbers < 1 then
         return nil
     end
@@ -101,24 +107,30 @@ function _M.find_episode(title)
     if not title then
         return
     end
+    local max_num = 1000
     local it = gmatch(title, "(更新至|连载至|EP|第)(?<num>["..STR_NUM_REG.."]+)[集话]?","joi")
-    local numbers = iterator_numbers(it)
+    local numbers = iterator_numbers(it,max_num)
     if #numbers > 0 then
         return max_number(numbers)
     end
 
     local it = gmatch(title, "(?<num>["..STR_NUM_REG.."]+)\\.[a-zA-Z0-9]{1,4}$","joi")
-    local numbers = iterator_numbers(it)
+    local numbers = iterator_numbers(it,max_num)
     if #numbers > 0 then
         return max_number(numbers)
     end
     local it = gmatch(title, "[\\(（\\[【](?<num>["..STR_NUM_REG.."]+)[\\)）\\]】][\\W]*$","joi")
-    local numbers = iterator_numbers(it)
+    local numbers = iterator_numbers(it,max_num)
     if #numbers > 0 then
         return max_number(numbers)
     end
     local it = gmatch(title, "[^a-z]S[0-9]+E(?<num>[0-9]+)","joi")
-    local numbers = iterator_numbers(it)
+    local numbers = iterator_numbers(it,max_num)
+    if #numbers > 0 then
+        return max_number(numbers)
+    end
+    local it = gmatch(title, "(?<num>[0-9]+)","joi")
+    local numbers = iterator_numbers(it,max_num)
     if #numbers > 0 then
         return max_number(numbers)
     end
