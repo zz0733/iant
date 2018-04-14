@@ -26,7 +26,7 @@ function tb:test_0find_episode()
         ["来自星星的你_11[电影"] = 11,
         ["怪侠欧阳德/怪侠欧阳德59.[国语DVD].rmvb"] = 59,
         ["云中歌_41.mkv"] = 41,
-        ["[久久影视www.99bo.cc]夏家三千金[国语DVD]25.rmvb"] = 25,
+        ["[久久影视网www.99bo.cc电影天堂]夏家三千金[国语DVD]25.rmvb"] = 25,
         ["荆棘花EP54.rmvb"] = 54
     }
     for t,v in pairs(title_episods) do
