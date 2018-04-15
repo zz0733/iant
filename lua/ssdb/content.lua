@@ -70,6 +70,8 @@ function _M:get(content_id)
    return content_val
 end
 
+
+
 function _M:update(content_id, content)
    local has_content_val = self:get(content_id)
    local save_content = content
@@ -80,6 +82,34 @@ function _M:update(content_id, content)
       end
    end
    return self:set(content_id, save_content)
+end
+
+function _M:multi_get(keys)
+   if not keys then
+      return {}
+   end
+   for i = 1, #keys do
+     keys[i] = "D_" .. keys[i]
+   end
+
+   local client = ssdb_client:newClient();
+   if not client then
+      return nil, 'fail to newClient'
+   end
+   local resp, err = client:multi_get(unpack(keys))
+   if err then
+       log(ERR,"multi_get,cause:",err)
+   end
+   if resp then
+      local dest = {}
+      for k,v in pairs(resp) do
+           k = string.sub(k,3)
+           dest[k] =  cjson_safe.decode(v)
+      end
+      return dest
+   else
+      return resp
+   end
 end
 
 return _M

@@ -72,7 +72,7 @@ function getContentByChannel( media, channel, maxChannel )
 	return movie_codes;
 end
 
-local resp = ngx.location.capture("/api/movie/scroll.json?metho=home")
+local resp = ngx.location.capture("/api/movie/scroll.json?method=home")
 if resp and resp.status ~= 200 then
 	return ngx.exit(resp.status)
 end

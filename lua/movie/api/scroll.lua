@@ -7,6 +7,7 @@ local util_time = require "util.time"
 local decodeURI = ngx.unescape_uri
 
 local content_dao = require "dao.content_dao"
+local ssdb_content = require "ssdb.content"
 
 local ngx_re_sub = ngx.re.sub
 
@@ -58,8 +59,13 @@ if method == "home" then
     local contents = {}
     data.contents = contents
     local mintime = ltime
-     for i,v in ipairs(hits.hits) do
-        local source = v._source;
+    local idArr = {}
+    for i,v in ipairs(hits.hits) do
+      table.insert(idArr, v._id)
+    end
+    local kv_doc = ssdb_content:multi_get(idArr)
+    for i,v in pairs(kv_doc) do
+        local source = v;
         local article = source.article;
         local genres = source.genres;
         local digests = source.digests;
