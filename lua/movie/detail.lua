@@ -34,15 +34,16 @@ if not content_id then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local content_val = ssdb_content:get(content_id)
-if not content_val then
+local contentIds = {}
+table.insert(contentIds,content_id)
+local resp = content_dao:query_by_ids(contentIds)
+if not resp or not resp.hits then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local content_doc = { ["_id"] = content_id}
-content_doc._source = content_val
+local content_doc = resp.hits.hits[1]
 local source = content_doc._source
-
+-- log(ERR,"source:" .. cjson_safe.encode(source) )
 local ids = {}
 table.insert(ids,"hotest")
 local resp,status = channel_dao:query_by_ids(ids)
