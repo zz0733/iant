@@ -30,7 +30,7 @@ local body = {
 
 local sourceClient = client_utils.client()
 local sourceIndex = "link";
-local scroll = "2m";
+local scroll = "5m";
 local scanParams = {};
 scanParams.index = sourceIndex
 scanParams.scroll = scroll
@@ -82,7 +82,7 @@ end
 
 function knnContents( title )
     local fields = {"names","article","directors","actors","genres","issueds"}
-    local resp = content_dao:query_by_name(0, 10, title, fields)
+    local resp = content_dao:query_by_name(0, 5, title, fields)
     local contents = {}
     if resp and resp.hits and resp.hits.hits then
         for _,v in ipairs(resp.hits.hits) do
