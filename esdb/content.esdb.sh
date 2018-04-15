@@ -87,12 +87,12 @@ curl -XPUT 'http://localhost:9200/content_v5/_mapping/table?pretty' -d '
         },
         "title": {
           "type": "text",
-          "analyzer": "ik_max_word_synonym",
-          "search_analyzer": "ik_max_word_synonym"
+          "analyzer": "ik_smart_synonym",
+          "search_analyzer": "ik_smart_synonym"
         },
         "url": {
-          "type": "string",
-          "index": "no"
+          "type": "keyword",
+          "index": false
         },
         "source": {
           "type": "keyword"
@@ -168,30 +168,30 @@ curl -XPUT 'http://localhost:9200/content_v5/_mapping/table?pretty' -d '
           "type": "text"
         },
         "acover": {
-          "type": "string",
-          "index": "no"
+          "type": "keyword",
+          "index": false
         }
       }
     },
     "names": {
       "type": "text",
-      "analyzer": "ik_max_word_synonym",
-      "search_analyzer": "ik_max_word_synonym"
+      "analyzer": "ik_smart_synonym",
+      "search_analyzer": "ik_smart_synonym"
     },
     "genres": {
       "type": "text",
-      "analyzer": "ik_max_word_synonym",
-      "search_analyzer": "ik_max_word_synonym"
+      "analyzer": "ik_smart_synonym",
+      "search_analyzer": "ik_smart_synonym"
     },
     "actors": {
       "type": "text",
-      "analyzer": "ik_max_word_synonym",
-      "search_analyzer": "ik_max_word_synonym"
+      "analyzer": "ik_smart_synonym",
+      "search_analyzer": "ik_smart_synonym"
     },
     "directors": {
       "type": "text",
-      "analyzer": "ik_max_word_synonym",
-      "search_analyzer": "ik_max_word_synonym"
+      "analyzer": "ik_smart_synonym",
+      "search_analyzer": "ik_smart_synonym"
     },
     "images": {
       "type": "nested",
@@ -200,8 +200,8 @@ curl -XPUT 'http://localhost:9200/content_v5/_mapping/table?pretty' -d '
           "type": "keyword"
         },
         "link": {
-          "type": "string",
-          "index": "no"
+          "type": "keyword",
+          "index": false
         }
       }
     },
@@ -224,8 +224,8 @@ curl -XPUT 'http://localhost:9200/content_v5/_mapping/table?pretty' -d '
       "properties": {
         "text": {
           "type": "text",
-          "analyzer": "ik_max_word_synonym",
-          "search_analyzer": "ik_max_word_synonym"
+          "analyzer": "ik_smart_synonym",
+          "search_analyzer": "ik_smart_synonym"
         },
         "content": {
           "type": "string",
@@ -246,13 +246,12 @@ curl -XPUT 'http://localhost:9200/content_v5/_mapping/table?pretty' -d '
       "type": "nested",
       "properties": {
         "text": {
-          "type": "text",
-          "analyzer": "ik_max_word_synonym",
-          "search_analyzer": "ik_max_word_synonym"
+          "type": "keyword",
+          "index": false
         },
         "content": {
-          "type": "string",
-          "index": "no"
+          "type": "keyword",
+          "index": false
         },
         "sort": {
           "type": "keyword"
@@ -301,14 +300,14 @@ curl -XPUT 'http://localhost:9200/content_v5/_mapping/table?pretty' -d '
           "type": "short"
         },
         "reason": {
-          "type": "string",
-          "index": "no"
+          "type": "keyword",
+          "index": false
         }
       }
     },
     "extends": {
-      "type": "string",
-      "index": "no"
+      "type": "keyword",
+      "index": false
     },
     "lpipe": {
       "properties": {
