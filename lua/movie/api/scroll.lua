@@ -63,7 +63,7 @@ if method == "home" then
       table.insert(idArr, v._id)
     end
     local kv_doc = ssdb_content:multi_get(idArr)
-    for i,v in pairs(kv_doc) do
+    for _id,v in pairs(kv_doc) do
         local source = v;
         local article = source.article;
         local genres = source.genres;
@@ -96,10 +96,9 @@ if method == "home" then
         }
         local media_name = media_names[article.media]
         local content = {}
-        content.id = v._id
+        content.id = _id
         content.title = article.title
         content.img = str_img
-        content.cost = str_cost
         content.cost = str_cost
         content.media = media_name
         content.rate = rate
