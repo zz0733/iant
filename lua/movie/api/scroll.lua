@@ -27,7 +27,6 @@ local resp, status;
 if method == "home" then
   local offset = tonumber(args.offset) or 0
   local ltime = tonumber(args.ltime) or ngx.time()
-  local fields = {"article","digests","lcount","issueds","evaluates","genres"}
   local year = util_time.year()
   local from = offset
   local size = 30

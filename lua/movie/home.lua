@@ -88,6 +88,7 @@ end
 local movie_codes  = getContentByChannel("movie","正在热播",30)
 local from = 0
 local size = #movie_codes
+-- local fields = {"article","digests","lcount","issueds","evaluates","genres"}
 local resp =  content_dao:query_by_codes(from,size,movie_codes,fields);
 local playing_movie = {}
 if resp then

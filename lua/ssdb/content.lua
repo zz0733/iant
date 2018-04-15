@@ -27,7 +27,8 @@ end
 
 function _M:hasOnlyFields(fields)
    if not fields then
-      return false
+      -- all fields
+      return true
    end
    for i = 1, #fields do
      local fld = fields[i]
