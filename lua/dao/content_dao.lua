@@ -3,6 +3,7 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local util_context = require "util.context"
 local ESClient = require "es.ESClient"
+local ssdb_content = require "ssdb.content"
 
 
 local log = ngx.log
@@ -14,12 +15,15 @@ _M._VERSION = '0.01'
 
 -- local origin_search = _M:search;
 
+
+
 function _M:search(body)
  local resp, status = _M.client:search{
     index = _M.index,
     type = _M.type,
     body = body
   }
+  self:addOnlySSDBFields(resp, body._source)
   if resp and resp.hits and resp.hits.hits then
   	local hits = resp.hits.hits
   	for i,v in ipairs(hits) do
@@ -34,6 +38,7 @@ function _M:search(body)
   			end
   		end
   	end
+
   end
   return resp, status
 end
@@ -239,26 +244,13 @@ function _M:save_docs( docs)
     	  	 end
     	  end
     	end
-    end
-	return self:bulk_docs(docs)
-end
-
-function _M:save_docs( docs)
-    if not docs then
-      return nil, 400
-    end
-    for _,v in ipairs(docs) do
-    	if v.issueds then
-    	  local issueds = v.issueds
-    	  for _,sv in ipairs(issueds) do
-    	  	 if sv.region then
-    	  	 	sv.region = self:to_synonym(sv.region, "issueds.region")
-    	  	 end
-    	  	 if sv.country then
-    	  	 	sv.country = self:to_synonym(sv.country, "issueds.country")
-    	  	 end
-    	  end
-    	end
+    	local cmd = v[self.bulk_cmd_field]
+        if 'update' == cmd then
+        	ssdb_content:update(v.id, v)
+        else
+        	ssdb_content:set(v.id, v)
+        end
+        v = ssdb_content:removeOnlyFields(v)
     end
 	return self:bulk_docs(docs)
 end
@@ -283,6 +275,14 @@ function _M:update_link_pipe( id, lpipe )
   table.insert(es_body,new_doc)
   -- log(ERR,"incr_by_target.resp:" ..  cjson_safe.encode(new_doc) )
   return self:bulk( es_body )
+end
+
+function _M:addOnlySSDBFields( resp, fields )
+	if resp and resp.hits and ssdb_content:hasOnlyFields(fields) then
+		for i,v in ipairs(resp.hits.hits) do
+			v._source = ssdb_content:get(v._id)
+		end
+	end
 end
 
 return _M

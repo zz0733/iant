@@ -172,7 +172,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "query": {
       "match": {
-        "_id":"01359877942"
+        "_id":"f06026345"
       }
   }
 }
@@ -482,6 +482,40 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
         "minimum_should_match":"80%"
       }
     }
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/task/_delete_by_query?pretty' -d '
+{
+  "query": {
+      "match_all": {
+      }
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/content_v5/_search?pretty' -d '
+{
+  "size" : 2,
+  "query": {
+      "match_all": {
+      }
+  }
+}
+'
+
+curl -XGET http://localhost:9200/_cat/indices?v
+
+
+curl -XPOST 'localhost:9200/_bulk' --data-binary '@match.log'
+
+curl -X POST 'http://127.0.0.1:9200/match/table/_search?pretty' -d '
+{
+  "query": {
+      "match": {
+        "_id":"f06026345"
+      }
   }
 }
 '

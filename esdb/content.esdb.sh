@@ -1,16 +1,16 @@
 #!/bin/bash
 #创建索引
-curl -XPUT http://localhost:9200/content_v3
+curl -XPUT http://localhost:9200/content_v5
 
 #取别名
-curl -XPUT http://localhost:9200/content_v3/_alias/content 
-# curl -XGET http://localhost:9200/content_v1/_alias/*
+curl -XPUT http://localhost:9200/content_v5/_alias/content 
+# curl -XGET http://localhost:9200/content_v4/_alias/content
 # curl -XGET http://localhost:9200/*/_alias/content
 
 
-curl -XPOST 'localhost:9200/content_v3/_close'
+curl -XPOST 'localhost:9200/content_v5/_close'
 
-curl -XPUT http://localhost:9200/content_v3/_settings?pretty -d '
+curl -XPUT http://localhost:9200/content_v5/_settings?pretty -d '
 {
   "index": {
     "analysis": {
@@ -49,8 +49,8 @@ curl -XPUT http://localhost:9200/content_v3/_settings?pretty -d '
   }
 }
 '
-curl -XPOST 'localhost:9200/content_v2/_open'
-curl -XPUT http://localhost:9200/content_v2/_settings?pretty -d '
+curl -XPOST 'localhost:9200/content_v5/_open'
+curl -XPUT http://localhost:9200/content_v5/_settings?pretty -d '
 {
   "index": {
     "number_of_replicas": 0
@@ -58,18 +58,20 @@ curl -XPUT http://localhost:9200/content_v2/_settings?pretty -d '
 }
 '
 #电影、动漫、电视剧等内容资源
-curl -XPUT 'http://localhost:9200/content_v3/_mapping/table?pretty' -d '
+curl -XPUT 'http://localhost:9200/content_v5/_mapping/table?pretty' -d '
 {
+  "_all": {
+    "enabled": false
+  },
   "include_in_all": false,
   "dynamic_templates": [
     {
-      "cn": {
-        "match": "*_cn",
-        "match_mapping_type": "text",
+      "string_fields": {
+        "match": "*",
+        "match_mapping_type": "string",
         "mapping": {
-          "type": "text",
-          "analyzer": "ik_max_word",
-          "search_analyzer": "ik_max_word"
+          "index": "not_analyzed",
+          "type": "string"
         }
       }
     }
@@ -340,4 +342,4 @@ curl -XPUT 'http://localhost:9200/content_v3/_mapping/table?pretty' -d '
 }
 '
 
-curl -XPOST 'localhost:9200/content_v3/_open'
+curl -XPOST 'localhost:9200/content_v5/_open'

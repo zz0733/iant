@@ -81,7 +81,7 @@ local function isEmpty(s)
 end
 
 function knnContents( title )
-    local fields = {"names","article","directors","actors","genres","issueds"}
+    local fields = {"names","article","directors","genres","issueds"}
     local resp = content_dao:query_by_name(0, 5, title, fields)
     local contents = {}
     if resp and resp.hits and resp.hits.hits then
@@ -106,7 +106,7 @@ function knnContents( title )
                         end
                         local splitor = " "
                         local all_txt = table.concat( text_arr , splitor)
-                        local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
+                        local aresp,astatus = content_dao:analyze(all_txt,nil,nil,'ik_smart')
                         local analyze_arr = {}
                         if aresp and aresp.tokens then
                            for _,tv in ipairs(aresp.tokens) do
@@ -207,7 +207,7 @@ while true do
        
              local splitor = " "
              local all_txt = table.concat( text_arr , splitor)
-             local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
+             local aresp,astatus = content_dao:analyze(all_txt,nil,nil,'ik_smart')
              local analyze_arr = {}
              if aresp and aresp.tokens then
                 for _,tv in ipairs(aresp.tokens) do
@@ -216,7 +216,7 @@ while true do
              end
              local analyze_txt = table.concat( analyze_arr , splitor)
              if not analyze_txt or analyze_txt == '' then
-                log(ERR, "empty analyze_txt:" .. v._id)
+                log(ERR, "empty analyze_txt:" .. v._id .. ",all_txt:" .. all_txt .. ",aresp:" .. cjson_safe.encode(aresp) .. ",astatus:" .. astatus)
              else
                 match_data.analyze = analyze_txt
                 local contents = knnContents(link_title)

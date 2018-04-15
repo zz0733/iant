@@ -3,6 +3,7 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local dochtml = require "util.dochtml"
 local context = require "util.context"
+local ssdb_content = require "ssdb.content"
 
 local template = require "resty.template"
 
@@ -33,14 +34,13 @@ if not content_id then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local ids = {}
-ids[1] = content_id
-local resp, status = content_dao:query_by_ids(ids)
-if not resp or resp.hits.total < 1 then
+local content_val = ssdb_content:get(content_id)
+if not content_val then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local content_doc = resp.hits.hits[1]
+local content_doc = { ["_id"] = content_id}
+content_doc._source = content_val
 local source = content_doc._source
 
 local ids = {}
@@ -97,4 +97,3 @@ content_doc.config  = {
 	weibo_app_key = context.weibo_app_key
 }
 template.render("detail.html", content_doc)
-

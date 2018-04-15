@@ -1,6 +1,6 @@
 local cjson_safe = require "cjson.safe"
 local client_utils = require("util.client_utils")
-local ssdb_client = require "ssdb.ssdb_client"
+local ssdb_client = require "ssdb.client"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
