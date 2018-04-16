@@ -26,9 +26,10 @@ function tb:test_0find_episode()
         ["来自星星的你_11[电影"] = 11,
         ["怪侠欧阳德/怪侠欧阳德59.[国语DVD].rmvb"] = 59,
         ["云中歌_41.mkv"] = 41,
-        ["[久久影视www.99bo.cc电影天堂]夏家三千金[国语DVD]25.rmvb"] = 25,
+        ["[久久影视www.99bx.xc电影天堂]夏家三千金[国语DVD]25.rmvb"] = 25,
         ["重案组.1024x548.国粤双语.中文字幕2.mkv"] = 2,
         ["图书管理员.The.Librarians.US.S01E04.中英字幕.HDTVrip.624X352.mp4"] = 4,
+        ["[日本][剧情][Doctor-X 5：外科医生大门未知子 第5季][更至04集]"] = 4,
         ["荆棘花EP54.rmvb"] = 54
     }
     for t,v in pairs(title_episods) do

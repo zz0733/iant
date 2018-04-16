@@ -109,11 +109,12 @@ function _M.find_episode(title)
     end
     title = ngx.re.gsub(title, "mp4|720P", "","ijo")
     title = ngx.re.gsub(title, "[0-9]{3,4}x[0-9]{3,4}", "","ijo")
+    title = ngx.re.gsub(title, "["..STR_NUM_REG.."]+(部|季)", "","ijo")
     -- local link_title = title
     -- link_title = ngx.re.gsub(link_title, "[\\[【][%W]*[】\\]]", "","ijou")
-    -- log(ERR,"link_title:" .. link_title .. ",old:" .. title)
+    -- log(ERR,"link_title:" .. title .. ",old:" .. title)
     local max_num = 1000
-    local it = gmatch(title, "(更新至|连载至|EP|第)(?<num>["..STR_NUM_REG.."]+)[集话]?","joi")
+    local it = gmatch(title, "(更新至|连载至|更至|EP|第)(?<num>["..STR_NUM_REG.."]+)[集话]?","joi")
     local numbers = iterator_numbers(it,max_num)
     if #numbers > 0 then
         return max_number(numbers)
@@ -136,7 +137,7 @@ function _M.find_episode(title)
     end
     local it = gmatch(title, "(?<num>[0-9]+)","ijo")
     local numbers = iterator_numbers(it,max_num)
-    if #numbers > 0 then
+    if #numbers == 1 then
         return max_number(numbers)
     end
 end
