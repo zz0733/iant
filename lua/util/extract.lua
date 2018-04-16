@@ -109,6 +109,7 @@ function _M.find_episode(title)
     end
     title = ngx.re.gsub(title, "mp4|720P", "","ijo")
     title = ngx.re.gsub(title, "[0-9]{3,4}x[0-9]{3,4}", "","ijo")
+    title = ngx.re.gsub(title, "x[0-9]{3,4}", "","ijo")
     title = ngx.re.gsub(title, "["..STR_NUM_REG.."]+(部|季)", "","ijo")
     -- local link_title = title
     -- link_title = ngx.re.gsub(link_title, "[\\[【][%W]*[】\\]]", "","ijou")
