@@ -33,15 +33,14 @@ local ensure_doc = function ( doc )
   end
 end
 
-local keepFields = {"_doc_cmd","title","link","secret","space","directors","ctime","status"}
+local keepFields = {"_doc_cmd","id","title","link","secret","space","directors","ctime","status"}
 local makeLinkDoc = function ( doc )
   local newDoc = {}
-  newDoc.id = v["_id"]
-  newDoc.lid = newDoc.id
   for i = 1, #keepFields do
       local fld = keepFields[i]
       newDoc[fld] = doc[fld]
   end
+  newDoc.lid = newDoc.id
   -- 清理标题中的广告信息和冗余信息
   local link_title = newDoc.title
   if link_title then

@@ -35,7 +35,33 @@ scanParams.scroll = scroll
 scanParams.size = 100
 scanParams.body = body
 
-local copyFields = {"title","link","secret","space","directors","ctime"}
+local keepFields = {"_doc_cmd","id","title","link","secret","space","directors","ctime","status"}
+local makeLinkDoc = function ( doc )
+  local newDoc = {}
+  for i = 1, #keepFields do
+      local fld = keepFields[i]
+      newDoc[fld] = doc[fld]
+  end
+  newDoc.lid = newDoc.id
+  -- 清理标题中的广告信息和冗余信息
+  local link_title = newDoc.title
+  if link_title then
+    link_title = ngx.re.gsub(link_title, "(www\\.[a-z0-9\\.\\-]+)|([a-z0-9\\.\\-]+?\\.com)|([a-z0-9\\.\\-]+?\\.net)", "","ijou")
+    link_title = ngx.re.gsub(link_title, "(电影天堂|久久影视|阳光影视|阳光电影|人人影视|外链影视|笨笨影视|390影视|转角影视|微博@影视李易疯|66影视|高清影视交流|大白影视|听风影视|BD影视分享|影视后花园|BD影视|新浪微博@笨笨高清影视|笨笨高清影视)", "","ijou")
+    link_title = ngx.re.gsub(link_title, "(小调网|阳光电影|寻梦网)", "","ijou")
+    link_title = ngx.re.gsub(link_title, "[\\[【][%W]*[】\\]]", "","ijou")
+    newDoc.title = link_title
+ end
+  local code = doc.code
+   if code and string.startsWith(code, 'imdbtt') then
+       code = ngx.re.sub(code, "imdbtt", "")
+       newDoc.imdb = code
+   elseif code and string.startsWith(code, 'imdb') then
+       code = ngx.re.sub(code, "imdb", "")
+       newDoc.imdb = code
+   end
+   return newDoc
+end
 
 
 local scan_count = 0
@@ -81,21 +107,8 @@ while true do
         for _,v in ipairs(hits) do
             local doc = v["_source"]
             if doc and doc.status and doc.status > -1 then
-                local newDoc = {}
-                newDoc.id = v["_id"]
-                newDoc.lid = newDoc.id
-                for i = 1, #copyFields do
-                    local fld = copyFields[i]
-                    newDoc[fld] = doc[fld]
-                end
-                local code = doc.code
-                 if code and string.startsWith(code, 'imdbtt') then
-                     code = ngx.re.sub(code, "imdbtt", "")
-                     newDoc.imdb = code
-                 elseif code and string.startsWith(code, 'imdb') then
-                     code = ngx.re.sub(code, "imdb", "")
-                     newDoc.imdb = code
-                 end
+                doc.id = v["_id"]
+                local newDoc  = makeLinkDoc(doc)
                 table.insert(save_docs, newDoc)
             end
         end
