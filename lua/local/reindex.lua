@@ -100,7 +100,7 @@ while true do
             end
         end
         local str_docs = cjson_safe.encode(save_docs)
-        local srep,serr = link_dao:save_docs(save_docs)
+        local srep,serr = link_dao:bulk_docs(save_docs)
         if srep then
           save = save + #save_docs
         end
