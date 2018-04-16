@@ -65,10 +65,7 @@ function _M:get(content_id)
       return nil, 'fail to newClient'
    end
    local content_val =  client:get(content_id)
-   if content_val then
-      content_val = cjson_safe.decode(content_val)
-   end
-   return content_val
+   return toJSONBean(content_val)
 end
 
 
@@ -105,12 +102,29 @@ function _M:multi_get(keys)
       local dest = {}
       for k,v in pairs(resp) do
            k = string.sub(k,3)
-           dest[k] =  cjson_safe.decode(v)
+           dest[k] =  toJSONBean(v)
       end
       return dest
    else
       return resp
    end
+end
+
+function toJSONBean( sVal )
+   if not sVal then
+      return nil
+   end
+   local jsonVal =  cjson_safe.decode(sVal)
+   if jsonVal and jsonVal.digests then
+      local digests = jsonVal.digests
+      for _,dv in ipairs(digests) do
+         -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
+         if dv.sort == 'img' and string.match(dv.content,"^/img/") then
+            dv.content = util_context.CDN_URI .. dv.content
+         end
+      end
+   end
+   return jsonVal
 end
 
 return _M
