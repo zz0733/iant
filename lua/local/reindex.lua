@@ -3,7 +3,7 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
-local content_dao = require "dao.content_dao"
+local link_dao = require "dao.link_dao"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -16,14 +16,18 @@ local message = {}
 message.code = 200
 
 local body = {
+    query = {
+        match_all = {
+        }
+    }
 }
 
 local sourceClient = client_utils.client()
 local targetClient =  sourceClient
-local sourceIndex = "content_v2";
-local targetIndex = "content_v3";
+local sourceIndex = "link_v2";
+local targetIndex = "link_v3";
 content_dao.index = targetIndex
-local scroll = "1m";
+local scroll = "5m";
 local scanParams = {};
 scanParams.index = sourceIndex
 scanParams.scroll = scroll
@@ -31,6 +35,7 @@ scanParams.scroll = scroll
 scanParams.size = 100
 scanParams.body = body
 
+local copyFields = {"title","link","secret","space","directors","ctime"}
 
 
 local scan_count = 0
@@ -75,14 +80,27 @@ while true do
         local save_docs = {}
         for _,v in ipairs(hits) do
             local doc = v["_source"]
-            doc.id = v["_id"]
-            if doc.epcount then
-              doc.epcount = tonumber(doc.epcount)
+            if doc and doc.status and doc.status > -1 then
+                local newDoc = {}
+                newDoc.id = v["_id"]
+                newDoc.lid = newDoc.id
+                for i = 1, #copyFields do
+                    local fld = copyFields[i]
+                    newDoc[fld] = doc[fld]
+                end
+                local code = source.code
+                 if code and string.startsWith(code, 'imdbtt') then
+                     code = ngx.re.sub(code, "imdbtt", "")
+                     newDoc.imdb = code
+                 elseif code and string.startsWith(code, 'imdb') then
+                     code = ngx.re.sub(code, "imdb", "")
+                     newDoc.imdb = code
+                 end
+                table.insert(save_docs, newDoc)
             end
-            table.insert(save_docs, doc)
         end
         local str_docs = cjson_safe.encode(save_docs)
-        local srep,serr = content_dao:save_docs(save_docs)
+        local srep,serr = link_dao:save_docs(save_docs)
         if srep then
           save = save + #save_docs
         end

@@ -9,7 +9,40 @@ curl -XPUT http://localhost:9200/match_v1/_alias/match
 curl -XPUT http://localhost:9200/match_v1/_settings?pretty -d '
 {
   "index": {
-    "number_of_replicas": 0
+    "number_of_replicas": 0,
+    "analysis": {
+      "analyzer": {
+        "ik_smart_synonym": {
+          "tokenizer": "ik_smart",
+          "filter": [
+            "synmone"
+          ]
+        },
+        "ik_smart_synmgroup": {
+          "tokenizer": "ik_smart",
+          "filter": [
+            "synmone",
+            "synmgroup"
+          ]
+        },
+        "ik_max_word_synonym": {
+          "tokenizer": "ik_max_word",
+          "filter": [
+            "synmone"
+          ]
+        }
+      },
+      "filter": {
+        "synmone": {
+          "type": "synonym",
+          "synonyms_path": "analysis/synonym.txt"
+        },
+        "synmgroup": {
+          "type": "synonym",
+          "synonyms_path": "analysis/standard.txt"
+        }
+      }
+    }
   }
 }
 '
@@ -34,6 +67,9 @@ curl -XPUT 'http://localhost:9200/match_v1/_mapping/table?pretty' -d '
     }
   ],
   "properties": {
+    "id": {
+      "type": "keyword"
+    },
     "season": {
       "type": "short"
     },
@@ -43,6 +79,15 @@ curl -XPUT 'http://localhost:9200/match_v1/_mapping/table?pretty' -d '
     "title": {
       "type": "keyword",
       "index": false
+    },
+    "link": {
+      "type": "keyword"
+    },
+    "secret": {
+      "type": "keyword"
+    },
+    "space": {
+      "type": "long"
     },
     "docid": {
       "type": "keyword"
