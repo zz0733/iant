@@ -88,7 +88,7 @@ while true do
                     local fld = copyFields[i]
                     newDoc[fld] = doc[fld]
                 end
-                local code = source.code
+                local code = doc.code
                  if code and string.startsWith(code, 'imdbtt') then
                      code = ngx.re.sub(code, "imdbtt", "")
                      newDoc.imdb = code
