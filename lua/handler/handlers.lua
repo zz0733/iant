@@ -33,6 +33,26 @@ local ensure_doc = function ( doc )
   end
 end
 
+local keepFields = {"_doc_cmd","title","link","secret","space","directors","ctime","status"}
+local makeLinkDoc = function ( doc )
+  local newDoc = {}
+  newDoc.id = v["_id"]
+  newDoc.lid = newDoc.id
+  for i = 1, #keepFields do
+      local fld = keepFields[i]
+      newDoc[fld] = doc[fld]
+  end
+  local code = doc.code
+   if code and string.startsWith(code, 'imdbtt') then
+       code = ngx.re.sub(code, "imdbtt", "")
+       newDoc.imdb = code
+   elseif code and string.startsWith(code, 'imdb') then
+       code = ngx.re.sub(code, "imdb", "")
+       newDoc.imdb = code
+   end
+   return newDoc
+end
+
 _M.execute = function (cmd, ... )
   local do_cmd = _M[cmd]
    if not do_cmd then
@@ -99,6 +119,7 @@ _M.meta = function(id, source)
    return meta_dao:bulk_docs(docs)
 end
 
+
 _M.link = function(id, source)
    if not source then
        return nil, "source is nil"
@@ -121,7 +142,9 @@ _M.link = function(id, source)
         if not v.id then
          v.id = tostring(type) .. tostring(id)
         end
-         ensure_doc(v)
+        -- 只保留主要字段,减少ES空间的占用。
+        v = makeLinkDoc(v)
+        ensure_doc(v)
    end
    log(ERR,"handle[link],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
    return link_dao:bulk_docs(docs)
