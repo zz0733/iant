@@ -495,7 +495,7 @@ curl -X POST 'http://127.0.0.1:9200/task/_delete_by_query?pretty' -d '
 }
 '
 
-curl -X POST 'http://127.0.0.1:9200/content_v5/_search?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/content/_search?pretty' -d '
 {
   "size" : 2,
   "query": {
@@ -510,11 +510,11 @@ curl -XGET http://localhost:9200/_cat/indices?v
 
 curl -XPOST 'localhost:9200/_bulk' --data-binary '@match.log'
 
-curl -X POST 'http://127.0.0.1:9200/match/table/_search?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "query": {
       "match": {
-        "_id":"f06026345"
+        "_id":"685105844"
       }
   }
 }

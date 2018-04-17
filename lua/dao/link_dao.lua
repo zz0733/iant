@@ -140,14 +140,7 @@ function _M:query_by_target( target_id, from , size, fields )
     query = {
       bool = {
         must = {
-		   nested = {
-		        path = "targets",
-		         query ={
-		           match = { 
-		              ["targets.id"] = target_id
-		           }
-		         }
-		      }
+		   match = { ["target"] = target_id }
 	    },
 	    must_not = {
             match = { status = -1 }
