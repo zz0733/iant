@@ -146,16 +146,18 @@ _M.link = function(id, source)
    end
    local docs = data.data.docs
    local type = source.type
+   local newDocs = {}
    for _,v in ipairs(docs) do
         if not v.id then
          v.id = tostring(type) .. tostring(id)
         end
         -- 只保留主要字段,减少ES空间的占用。
-        v = makeLinkDoc(v)
-        ensure_doc(v)
+        local newDoc = makeLinkDoc(v)
+        ensure_doc(newDoc)
+        table.insert(newDocs,newDoc)
    end
    log(ERR,"handle[link],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
-   return link_dao:bulk_docs(docs)
+   return link_dao:bulk_docs(newDocs)
 end
 
 _M.channel = function(id, source)
