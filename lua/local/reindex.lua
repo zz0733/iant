@@ -108,7 +108,8 @@ while true do
         local delete_ids = {}
         for _,v in ipairs(hits) do
             local doc = v["_source"]
-            if doc and doc.status and doc.status > -1 then
+            -- if doc and doc.status and doc.status > -1 then
+            if doc then
                 doc.id = v["_id"]
                 local newDoc  = makeLinkDoc(doc)
                 table.insert(save_docs, newDoc)
