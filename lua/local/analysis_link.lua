@@ -4,6 +4,7 @@ local util_table = require "util.table"
 local util_table = require "util.table"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
+local util_extract = require "util.extract"
 local content_dao = require("dao.content_dao")
 
 local req_method = ngx.req.get_method()
