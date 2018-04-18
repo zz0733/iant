@@ -17,15 +17,14 @@ message.code = 200
 
 local body = {
     query = {
-      exists = {
-         field = "paths"
-      }
+        match_all = {
+        }
     }
 }
 
 local sourceClient = client_utils.client()
 local targetClient =  sourceClient
-local sourceIndex = "link_v3";
+local sourceIndex = "link_v2";
 local targetIndex = "link_v3";
 link_dao.index = targetIndex
 local scroll = "5m";
@@ -105,19 +104,15 @@ while true do
         local elements = {}
      
         local save_docs = {}
-        local delete_ids = {}
         for _,v in ipairs(hits) do
             local doc = v["_source"]
-            -- if doc and doc.status and doc.status > -1 then
-            if doc then
+            if doc and doc.status and doc.status > -1 then
                 doc.id = v["_id"]
                 local newDoc  = makeLinkDoc(doc)
                 table.insert(save_docs, newDoc)
-                table.insert(delete_ids, doc.id)
             end
         end
         local str_docs = cjson_safe.encode(save_docs)
-        link_dao:delete_by_ids(delete_ids)
         local srep,serr = link_dao:bulk_docs(save_docs)
         if srep then
           save = save + #save_docs

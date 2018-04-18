@@ -1,0 +1,211 @@
+{(decorator/header.html)}
+
+<link rel="canonical" href="{*context.header.canonical*}"/>
+<meta name="description" content="{*context.header.description*}"/>
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+
+</head>
+{# end of head #}
+
+<body>
+
+{(decorator/navbar.html)}
+{(decorator/blankbar.html)}
+
+
+<div class="main data-box">
+  <div class="act">
+    <div class="container">
+    <ol class="breadcrumb">
+    {% for index, oLink in ipairs(crumbs) do %}
+       {% if oLink.link then %}
+        <li><a href="{{oLink.link}}">{{oLink.name}}</a></li>
+       {% else %}
+        <li><span>{{oLink.name}}</span></li>
+       {% end %}
+        
+    {% end %}
+        <li class="active"><strong>{*_source.article.title*}</strong></li>
+      </ol>
+
+      <div class="container-fluid">
+          <div class="row top-margin">
+              <div class="col-xs-12 col-sm-4 col-md-3 movie-left">
+                   {%
+                      local digests = _source.digests
+                  local str_img
+                          if digests then
+                             for _,v in ipairs(digests) do
+                                if v.sort == 'img' then
+                                   str_img = v.content
+                                   str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                                   str_img = ngx.re.sub(str_img, "http:", "https:")
+                                   break
+                                end
+                             end
+                          end
+                          if str_img and not string.match(str_img,"^http") then
+                                str_img = '/img/' .. str_img
+                                str_img = ngx.re.sub(str_img, "http:", "https:")
+                              end
+                   %}
+                   <img src="{{str_img}}" 
+                   class="img-thumbnail movie-img" alt="{*_source.article.title*}"/>
+                </div>
+                <div class="col-xs-12 col-sm-8 col-md-9 movie-right">
+                    <ul class="list-group">
+                    <li class="list-group-item">
+                        <h1 class="movie-title-margin">
+                        {*_source.article.title*}
+                          <span class="badge movie-badge">{*_source.article.year*}</span>
+                        </h1>
+                    <li class="list-group-item tag-info">
+                       <strong>导演：</strong>
+                       {% local directors = _source.directors or {}; %}
+                       {* table.concat(directors,' ') *}
+                    </li>
+                    <li class="list-group-item tag-info">
+                       <strong>主演：</strong>
+                       {%
+                         local actors = _source.actors or {} 
+                         local suffix = ""
+                     if #actors > 10 then
+                       local inputs = actors
+                       actors = {}
+                       local max = 8
+                       for i=1, max do
+                        table.insert(actors, inputs[i])
+                       end
+                       suffix = "..."
+                     end
+                       %}
+                       {*  table.concat(actors,'、') .. suffix *}
+                    </li>
+                    <li class="list-group-item tag-info">
+                      <strong>类型：</strong>
+                      {% local genres = _source.genres or {} %}
+                      {*   table.concat(genres,' ') *}
+                    </li>
+                    <li class="list-group-item tag-info">
+                      <strong>上映：</strong>
+                        {%
+                          local issueds = _source.issueds or {};
+                          for i,v in ipairs(issueds) do
+                       if i > 1 then 
+                        %}  &nbsp  {%
+                       end 
+                       local issued = v.time;  
+                       if string.len(tostring(issued)) > 10 then 
+                          issued = math.modf( issued / 1000)  
+                       end 
+                       %} {{v.country}}( {* os.date("%Y-%m-%d",issued) *}) {%
+                       end 
+                    %}
+                    </li>
+                  </ul>
+                 </div>
+              </div>
+        </div>
+      </div>
+    </div>
+
+       <input type="hidden" id="did" name="did" value="{{context._id}}">
+       <input type="hidden" id="title" name="title" value="{{context._source.article.title}}">
+       <div class="container top-margin">
+       <div class="story">
+
+        <div class="story-header">
+        <div class="share-group">
+                        {%
+                          local media_names = { 
+                     tv = "电视剧",
+                     movie = "电影"
+                  }
+                          local directors = _source.directors or {}; 
+                          local media = _source.article.media
+                          local content = ""
+                  if directors and directors[1] then
+                     content = directors[1] .. "导演的"
+                   content = content .. media_names[media]
+                  end
+                    content = content .. "《" .. _source.article.title .."》"
+                          local evaluates = _source.evaluates;
+                          if evaluates and evaluates[1] then
+                               local rate = evaluates[1].rate
+                               content = content .. ",豆瓣评分" .. rate;
+                          end
+                          if _source.article.cost then
+                             content = content .. ",约" .. _source.article.cost .."分钟";
+                          end
+                  content = content .. "，免费资源为你所用."
+                  local encode_title = string.encodeURI(content)
+                        %}
+                                <a href="http://service.weibo.com/share/share.php?appkey={*config.weibo_app_key*}&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;ralateUid={*config.weibo_uid*}&amp;source=狸猫资讯&amp;sourceUrl=http%3A%2F%2Fwww.lezomao.com&amp;content=utf8&amp;searchPic=false&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_sina.png"></a>
+                                <a href="http://www.jiathis.com/send/?webid=tqq&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_tengwb.png"></a>
+                                <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_wx.png"></a>
+                                <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_friend.png"></a>
+                                <a href="http://www.jiathis.com/send/?webid=renren&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_renren.png"></a>
+                        </div>
+            <h4 class="head-title">剧情介绍
+            </h4>
+        </div>
+        <div class="story-body">
+          {% 
+          for index, page in ipairs(context._source.contents) do 
+             if page.sort == "img" then
+              %} <img src="{{page.text}}" >  {%
+             else 
+              %} <p>{{page.text}}</p>  {%
+             end 
+          end 
+          %}
+         </div>
+      </div>
+    </div>
+
+    <div class="container" >
+        <div class="row">
+          <div class="col-md-8 link-group-left">
+          <ul class="list-group">
+              <span class="link-no-more">
+                    <input type="hidden" id="curPage" name="curPage" value="0">
+                <li class="list-group-item" >
+                </li> 
+             </span>
+          </ul>
+          </div>
+          <div class="col-md-4 link-group-right">
+          <ul class="list-group recmd-box">
+            {%
+              local count = 0
+              for k,v in pairs(recmd_map) do
+                     count = count + 1
+                     local str_index = tostring(count)
+                     if count < 10 then
+                        str_index = "0" .. str_index
+                     end 
+               %}  
+               <li class="list-group-item">
+                <span class="badge recmd-badge">{{str_index}}</span>
+                 <a href="/movie/detail/{{k}}.html" class="recmd-title">{{v.title}}</a> 
+               </li>
+               {%
+            end
+            if count < 1 then
+              %} <li class="list-group-item">暂无推荐</li> {%
+            end
+            %}
+           </ul>
+          </div>
+
+    </div>
+
+</div>
+
+<script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/custom/detail.js?v={{version}}"></script>
+
+
+
+{(decorator/footer.html)}

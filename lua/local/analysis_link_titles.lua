@@ -1,7 +1,7 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
-local util_table = require "util.table"
+local util_extract = require "util.extract"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require("dao.content_dao")
@@ -30,7 +30,7 @@ local body = {
 
 local sourceClient = client_utils.client()
 local sourceIndex = "link";
-local scroll = "2m";
+local scroll = "5m";
 local scanParams = {};
 scanParams.index = sourceIndex
 scanParams.scroll = scroll
@@ -76,6 +76,64 @@ function add2Arr(text_arr, source )
    
 end
 
+local function isEmpty(s)
+  return s == nil or s == ''
+end
+
+function knnContents( title )
+    local fields = {"names","article","directors","genres","issueds"}
+    local resp = content_dao:query_by_name(0, 5, title, fields)
+    local contents = {}
+    if resp and resp.hits and resp.hits.hits then
+        for _,v in ipairs(resp.hits.hits) do
+             local source = v._source
+             if  source and source.article then
+                article = source.article
+                names = source.names or {}
+               
+                local article = source.article
+                table_insert(names, source.article.title)
+                for ni,nv in ipairs(names) do
+                    if not isEmpty(nv) then
+                        local text_arr = {}
+                        add2Arr(text_arr, source.article.year)
+                        add2Arr(text_arr, nv)
+                        if source.directors then
+                           add2Arr(text_arr, source.directors)
+                        end
+                        if source.article.imdb then
+                           add2Arr(text_arr, "imdb" .. source.article.imdb)
+                        end
+                        local splitor = " "
+                        local all_txt = table.concat( text_arr , splitor)
+                        local aresp,astatus = content_dao:analyze(all_txt,nil,nil,'ik_smart')
+                        local analyze_arr = {}
+                        if aresp and aresp.tokens then
+                           for _,tv in ipairs(aresp.tokens) do
+                               add2Arr(analyze_arr, tv.token)
+                           end
+                        end
+                        local analyze_txt = table.concat( analyze_arr , splitor)
+                        local match_data = {}
+                        match_data.id = v._id
+                        match_data.year = article.year
+                        match_data.imdb = article.imdb
+                        match_data.analyze = analyze_txt
+                        match_data.epcount = 1
+                        if article.epcount then
+                            match_data.epcount = article.epcount
+                        elseif article.media == 'tv' then
+                            match_data.epcount = 99999
+                        end
+                        table_insert(contents, match_data)
+                    end
+                end
+             end
+         end
+     end
+     return contents
+end
+
 while true do
      index = index + 1;
      local data,err;
@@ -111,15 +169,14 @@ while true do
          for _,v in ipairs(hits) do
              local source = v._source
              local text_arr = {}
-             
              local link_title = source.title
              if link_title then
                 link_title = ngx.re.gsub(link_title, "(www\\.[a-z0-9\\.\\-]+)|([a-z0-9\\.\\-]+?\\.com)|([a-z0-9\\.\\-]+?\\.net)", "","ijou")
                 link_title = ngx.re.gsub(link_title, "(电影天堂|久久影视|阳光影视|阳光电影|人人影视|外链影视|笨笨影视|390影视|转角影视|微博@影视李易疯|66影视|高清影视交流|大白影视|听风影视|BD影视分享|影视后花园|BD影视|新浪微博@笨笨高清影视|笨笨高清影视)", "","ijou")
                 link_title = ngx.re.gsub(link_title, "(小调网|阳光电影|寻梦网)", "","ijou")
                 link_title = ngx.re.gsub(link_title, "[\\[【][%W]*[】\\]]", "","ijou")
-                add2Arr(text_arr, link_title)
              end
+             add2Arr(text_arr, link_title)
              if source.directors then
                 add2Arr(text_arr, "导演")
                 add2Arr(text_arr, source.directors) --todo
@@ -135,6 +192,8 @@ while true do
              local match_data = {}
              match_data.id = v._id
              match_data.title = link_title
+             match_data.episode = util_extract.find_episode(link_title)
+             match_data.season = util_extract.find_season(link_title)
              local code = source.code
              if code and string.startsWith(code, 'imdbtt') then
                  code = ngx.re.sub(code, "imdbtt", "")
@@ -148,7 +207,7 @@ while true do
        
              local splitor = " "
              local all_txt = table.concat( text_arr , splitor)
-             local aresp = content_dao:analyze(all_txt,nil,nil,'ik_smart')
+             local aresp,astatus = content_dao:analyze(all_txt,nil,nil,'ik_smart')
              local analyze_arr = {}
              if aresp and aresp.tokens then
                 for _,tv in ipairs(aresp.tokens) do
@@ -157,10 +216,14 @@ while true do
              end
              local analyze_txt = table.concat( analyze_arr , splitor)
              if not analyze_txt or analyze_txt == '' then
-                log(ERR, "empty analyze_txt:" .. v._id)
+                log(ERR, "empty analyze_txt:" .. v._id .. ",all_txt:" .. all_txt .. ",aresp:" .. cjson_safe.encode(aresp) .. ",astatus:" .. astatus)
              else
                 match_data.analyze = analyze_txt
-                log(CRIT, "STARTBODY:" .. cjson_safe.encode(match_data) .. ":ENDBODY")
+                local contents = knnContents(link_title)
+                for i,v in ipairs(contents) do
+                    match_data.content = v
+                    log(CRIT, "STARTBODY:" .. cjson_safe.encode(match_data) .. ":ENDBODY")
+                end
              end
              aCount = aCount + 1
          end
