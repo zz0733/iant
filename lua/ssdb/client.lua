@@ -16,7 +16,7 @@ function _M.newClient()
     local ok, err = ssdbClient:connect(context.SSDB_HOST, context.SSDB_PORT)
     if not ok then
         ngx.say("failed to connect[" .. context.SSDB_HOST .. ":" .. context.SSDB_PORT .. "],cause:", err)
-        return
+        return nil, err
     end
     return ssdbClient
 end
