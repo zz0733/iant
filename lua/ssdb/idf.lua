@@ -16,19 +16,21 @@ local _M = new_tab(0, 2)
 _M._VERSION = '0.01'
 
 
-function _M:new(o)
-  o = o or {}
-  setmetatable(o, self)
-  self.__index = self
-  local error = nil
-  if not self.client then
-    -- the execute client
-    self.client = ssdb_client.newClient()
-  end
-  if error then
-    log(ERR,"new ssdb client,cause:",error)
-  end
-  return o, error
+function open( )
+   local client,err = ssdb_client:newClient();
+   if err then
+      return nil, err
+   end
+   return client
+end
+function close( client )
+   if not client then
+      return
+   end
+   local ok, err = client:set_keepalive(0, 20)
+   if not ok then
+      log(ERR,"failed to set keepalive: ", err)
+   end
 end
 
 function toSSDBKey( key )
@@ -36,12 +38,16 @@ function toSSDBKey( key )
 end
 
 function _M:setValue(key, val)
-   local ret, err = self.client:set(toSSDBKey(key), val)
+   local client =  open();
+   local ret, err = client:set(toSSDBKey(key), val)
+   close(client)
    return ret, err
 end
 
 function _M:getValue(key)
-   local ret, err = self.client:get(toSSDBKey(key))
+   local client =  open();
+   local ret, err = client:get(toSSDBKey(key))
+   close(client)
    if err then
       return nil, err
    end

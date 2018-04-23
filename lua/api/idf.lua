@@ -1,7 +1,7 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
-local ssdb_idf = require("ssdb.idf"):new()
+local ssdb_idf = require("ssdb.idf")
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()

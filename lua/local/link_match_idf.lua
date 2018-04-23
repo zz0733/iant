@@ -5,7 +5,7 @@ local util_extract = require "util.extract"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require("dao.content_dao")
-local ssdb_idf = require("ssdb.idf"):new()
+local ssdb_idf = require("ssdb.idf")
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
