@@ -1,0 +1,1 @@
+cat $1 |xargs -I % curl -k -XPOST 'https://127.0.0.1/api/idf.json' -d '%'
