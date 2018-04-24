@@ -34,7 +34,7 @@ should.bool = { must_not = { exists = { field = "status" } } }
 table_insert(shoulds, should)
 
 table_insert(musts,{ bool = { should = shoulds}})
-table_insert(musts,{ bool = { range = {gt = from_date}}})
+table_insert(musts,{ range = { ctime = { gte = from_date }}})
 local body = {
     query = {
        bool = {
