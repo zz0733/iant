@@ -5,6 +5,7 @@ local util_extract = require "util.extract"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require("dao.content_dao")
+local link_dao = require("dao.link_dao")
 local ssdb_idf = require("ssdb.idf")
 
 local req_method = ngx.req.get_method()
@@ -172,6 +173,9 @@ function cosine_match( link_data, content_data )
     local splitor = " "
     link_count = count_dict(string.split(link_data.analyze, splitor))
     content_count = count_dict(string.split(content_data.analyze, splitor))
+    -- log(ERR,"link_count:" .. link_data.analyze .. ",array:".. cjson_safe.encode(string.split(link_data.analyze, splitor)))
+    -- log(ERR,"link_count:" .. link_data.analyze .. ",count:".. cjson_safe.encode(link_count))
+    -- log(ERR,"content_count:" .. content_data.analyze .. ",count:".. cjson_safe.encode(content_count))
     return tfidf_cosine(link_count, content_count)
 end
 
@@ -250,8 +254,11 @@ function tfidf_cosine( link_count, content_count )
     sum_count_dict(content_count, sum_count)
     link_vector = make_vector(sum_count, link_count)
     content_vector = make_vector(sum_count, content_count)
-    log(ERR,"link_vector:" .. cjson_safe.encode(link_vector))
-    log(ERR,"content_vector:" .. cjson_safe.encode(content_vector))
+    -- log(ERR,"link_count:" .. cjson_safe.encode(link_count))
+    -- log(ERR,"content_count:" .. cjson_safe.encode(content_count))
+    -- log(ERR,"sum_count:" .. cjson_safe.encode(sum_count))
+    -- log(ERR,"link_vector:" .. cjson_safe.encode(link_vector))
+    -- log(ERR,"content_vector:" .. cjson_safe.encode(content_vector))
     return cosine(link_vector, content_vector)
 end
 function cosine( link_vector, content_vector)
@@ -270,6 +277,16 @@ function cosine( link_vector, content_vector)
     local cos_val = dot_val / (link_norm * content_norm)
     return cos_val
 end
+local desc_score_comp = function ( a, b )
+    if not a or not a.score then
+        return true
+    end
+    if not b or not b.score then
+        return false
+    end
+    return   b.score < a.score
+end
+
 while true do
      index = index + 1;
      local data,err;
@@ -356,12 +373,31 @@ while true do
              else
                 match_data.analyze = analyze_txt
                 local content_set = knnContents(link_title, analyze_txt)
-                log(ERR,"title:"..match_data.title .. ",content_set:" .. cjson_safe.encode(content_set))
+                -- log(ERR,"title:"..match_data.title .. ",content_set:" .. cjson_safe.encode(content_set))
                 local idf_cos_list = {}
                 for _,vcontent in pairs(content_set) do
                      local idf_cos = cosine_match(match_data, vcontent)
-                     log(ERR, "idf:".. idf_cos ..",id:" .. match_data.id .. "," .. vcontent.id .. ",title:" .. match_data.title .. "," .. match_data.analyze)
-                     table_insert(idf_cos_list, { ["id"] = vcontent.id, ["score"] = idf_cos})
+                     if idf_cos >= 0.49 then
+                       -- log(ERR, "idf:".. idf_cos ..",id:" .. match_data.id .. "," .. vcontent.id .. ",title:" .. match_data.title .. ",analyze:(" .. match_data.analyze .. "," .. vcontent.analyze)
+                       table_insert(idf_cos_list, { ["id"] = vcontent.id, ["score"] = idf_cos})
+                     end
+                end
+                if #idf_cos_list > 0  then
+                    table.sort(idf_cos_list, desc_score_comp)
+                    local match_content = idf_cos_list[1]
+                    local link_doc = {}
+                    link_doc.id = match_data.id
+                    link_doc.title = match_data.title
+                    link_doc.episode = match_data.episode
+                    link_doc.season = match_data.season
+                    link_doc.target = match_content.id
+                    link_doc.score =  tonumber(string.format("%.4f", match_content.score))
+                    -- # -1:失效,0:默认,1:有效,2:自动匹配,3:人工匹配
+                    link_doc.status =  2
+                    local link_docs = {}
+                    table_insert(link_docs, link_doc)
+                    local resp = link_dao:update_docs(link_docs)
+                    log(ERR,"matchDoc:".. cjson_safe.encode(link_doc) .. ",resp:" .. cjson_safe.encode(resp))
                 end
              end
              aCount = aCount + 1
