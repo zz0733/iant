@@ -23,14 +23,18 @@ local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 local to_date = ngx.time()
 local from_date = to_date - 1*24*60*60
+local shoulds = {}
+local should = {}
+should.match = { status = 0}
+table_insert(shoulds, should)
+
+should = {}
+should.bool = { must_not = { exists = { field = "status" } } }
+table_insert(shoulds, should)
 local body = {
     query = {
        bool = {
-         must = {
-            match = {
-              status = 0
-            }
-         }
+         should = shoulds
        }
     }
 }

@@ -168,11 +168,11 @@ exit 0
 # '
 # exit 0
 
-curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   "query": {
       "match": {
-        "_id":"f06026345"
+        "_id":"m01668146354"
       }
   }
 }
@@ -536,13 +536,45 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   "query": {
-      "bool": {
-        "must":{
+      "match":{
+        "_id" :"f0872486546"
+      }
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "query": {
+      "match":{
+        "status" :"f0872486546"
+      }
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "size": 10,
+  "query": {
+    "bool": {
+      "should": [
+        {
           "match": {
-            "target":"220275124"
+            "status": 0
+          }
+        },
+        {
+          "bool": {
+            "must_not": {
+              "exists": {
+                "field": "status"
+              }
+            }
           }
         }
-      }
+      ]
+    }
   }
 }
 '
