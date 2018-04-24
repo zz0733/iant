@@ -25,8 +25,13 @@ local to_date = ngx.time()
 local from_date = to_date - 1*24*60*60
 local body = {
     query = {
-        match_all = {
-        }
+       bool = {
+         must = {
+            match = {
+              status = 0
+            }
+         }
+       }
     }
 }
 
@@ -396,8 +401,8 @@ while true do
                     link_doc.status =  2
                     local link_docs = {}
                     table_insert(link_docs, link_doc)
-                    local resp = link_dao:update_docs(link_docs)
-                    log(ERR,"matchDoc:".. cjson_safe.encode(link_doc) .. ",resp:" .. cjson_safe.encode(resp))
+                    link_dao:update_docs(link_docs)
+                    log(ERR,"id:"..match_data.id..",matchDoc:".. cjson_safe.encode(link_doc) .. ",content:" .. cjson_safe.encode(content_set[link_doc.target]))
                 end
              end
              aCount = aCount + 1
