@@ -25,6 +25,44 @@ for i = 1, #fields do
     _M._ONGLYS[cmd] = 1
 end
 
+function open( )
+   local client,err = ssdb_client:newClient();
+   if err then
+      return nil, err
+   end
+   return client
+end
+function close( client )
+   if not client then
+      return
+   end
+   local ok, err = client:set_keepalive(0, 20)
+   if not ok then
+      log(ERR,"failed to set keepalive: ", err)
+   end
+end
+
+function toSSDBKey( key )
+  return "D_" .. key
+end
+
+function toJSONBean( sVal )
+   if not sVal then
+      return nil
+   end
+   local jsonVal =  cjson_safe.decode(sVal)
+   if jsonVal and jsonVal.digests then
+      local digests = jsonVal.digests
+      for _,dv in ipairs(digests) do
+         -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
+         if dv.sort == 'img' and string.match(dv.content,"^/img/") then
+            dv.content = util_context.CDN_URI .. dv.content
+         end
+      end
+   end
+   return jsonVal
+end
+
 function _M:hasOnlyFields(fields)
    if not fields then
       -- all fields
@@ -47,25 +85,26 @@ function _M:removeOnlyFields(content_val)
 end
 
 function _M:set(content_id, content_val)
-   content_id = "D_" .. content_id
    if util_table.is_table(content_val) then
    	 content_val =  cjson_safe.encode(content_val)
    end
-   local client = ssdb_client:newClient();
-   if not client then
-      return nil, 'fail to newClient'
-   end
-   return client:set(content_id, content_val)
+   local client =  open();
+   local ret, err = client:set(toSSDBKey(content_id), content_val)
+   close(client)
+   return ret, err
 end
 
 function _M:get(content_id)
-   content_id = "D_" .. content_id
-   local client = ssdb_client:newClient();
-   if not client then
-      return nil, 'fail to newClient'
+   local client =  open();
+   local ret, err = client:get(toSSDBKey(content_id))
+   close(client)
+   if err then
+      return nil, err
    end
-   local content_val =  client:get(content_id)
-   return toJSONBean(content_val)
+   if ret == ngx.null then
+     return nil
+   end
+   return toJSONBean(ret)
 end
 
 
@@ -87,44 +126,22 @@ function _M:multi_get(keys)
       return {}
    end
    for i = 1, #keys do
-     keys[i] = "D_" .. keys[i]
+     keys[i] =  toSSDBKey(keys[i]) 
    end
-
-   local client = ssdb_client:newClient();
-   if not client then
-      return nil, 'fail to newClient'
-   end
-   local resp, err = client:multi_get(unpack(keys))
-   if err then
-       log(ERR,"multi_get,cause:",err)
-   end
-   if resp then
+   local client = open();
+   local ret, err = client:multi_get(unpack(keys))
+   if ret then
       local dest = {}
-      for k,v in pairs(resp) do
+      for k,v in pairs(ret) do
            k = string.sub(k,3)
            dest[k] =  toJSONBean(v)
       end
       return dest
    else
-      return resp
+      return ret, err
    end
 end
 
-function toJSONBean( sVal )
-   if not sVal then
-      return nil
-   end
-   local jsonVal =  cjson_safe.decode(sVal)
-   if jsonVal and jsonVal.digests then
-      local digests = jsonVal.digests
-      for _,dv in ipairs(digests) do
-         -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-         if dv.sort == 'img' and string.match(dv.content,"^/img/") then
-            dv.content = util_context.CDN_URI .. dv.content
-         end
-      end
-   end
-   return jsonVal
-end
+
 
 return _M
