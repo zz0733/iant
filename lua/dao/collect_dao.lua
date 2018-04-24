@@ -68,8 +68,8 @@ function _M:insert_docs( collects )
 
 		    es_body[#es_body + 1] = collect_obj
 		    count = count + 1			    
-		else
-		    log(ERR,"ignore.collect:" .. str_task .. ",data:" .. str_data)
+		-- else
+		    -- log(ERR,"ignore.collect:" .. str_task .. ",data:" .. str_data)
 	    end
 	end
     if count < 1 then
