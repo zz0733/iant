@@ -57,6 +57,7 @@ local scan_count = 0
 local scrollId = nil
 local index = 0
 local aCount = 0
+local matchCount = 0
 local total = nil
 local begin = ngx.now()
 local md5_set = {}
@@ -317,8 +318,8 @@ while true do
      if data == nil or not data["_scroll_id"] or #data["hits"]["hits"] == 0 then
         local cost = (ngx.now() - begin)
          cost = tonumber(string.format("%.3f", cost))
-        log(ERR, "done.match,index:"..index..",scan:"..scan_count..",total:" .. tostring(total) .. ",aCount:" .. tostring(aCount) .. ",cost:" .. cost)
-        message.data = {cost = cost,index = index, scan = scan_count, total = total, aCount =  aCount}
+        log(ERR, "done.match,index:"..index..",scan:"..scan_count..",total:" .. total .. ",aCount:" .. aCount,",match:" .. matchCount .. ",cost:" .. cost)
+        message.data = {cost = cost,index = index, scan = scan_count, total = total, aCount =  aCount, match = matchCount}
         break
      else
          total = data.hits.total
@@ -410,6 +411,7 @@ while true do
                     local link_docs = {}
                     table_insert(link_docs, link_doc)
                     link_dao:update_docs(link_docs)
+                    matchCount = matchCount + 1
                     log(ERR,"id:"..match_data.id..",matchDoc:".. cjson_safe.encode(link_doc) .. ",content:" .. cjson_safe.encode(content_set[link_doc.target]))
                 end
              end
