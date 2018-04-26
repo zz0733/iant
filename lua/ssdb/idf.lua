@@ -28,8 +28,12 @@ function close( client )
       return
    end
    local ok, err = client:set_keepalive(0, 20)
-   if not ok then
-      log(ERR,"failed to set keepalive: ", err)
+   if err then
+      log(ERR,"failed to set keepalive:", err)
+      local ok, err = client:close()
+      if not err then
+         log(ERR,"failed to close client:", err)
+      end
    end
 end
 
