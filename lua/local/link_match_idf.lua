@@ -411,8 +411,20 @@ while true do
                     local link_docs = {}
                     table_insert(link_docs, link_doc)
                     link_dao:update_docs(link_docs)
+
+                    local logmsg = "id:"..match_data.id..",matchDoc:".. cjson_safe.encode(link_doc) .. ",content:" .. cjson_safe.encode(content_set[link_doc.target])
+                    if link_doc.episode and link_doc.episode > 0 then
+                        local lpipe = {}
+                        lpipe.lid = match_data.id
+                        -- lpipe.index = 0
+                        lpipe.time = source.ctime
+                        lpipe.epmax = link_doc.episode
+                        -- log(ERR,"link_doc.target:" .. link_doc.target .. ",lpipe:" .. cjson_safe.encode(lpipe))
+                        content_dao:update_link_pipe(link_doc.target, lpipe)
+                        logmsg = logmsg .. ",lpipe:" .. cjson_safe.encode(lpipe)
+                    end
                     matchCount = matchCount + 1
-                    log(ERR,"id:"..match_data.id..",matchDoc:".. cjson_safe.encode(link_doc) .. ",content:" .. cjson_safe.encode(content_set[link_doc.target]))
+                    log(ERR, logmsg)
                 end
              end
              aCount = aCount + 1
