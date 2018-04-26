@@ -63,13 +63,15 @@ if method == "home" then
       table.insert(idArr, v._id)
     end
     local kv_doc = ssdb_content:multi_get(idArr)
-    for _id,v in pairs(kv_doc) do
-        local source = v;
+    for _,v in ipairs(hits.hits) do
+        local _id = v._id
+        local _es_source = v._source
+        local source = kv_doc[_id] or _es_source
         local article = source.article;
         local genres = source.genres;
         local digests = source.digests;
         local evaluates = source.evaluates;
-        local lpipe = source.lpipe;
+        local lpipe = _es_source.lpipe or source.lpipe;
         local rate
         if evaluates and evaluates[1] then
              rate = evaluates[1].rate
