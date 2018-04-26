@@ -66,12 +66,15 @@ if method == "home" then
     for _,v in ipairs(hits.hits) do
         local _id = v._id
         local _es_source = v._source
-        local source = kv_doc[_id] or _es_source
+        local source = kv_doc[_id]
         local article = source.article;
         local genres = source.genres;
         local digests = source.digests;
         local evaluates = source.evaluates;
-        local lpipe = _es_source.lpipe or source.lpipe;
+        local lpipe = _es_source.lpipe;
+        if not lpipe then
+           lpipe = source.lpipe
+        end
         local rate
         if evaluates and evaluates[1] then
              rate = evaluates[1].rate
