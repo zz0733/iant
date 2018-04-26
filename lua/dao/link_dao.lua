@@ -107,14 +107,9 @@ function _M:count_by_target( target_id )
   end
   local  body = {
     query = {
-      nested = {
-        path = "targets",
-         query ={
            match = { 
-              ["targets.id"] = target_id
+              target = target_id
            }
-         }
-      }
     }
   }
   local resp, status = _M:count(body)
@@ -155,14 +150,10 @@ function _M:query_by_target_title( target_id,title , from , size, fields )
 	local shoulds = {}
 	if target_id then
 		  table.insert(shoulds,{
-		   nested = {
-		        path = "targets",
-		         query ={
 		           match = { 
-		              ["targets.id"] = target_id
+		              ["target"] = target_id
 		           }
 		         }
-		      }
 	  })
 	end
 	if title then
@@ -214,14 +205,9 @@ function _M:query_by_targetid_source(target_id, source_reg, from , size, fields 
   target_id = tostring(target_id)
   local must_arr = {}
     table.insert(must_arr,{
-		   nested = {
-		        path = "targets",
-		         query ={
 		           match = { 
-		              ["targets.id"] = target_id
+		              ["target"] = target_id
 		           }
-		         }
-		      }
 	})
     table.insert(must_arr,{
 	           match = { 
