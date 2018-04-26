@@ -135,7 +135,7 @@ function _M:query_by_target( target_id, from , size, fields )
     query = {
       bool = {
         must = {
-		   match = { ["target"] = target_id }
+		   match = { target = target_id }
 	    },
 	    must_not = {
             match = { status = -1 }
@@ -151,9 +151,8 @@ function _M:query_by_target_title( target_id,title , from , size, fields )
 	if target_id then
 		  table.insert(shoulds,{
 		           match = { 
-		              ["target"] = target_id
+		              target = target_id
 		           }
-		         }
 	  })
 	end
 	if title then
@@ -206,7 +205,7 @@ function _M:query_by_targetid_source(target_id, source_reg, from , size, fields 
   local must_arr = {}
     table.insert(must_arr,{
 		           match = { 
-		              ["target"] = target_id
+		              target = target_id
 		           }
 	})
     table.insert(must_arr,{
