@@ -575,11 +575,11 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 }
 '
 
-curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "query": {
       "match":{
-        "_id" :"f0872486546"
+        "_id" :"711877179"
       }
   }
 }
