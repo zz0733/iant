@@ -62,65 +62,61 @@ if method == "home" then
     for i,v in ipairs(hits.hits) do
       table.insert(idArr, v._id)
     end
-    local kv_doc,mgerr = ssdb_content:multi_get(idArr)
-    if kv_doc then
-      for _id,v in pairs(kv_doc) do
-          local source = v;
-          local article = source.article;
-          local genres = source.genres;
-          local digests = source.digests;
-          local evaluates = source.evaluates;
-          local lpipe = source.lpipe;
-          local rate
-          if evaluates and evaluates[1] then
-               rate = evaluates[1].rate
+    local kv_doc = ssdb_content:multi_get(idArr)
+    for _id,v in pairs(kv_doc) do
+        local source = v;
+        local article = source.article;
+        local genres = source.genres;
+        local digests = source.digests;
+        local evaluates = source.evaluates;
+        local lpipe = source.lpipe;
+        local rate
+        if evaluates and evaluates[1] then
+             rate = evaluates[1].rate
+        end
+        local str_cost
+        if article.cost then
+           local lcost = article.cost / 60
+           str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+        end
+        local str_img
+        if digests then
+           for _,v in ipairs(digests) do
+              if v.sort == 'img' then
+                 str_img = v.content
+                 str_img = ngx_re_sub(str_img, "[%.]webp", ".jpg")
+                 str_img = ngx_re_sub(str_img, "http:", "https:")
+                 break
+              end
+           end
+        end
+        local media_names = { 
+           tv = "电视剧",
+           movie = "电影"
+        }
+        local media_name = media_names[article.media]
+        local content = {}
+        content.id = _id
+        content.title = article.title
+        content.img = str_img
+        content.cost = str_cost
+        content.media = media_name
+        content.rate = rate
+        if lpipe and lpipe.epmax then
+          content.epmax = lpipe.epmax
+        end
+        if lpipe and lpipe.time and lpipe.time < mintime then
+           mintime = lpipe.time
+        end
+        if genres then
+          local link_genres = {}
+          local toIndex = math.min(3,#genres)
+          for i=1,toIndex do
+             table.insert(link_genres,genres[i])
           end
-          local str_cost
-          if article.cost then
-             local lcost = article.cost / 60
-             str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
-          end
-          local str_img
-          if digests then
-             for _,v in ipairs(digests) do
-                if v.sort == 'img' then
-                   str_img = v.content
-                   str_img = ngx_re_sub(str_img, "[%.]webp", ".jpg")
-                   str_img = ngx_re_sub(str_img, "http:", "https:")
-                   break
-                end
-             end
-          end
-          local media_names = { 
-             tv = "电视剧",
-             movie = "电影"
-          }
-          local media_name = media_names[article.media]
-          local content = {}
-          content.id = _id
-          content.title = article.title
-          content.img = str_img
-          content.cost = str_cost
-          content.media = media_name
-          content.rate = rate
-          if lpipe and lpipe.epmax then
-            content.epmax = lpipe.epmax
-          end
-          if lpipe and lpipe.time and lpipe.time < mintime then
-             mintime = lpipe.time
-          end
-          if genres then
-            local link_genres = {}
-            local toIndex = math.min(3,#genres)
-            for i=1,toIndex do
-               table.insert(link_genres,genres[i])
-            end
-            content.genres = link_genres
-          end
-          table.insert(contents,content)
-      end
-    else
-      log(ERR,"multi_get.cause:",mgerr)
+          content.genres = link_genres
+        end
+        table.insert(contents,content)
     end
     local content_size = #hits.hits
     local next_offset = 0
