@@ -125,6 +125,24 @@ function _M:multi_get(keys)
    if not keys then
       return {}
    end
+   local client = open();
+   local ret_set = {}
+   local merr = nil
+   for i = 1, #keys do
+     local ssdbKey = toSSDBKey(keys[i])
+     local ret, err = self:get(ssdbKey)
+     if ret then
+       ret_set[keys[i]] = ret
+     end
+     merr = err
+   end
+   return ret_set
+end
+
+function _M:multi_get2(keys)
+   if not keys then
+      return {}
+   end
    for i = 1, #keys do
      keys[i] =  toSSDBKey(keys[i]) 
    end
