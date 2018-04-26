@@ -52,7 +52,7 @@ if method == "home" then
     }
   resp, status = content_dao:search(body)
   -- log(ERR,"resp:"..tostring(cjson_safe.encode(resp)) .. ",status:" ..tostring(status))
-  if resp and resp.hits  then
+  if resp and resp.hits and resp.hits.total > 0  then
     local hits = resp.hits
     local data = {}
     local contents = {}
