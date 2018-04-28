@@ -417,6 +417,21 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query' -d '
 }
 '
 
+curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query' -d '
+{
+  "script": {
+    "inline": "ctx._source.lpipe = null;",
+    "lang": "painless"
+  },
+  "size":10,
+  "query": {
+    "match_all": {
+      
+    }
+  }
+}
+'
+
 curl -XGET 'http://localhost:9200/link/_analyze?pretty' -d '
 {
   "field" : "title",
@@ -567,9 +582,11 @@ curl -XPOST 'localhost:9200/_bulk' --data-binary '@match.log'
 
 curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
+  "size":5,
+  "sort":{"episode":{"order":"desc"}},
   "query": {
       "match": {
-        "target":"220275124"
+        "target":"277394682"
       }
   }
 }
@@ -579,7 +596,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "query": {
       "match":{
-        "_id" :"711877179"
+        "_id" :"0110041733"
       }
   }
 }
@@ -629,6 +646,58 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
           }
         }
       ]
+    }
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "size": 10,
+  "aggs": {
+    "content_group": {
+      "term": {
+        "field": "target",
+        "size": 10
+      },
+      "max_episode": {
+        "max": {
+          "field": "episode"
+        }
+      }
+    }
+  }
+}
+'
+
+
+curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "size": 0,
+  "query":{
+    "bool":{
+      "must":[
+        {"range":{"status":{"gte":2}}}
+      ]
+    }
+  },
+  "aggs": {
+    "content_group": {
+      "terms": {
+        "field": "target",
+        "include": {
+           "partition": 0,
+           "num_partitions": 1000
+        },
+        "size": 1000
+      },
+       "aggs": {
+        "max_episode": {
+          "max": {
+            "field": "episode"
+          }
+        }
+      }
     }
   }
 }

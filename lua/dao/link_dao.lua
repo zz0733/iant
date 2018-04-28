@@ -234,6 +234,7 @@ end
 
 
 function _M:incr_bury_digg( id, target_id, bury, digg )
+  return nil, 200, "ignore bury and digg"
   if not id or not bury or not digg then
   	return nil, 400
   end

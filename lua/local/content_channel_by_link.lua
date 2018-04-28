@@ -15,27 +15,18 @@ local CRIT = ngx.CRIT
 local message = {}
 message.code = 200
 
-local before  = tonumber(args.before)
-before = before or 1*24*60*60
-local to_date = ngx.time()
-local from_date = to_date - before
+local from_date = tonumber(args.from) or (ngx.time() - 5*60*60)
 
 local timeby = from_date
 
-
+ -- # -1:失效,0:默认,1:有效,2:自动匹配,3:人工匹配
 local must_array = {}
-table.insert(must_array,{match = { status = 1 }})
+table.insert(must_array,{range = { utime = { gte = from_date } }})
+-- table.insert(must_array,{range = { status = { gte = 1 } }})
 
 local body = {
     query = {
         bool = {
-            filter = {
-              range = {
-                ctime ={
-                  gte = from_date
-                }
-              }
-            },
             must = must_array
         }
     }
@@ -90,7 +81,7 @@ while true do
          log(ERR,"timeby:"..timeby..",scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
                 .. ",scan:" .. tostring(scan_count)..",index:"..index..",cost:" .. cost)
         local elements = {}
-     
+        
         for _,v in ipairs(hits) do
             local source = v._source;
             local targets = source.targets

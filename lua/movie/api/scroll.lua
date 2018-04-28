@@ -71,10 +71,7 @@ if method == "home" then
         local genres = source.genres;
         local digests = source.digests;
         local evaluates = source.evaluates;
-        local lpipe = _es_source.lpipe;
-        if not lpipe then
-           lpipe = source.lpipe
-        end
+        local lpipe = _es_source.lpipe or source.lpipe;
         local rate
         if evaluates and evaluates[1] then
              rate = evaluates[1].rate
