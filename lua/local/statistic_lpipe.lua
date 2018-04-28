@@ -81,10 +81,12 @@ while true do
                 local max_episode_ctime = nil
                 for _,v in ipairs(hits.hits) do
                     local _source = v._source
-                    if _source.episode and (not max_episode_num or (_source.episode > max_episode_num)) then
-                        max_episode_num = _source.episode
-                        max_episode_id = v._id
-                        max_episode_ctime = _source.ctime
+                    if _source.episode and _source.episode > 0  then
+                        if (not max_episode_num) or (_source.episode > max_episode_num) then
+                            max_episode_num = _source.episode
+                            max_episode_id = v._id
+                            max_episode_ctime = _source.ctime
+                        end
                     end
                 end
                 if max_episode_num and max_episode_num > 0 then
