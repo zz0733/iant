@@ -68,13 +68,12 @@ while true do
 
     if resp and resp.aggregations  then
         local buckets = resp.aggregations["content_group"].buckets
-        log(ERR,"buckets:" .. cjson_safe.encode(buckets))
         for _,v in ipairs(buckets) do
-            log(ERR,"v:" .. cjson_safe.encode(v))
             total = total + 1
             local content_id  = v.key
             musts[2].match.target = content_id
             local mresp = link_dao:search(max_episode_body)
+            log(ERR,"v:" .. cjson_safe.encode(v) .. ",body:" .. cjson_safe.encode(max_episode_body) .. ",resp:" .. cjson_safe.encode(mresp))
             if mresp and  mresp.hits and mresp.hits.total > 0  then
                 local hits = mresp.hits
                 local max_episode_id = nil
