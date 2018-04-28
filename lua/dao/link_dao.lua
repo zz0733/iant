@@ -234,31 +234,32 @@ end
 
 
 function _M:incr_bury_digg( id, target_id, bury, digg )
-  return nil, 200, "ignore bury and digg"
-  if not id or not bury or not digg then
-  	return nil, 400
-  end
+  return 'OK', 200
+  -- "ignore bury and digg"
+  -- if not id or not bury or not digg then
+  -- 	return nil, 400
+  -- end
 
-  local es_body = {}
-  local cmd = 'update'
-  local cmd_doc = {}
-   cmd_doc[cmd] = {
-	  ["_type"] = self.type,
-	  ["_id"] = id
-   }
-   es_body[#es_body + 1] = cmd_doc
-  local up_doc = { tid = target_id, bury = bury, digg = digg, utime = ngx.time() }
-  local new_doc = { 
-	    script = { 
-	      inline = "def targets = ctx._source.targets; for(int i = 0; i < targets.length; i++){ def target = targets[i]; if(target == null || target.id == null) { continue; } if(target.id == params.tid) { if(params.bury != null) { def bury = target.bury; if (bury == null) { bury = 0 ; } target.bury = bury + params.bury; if(target.bury >= 10 && targets.length == 1) { ctx._source.status=-1; } } if(params.digg != null) { def digg = target.digg; if (digg == null) { digg = 0 ; } target.digg = digg + params.digg; } break; } }", 
-	      lang = "painless", 
-	      params = up_doc
-	    },
-	    upsert = up_doc
-  }
-  es_body[#es_body + 1] = new_doc
-  -- log(ERR,"incr_by_target.resp:" ..  cjson_safe.encode(new_doc) )
-  return self:bulk( es_body )
+  -- local es_body = {}
+  -- local cmd = 'update'
+  -- local cmd_doc = {}
+  --  cmd_doc[cmd] = {
+	 --  ["_type"] = self.type,
+	 --  ["_id"] = id
+  --  }
+  --  es_body[#es_body + 1] = cmd_doc
+  -- local up_doc = { tid = target_id, bury = bury, digg = digg, utime = ngx.time() }
+  -- local new_doc = { 
+	 --    script = { 
+	 --      inline = "def targets = ctx._source.targets; for(int i = 0; i < targets.length; i++){ def target = targets[i]; if(target == null || target.id == null) { continue; } if(target.id == params.tid) { if(params.bury != null) { def bury = target.bury; if (bury == null) { bury = 0 ; } target.bury = bury + params.bury; if(target.bury >= 10 && targets.length == 1) { ctx._source.status=-1; } } if(params.digg != null) { def digg = target.digg; if (digg == null) { digg = 0 ; } target.digg = digg + params.digg; } break; } }", 
+	 --      lang = "painless", 
+	 --      params = up_doc
+	 --    },
+	 --    upsert = up_doc
+  -- }
+  -- es_body[#es_body + 1] = new_doc
+  -- -- log(ERR,"incr_by_target.resp:" ..  cjson_safe.encode(new_doc) )
+  -- return self:bulk( es_body )
 end
 
 function _M:latest_by_title( title, from, size, fields )
