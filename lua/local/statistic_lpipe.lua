@@ -73,17 +73,18 @@ while true do
             local content_id  = v.key
             musts[2].match.target = content_id
             local mresp = link_dao:search(max_episode_body)
-            log(ERR,"v:" .. cjson_safe.encode(v) .. ",body:" .. cjson_safe.encode(max_episode_body) .. ",resp:" .. cjson_safe.encode(mresp))
+            -- log(ERR,"v:" .. cjson_safe.encode(v) .. ",body:" .. cjson_safe.encode(max_episode_body) .. ",resp:" .. cjson_safe.encode(mresp))
             if mresp and  mresp.hits and mresp.hits.total > 0  then
                 local hits = mresp.hits
                 local max_episode_id = nil
                 local max_episode_num = nil
                 local max_episode_ctime = nil
                 for _,v in ipairs(hits.hits) do
-                    if v.episode and (not max_episode_num or v.episode > max_episode_num) then
-                        max_episode_num = v.episode
+                    local _source = v._source
+                    if _source.episode and (not max_episode_num or _source.episode > max_episode_num) then
+                        max_episode_num = _source.episode
                         max_episode_id = v._id
-                        max_episode_ctime = v.ctime
+                        max_episode_ctime = _source.ctime
                     end
                 end
                 if max_episode_num and max_episode_num > 0 then
