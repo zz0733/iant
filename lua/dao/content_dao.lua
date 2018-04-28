@@ -28,7 +28,7 @@ function _M:search(body)
   	local hits = resp.hits.hits
   	for i,v in ipairs(hits) do
   		local _source = v._source
-  		if _source.digests then
+  		if _source and _source.digests then
   			local digests = _source.digests
   			for _,dv in ipairs(digests) do
   				-- dv.content = '/img/a9130b4f2d5e7acd.jpg'

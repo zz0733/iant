@@ -24,7 +24,7 @@ local timeby = from_date
 local must_array = {}
 table.insert(must_array,{range = { utime = { gte = from_date } }})
 local cur_partition = 0
-local max_partition = 200
+local max_partition = 100
 local body = {
     size = 0,
     query = {
@@ -40,7 +40,7 @@ local body = {
                    partition = cur_partition,
                    num_partitions = max_partition
                },
-               size = 1000
+               size = 2000
            }
        }
     }
