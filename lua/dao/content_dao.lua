@@ -280,7 +280,7 @@ end
 function _M:addOnlySSDBFields( resp, fields )
 	if resp and resp.hits and ssdb_content:hasOnlyFields(fields) then
 		local idArr = {}
-	    for _,v in ipairs(hits.hits) do
+	    for _,v in ipairs(resp.hits.hits) do
 	      table.insert(idArr, v._id)
 	    end
 	    local kv_doc = ssdb_content:multi_get(idArr)
