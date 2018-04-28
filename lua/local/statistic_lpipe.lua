@@ -81,9 +81,11 @@ while true do
                 local max_episode_ctime = nil
                 for _,v in ipairs(hits.hits) do
                     local _source = v._source
-                    if _source.episode and _source.episode > 0  then
-                        if (not max_episode_num) or (_source.episode > max_episode_num) then
-                            max_episode_num = _source.episode
+                    -- _source.episode可能为NULL值
+                    local episode = tonumber(_source.episode)
+                    if episode and episode > 0  then
+                        if (not max_episode_num) or (episode > max_episode_num) then
+                            max_episode_num = episode
                             max_episode_id = v._id
                             max_episode_ctime = _source.ctime
                         end
