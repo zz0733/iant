@@ -279,8 +279,31 @@ end
 
 function _M:addOnlySSDBFields( resp, fields )
 	if resp and resp.hits and ssdb_content:hasOnlyFields(fields) then
-		for i,v in ipairs(resp.hits.hits) do
-			v._source = ssdb_content:get(v._id)
+		local idArr = {}
+	    for _,v in ipairs(hits.hits) do
+	      table.insert(idArr, v._id)
+	    end
+	    local kv_doc = ssdb_content:multi_get(idArr)
+		for _,v in ipairs(resp.hits.hits) do
+			local es_source = v._source
+			local ssdb_source = kv_doc[v._id]
+			local merge_source = es_source
+			if ssdb_source then
+				merge_source = ssdb_source
+				for k,v in pairs(es_source) do
+					merge_source[k] = v
+				end
+			end
+			local select_source = nil
+            if fields then
+            	select_source = {}
+            	for _,fld in ipairs(fields) do
+            		select_source[fld] = merge_source[fld]
+            	end
+            else
+            	select_source = merge_source
+            end
+			v._source = select_source
 		end
 	end
 end
