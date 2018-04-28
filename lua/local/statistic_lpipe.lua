@@ -65,10 +65,12 @@ local begin = ngx.now()
 while true do
     page = page + 1
     local resp, stauts = link_dao:search(body)
-    log(ERR,"resp:" .. cjson_safe.encode(resp))
+
     if resp and resp.aggregations  then
         local buckets = resp.aggregations["content_group"].buckets
+        log(ERR,"buckets:" .. cjson_safe.encode(buckets))
         for _,v in ipairs(buckets) do
+            log(ERR,"v:" .. cjson_safe.encode(v))
             total = total + 1
             local content_id  = v.key
             musts[2].match.target = content_id
