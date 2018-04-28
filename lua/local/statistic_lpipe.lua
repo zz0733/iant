@@ -65,7 +65,7 @@ local begin = ngx.now()
 while true do
     page = page + 1
     local resp, stauts = link_dao:search(body)
-    cur_partition = cur_partition + 1
+    log(ERR,"resp:" .. cjson_safe.encode(resp))
     if resp and resp.aggregations  then
         local buckets = resp.aggregations["content_group"].buckets
         for _,v in ipairs(buckets) do
@@ -106,6 +106,7 @@ while true do
             end
         end
     end
+    cur_partition = cur_partition + 1
     if cur_partition == max_partition then
         break
     end
