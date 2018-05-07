@@ -112,7 +112,7 @@ end
 function _M:update(content_id, content)
    local has_content_val = self:get(content_id)
    local save_content = content
-   if not has_content_val then
+   if has_content_val then
       save_content = has_content_val
       for k,v in pairs(content) do
          save_content[k] = v
