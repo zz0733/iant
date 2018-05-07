@@ -51,6 +51,9 @@ function toJSONBean( sVal )
       return nil
    end
    local jsonVal =  cjson_safe.decode(sVal)
+   if jsonVal and not util_table.is_table(jsonVal) then
+      jsonVal = nil
+   end
    if jsonVal and jsonVal.digests then
       local digests = jsonVal.digests
       for _,dv in ipairs(digests) do

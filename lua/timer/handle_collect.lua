@@ -29,7 +29,7 @@ local check
          if resp then
             local total  = resp.hits.total
             log(INFO,"collect,load[" .. str_handlers .. "],limit:" .. size 
-                ..",count:" .. total .. ",cost:" .. cost)
+                ..",total:" .. total .. ",cost:" .. cost)
             if total > 0 then
                 local hits  = resp.hits.hits
                 for _,v in ipairs(hits) do
