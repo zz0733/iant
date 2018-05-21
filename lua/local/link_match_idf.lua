@@ -408,6 +408,10 @@ while true do
                     link_doc.score =  tonumber(string.format("%.4f", match_content.score))
                     -- # -1:失效,0:默认,1:有效,2:自动匹配,3:人工匹配
                     link_doc.status =  2
+                    local vcontent = content_set[link_doc.target]
+                    if link_doc.episode and vcontent and string.match(vcontent.analyze,".*?" .. link_doc.episode) then
+                        link_doc.episode = nil
+                    end
                     local link_docs = {}
                     table_insert(link_docs, link_doc)
                     link_dao:update_docs(link_docs)

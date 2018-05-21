@@ -74,6 +74,12 @@
               local btnHtml;
               if string.match(link_doc.id,"^b[0-9]+") then
                   btnHtml = '<button class="btn-down" >百度云盘</button>'
+              elseif string.match(link_doc.id,"^m[0-9]+") and 1 == link_doc.webRTC then
+                  btnHtml = ''
+                  btnHtml = btnHtml .. '<button class="btn-down" >百度离线</button>'
+                  btnHtml = btnHtml .. '<button class="btn-down" >迅雷离线</button>'
+                  btnHtml = btnHtml .. '<button class="btn-down" >迅雷下载</button>'
+                  btnHtml = btnHtml .. '<button class="btn-down" >磁力播放</button>'
               else
                   btnHtml = ''
                   btnHtml = btnHtml .. '<button class="btn-down" >百度离线</button>'
@@ -89,6 +95,37 @@
       </div>
 
     </div>
+    <div id="post-video" class="post-video-display">
+
+        <div id="progressBar" class="progressBar"></div>
+        <div class="stat-box">
+            <span class="stat-rate">
+               <code id="downloaded">已下载0</code>/<code id="total">总大小</code>
+           </span>
+           <span class="stat-rate">
+              <code id="downloadSpeed">0KB/S</code>/<code id="remaining">省余时间</code>
+           </span>
+        </div>
+        <div class="video">
+           <div id="loading" class="abs-center" style="display: block;">
+            <div class="sk-fading-circle">
+              <div class="sk-circle1 sk-circle"></div>
+              <div class="sk-circle2 sk-circle"></div>
+              <div class="sk-circle3 sk-circle"></div>
+              <div class="sk-circle4 sk-circle"></div>
+              <div class="sk-circle5 sk-circle"></div>
+              <div class="sk-circle6 sk-circle"></div>
+              <div class="sk-circle7 sk-circle"></div>
+              <div class="sk-circle8 sk-circle"></div>
+              <div class="sk-circle9 sk-circle"></div>
+              <div class="sk-circle10 sk-circle"></div>
+              <div class="sk-circle11 sk-circle"></div>
+              <div class="sk-circle12 sk-circle"></div>
+            </div>
+          </div>
+        </div>
+    </div>
+
   </div>
   <div class="post-right">
 
@@ -98,5 +135,6 @@
 <script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
 <script src="{{static_host}}/assets/js/clipboard.min.js?v={{version}}"></script>
 <script src="{{static_host}}/assets/js/movie/torrent.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/movie/stream.js?v={{version}}"></script>
 
 {(decorator/footer.html)}

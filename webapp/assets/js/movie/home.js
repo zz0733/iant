@@ -29,6 +29,49 @@ $document.ready(function() {
 		template +=' </div>'
 		template +='</li>'
 		var template_genre = '<a target="_blank" class="lbtn-tag tag-size" href="/movie/genre/{{vencode}}.html">{{v}}</a>'
+
+        var templateV = ''
+		templateV +='<div class="video-inner" >'
+		templateV +='    <div class="title-box">'
+		templateV +='        <div class="row">'
+		templateV +='            <div class="col-md-8">'
+		templateV +='               <a href="/movie/torrent/m01022854757.html" '
+		templateV +='               target="_blank" class="atitle" src="e3b887af9b06ae2feff095f3f1d5b188470d37b4">'
+		templateV +='                海贼王[One_Piece][823][MP4].mp4'
+		templateV +='              </a>'
+		templateV +='            </div>'
+		templateV +='            <div class="col-md-4">'
+		templateV +='                <div class="video-stat-box">'
+		templateV +='                       <span class="downloaded">0MB</span>/<span class="total">总大小</span>'
+		templateV +='                </div>'
+		templateV +='            </div>'
+		templateV +='        </div>'
+		templateV +='        <div class="progressBar" style="width: 0%;"></div>'
+		templateV +='    </div>'
+		templateV +='    <div class="video-box">'
+		templateV +='       <div class="video-cover">'
+		templateV +='          <button class="button video-play"></button>'
+		templateV +='          <img src="/img/1030x440/video.png" alt="" >'
+		templateV +='       </div>'
+		templateV +='       <div class="loading abs-center" style="display: none;">'
+		templateV +='          <div class="sk-fading-circle">'
+		templateV +='            <div class="sk-circle1 sk-circle"></div>'
+		templateV +='            <div class="sk-circle2 sk-circle"></div>'
+		templateV +='            <div class="sk-circle3 sk-circle"></div>'
+		templateV +='            <div class="sk-circle4 sk-circle"></div>'
+		templateV +='            <div class="sk-circle5 sk-circle"></div>'
+		templateV +='            <div class="sk-circle6 sk-circle"></div>'
+		templateV +='            <div class="sk-circle7 sk-circle"></div>'
+		templateV +='            <div class="sk-circle8 sk-circle"></div>'
+		templateV +='            <div class="sk-circle9 sk-circle"></div>'
+		templateV +='            <div class="sk-circle10 sk-circle"></div>'
+		templateV +='            <div class="sk-circle11 sk-circle"></div>'
+		templateV +='            <div class="sk-circle12 sk-circle"></div>'
+		templateV +='          </div>'
+		templateV +='      </div>'
+		templateV +='   </div>'
+		templateV +='</div>'
+
 		var scrolling = false
 		function scrollMore() {
 			if (scrolling) {
@@ -65,6 +108,9 @@ $document.ready(function() {
 								continue
 							}
 							var destHtml = template;
+							if (content.link) {
+								destHtml = templateV
+							}
 							var genre_html = ""
 							if(content.genres) {
 								var genres = content.genres
@@ -113,5 +159,9 @@ $document.ready(function() {
 			   scrollMore();
 	    　　}
 	    });
+
+	    var $scriptEle = document.createElement('script');
+    	$scriptEle.src = '/assets/js/movie/stream.js'
+    	document.body.appendChild($scriptEle)
 
 });

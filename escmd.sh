@@ -11,7 +11,7 @@ curl -X POST 'http://127.0.0.1:9200/content/_delete_by_query?pretty' -d '
 {
   "query": {
       "match": {
-        "_id":"80040824"
+        "_id":"03167486"
       }
   }
 }
@@ -256,7 +256,7 @@ curl -XPOST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 #  '
 #  exit 0
 
- curl -XPOST 'http://127.0.0.1:9200/task/table/_search?pretty' -d '
+ curl -XPOST 'http://127.0.0.1:9200/task/table/_delete_by_query?pretty' -d '
 {
   "query": {
     "bool": {
@@ -267,13 +267,12 @@ curl -XPOST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
       },
       "must":{
         "terms":{
-          "type":["ed2000-movie-torrent"]
+          "type":["link-convert"]
         }
       }
     }
   },
-  "from": 0,
-  "size": 10
+  "size": 100000
 }
  '
 exit 0
@@ -417,16 +416,16 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query' -d '
 }
 '
 
-curl -X POST 'http://127.0.0.1:9200/content/table/_update_by_query' -d '
+curl -X POST 'http://127.0.0.1:9200/link/table/_update_by_query' -d '
 {
   "script": {
-    "inline": "ctx._source.lpipe = null;",
+    "inline": "ctx._source.status=1; ctx._source.utime=1525714188; ctx._source.episode=0;",
     "lang": "painless"
   },
   "size":10,
   "query": {
-    "match_all": {
-      
+    "match": {
+      "_id":"m1501406401"
     }
   }
 }
@@ -528,14 +527,14 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 
 curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 {
-  "size": 20,
+  "size": 10,
   "sort": {
     "ctime": "desc"
   },
   "query": {
     "match": {
       "title" :{
-        "query":"海贼王800",
+        "query":"海贼王",
         "minimum_should_match":"80%"
       }
     }
@@ -554,7 +553,7 @@ curl -X POST 'http://127.0.0.1:9200/task/_delete_by_query?pretty' -d '
 
 curl -X POST 'http://127.0.0.1:9200/link/_search?pretty' -d '
 {
-  "size" : 10,
+  "size" : 1,
   "sort":{"ctime":{"order":"desc"}},
   "query": {
       "match_all": {
@@ -586,7 +585,7 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
   "sort":{"episode":{"order":"desc"}},
   "query": {
       "match": {
-        "target":"277394682"
+        "target":"371978701"
       }
   }
 }
@@ -596,7 +595,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "query": {
       "match":{
-        "_id" :"0110041733"
+        "_id" :"0170040775"
       }
   }
 }
@@ -606,7 +605,7 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 {
   "query": {
       "match":{
-        "status" :"f0872486546"
+        "_id" :"f0872486546"
       }
   }
 }
@@ -697,6 +696,32 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
             "field": "episode"
           }
         }
+      }
+    }
+  }
+}
+'
+
+
+curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
+{
+  "size": 0,
+  "query":{
+    "bool":{
+      "must":[
+        {"range":{"status":{"gte":2}}}
+      ]
+    }
+  },
+  "aggs": {
+    "content_group": {
+      "terms": {
+        "field": "target",
+        "include": {
+           "partition": 99,
+           "num_partitions": 100
+        },
+        "size": 2000
       }
     }
   }

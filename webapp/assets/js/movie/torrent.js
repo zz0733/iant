@@ -31,6 +31,19 @@ $document.ready(function() {
              var toURL = urlcodesc.encode(toURL, "thunder");
              window.location.href = toURL
 		})
+    $('.btn-down:contains(磁力播放)').on('click',function(){
+         var self = this
+         var $postVideo = $('#post-video');
+         if ($postVideo.attr('class') == 'post-video-display') {
+             $postVideo.attr('class', 'post-video')
+             $postVideo.click()
+             $('#loading').show();
+             // var scriptEle = document.createElement("script");
+             // scriptEle.src = "/assets/js/btstream.js"
+             // $("#post-video").append(scriptEle)
+         }
+    })
+
     if(/\/movie\/torrent\/b[0-9]+\.html$/.test(location.pathname) 
         && $('#btn-copy:contains("复制密码")').size() < 1){
              $('.btn-down:contains(百度云盘)').click()

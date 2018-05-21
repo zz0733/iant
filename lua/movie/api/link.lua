@@ -38,7 +38,7 @@ if method == "incr_bury_digg" then
   resp, status = link_dao:incr_bury_digg( id, tid, bury, digg )
 elseif method == "query_by_ids" then
   local ids = {}
-  local fields = {"link","md5","secret","title","code"}
+  local fields = {"link","md5","secret","title","code","webRTC"}
   table.insert(ids, args.id)
   resp, status = link_dao:query_by_ids( ids, fields )
   if resp and resp.hits and resp.hits.hits then

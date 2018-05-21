@@ -21,21 +21,79 @@
       <div class="container-fluid">
         <div class="row">
               <div class="col-md-2"> </div>
-              <div class="col-md-6 feedBox"> 
+              <div class="col-md-6 feedBox">
                <input type="hidden" id="ltime" name="ltime" value="{{data.ltime}}">
                <input type="hidden" id="offset" name="offset" value="{{data.offset}}">
                <input type="hidden" id="hasmore" name="hasmore" value="{{data.hasmore}}">
+
+               
+
                <ul class="feed-ul">
+
+                
+
+              
  
                {% if not data or not data.contents or #data.contents < 1 then %}
                   <li class="item-box">暂无内容推荐</li>
                {% else
                   for i,v in ipairs(data.contents) do
-                     if v.img then
-                         v.img = ngx.re.sub(v.img, "/img/", "/img/154x100/")
+                     if v.img and v.video then
                          v.img = ngx.re.sub(v.img, "http:", "https:")
+                         if v.video then
+                           v.img = ngx.re.sub(v.img, "/img/", "/img/1030x440/")
+                         else
+                           v.img = ngx.re.sub(v.img, "/img/", "/img/154x100/")
+                         end
                      end
                   %}
+                 {%if v.video then%}
+                   <li class="item-box">
+                      <div id="feed-video-1" class="video-inner" >
+                        <div class="title-box">
+                            <div class="row">
+                                <div class="col-md-8">
+                                   <a href="/movie/torrent/{{v.id}}.html" target="_blank" class="atitle" 
+                              src="{{v.link}}">
+                                    {{v.title}}
+                                  </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="video-stat-box">
+                                           <span class="downloaded">0MB</span>/<span class="total">总大小</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="progressBar" style="width: 0%;"></div>
+                        </div>
+                        <div class="video-box">
+                           <div class="video-cover">
+                              
+                              <span class='button video-init'>
+                                <button class="button video-play"></button>
+                              </span>
+                              <img src="{{v.img}}" alt="" class="src">
+                           </div>
+                           <div class="loading abs-center" style="display: none;">
+                              <div class="sk-fading-circle">
+                                <div class="sk-circle1 sk-circle"></div>
+                                <div class="sk-circle2 sk-circle"></div>
+                                <div class="sk-circle3 sk-circle"></div>
+                                <div class="sk-circle4 sk-circle"></div>
+                                <div class="sk-circle5 sk-circle"></div>
+                                <div class="sk-circle6 sk-circle"></div>
+                                <div class="sk-circle7 sk-circle"></div>
+                                <div class="sk-circle8 sk-circle"></div>
+                                <div class="sk-circle9 sk-circle"></div>
+                                <div class="sk-circle10 sk-circle"></div>
+                                <div class="sk-circle11 sk-circle"></div>
+                                <div class="sk-circle12 sk-circle"></div>
+                              </div>
+                          </div>
+                       </div>
+                    </div>
+                  </li>
+                 {%else%}
                   <li class="item-box">
                    <div class="item-inner">
                       <div class="lbox">
@@ -70,19 +128,38 @@
                       </div>
                    </div>
                   </li>
+                  {%end%}
                   {%
                     end
                 end
                %}
                 </ul>
               </div>
+
               <div class="col-md-4 "> 
                 <div class="wx-mp-box">
-                    <h4 class="wx-mp-txt">微信<span style="color: blue;">扫一扫</span>下方二维码</span><br/>关注微信公众号<br/>最新热门资源及时获取</h4>
+                    <h4 class="wx-mp-txt">微信<span style="color: blue;">扫一扫关注</span>公众号</h4>
                     <div class="wx-mp-img">
                       <img width="220px" height="220px" src="/assets/img/wx-mp-qrcode.jpg" alt="关注微信公众号" class="img-rounded">
                     </div>
                 </div>
+                <div class="video-share-box">
+                    <div class="video-upload">
+                        <h4>拖动视频到这或双击选择视频上传</h4>
+                        <div class="row video-upload-msg">
+                           <div class="col-md-4">
+                              <div id="upload-count">0</div>
+                            </div>
+                            <div class="col-md-8 col-log">
+                              <div id="upload-log">欢迎上传</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="video-share-target">
+                      上传磁力网络，即可在线播放
+                    </div>
+                </div>
+       
                 <div class="msgbox">
                   <div class="playing-head"> 正在热播 </div>
                   <ul class="playing-list">
@@ -153,4 +230,5 @@
   </div>
 </div>
 <script src="{{static_host}}/assets/js/movie/home.js?v={{version}}"></script>
+<!-- <script src="{{static_host}}/assets/js/movie/stream.js?v={{version}}"></script> -->
 {(decorator/footer.html)}

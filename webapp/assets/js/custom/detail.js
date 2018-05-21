@@ -104,6 +104,12 @@ $(document).ready(function() {
 								 		}
 								 	}
 								 }
+				            } else if(/^m[0-9]+$/.test(id)){
+				            	btn_txt = "磁力资源";
+								 link_tempate = '<a href="/movie/torrent/{{v._id}}.html" rel="nofollow" target="_blank" role="button" class="btn target-btn" >{{btn_txt}}</a>'
+								 if (v_source.space && (v_source.space ==0 || v_source.space == 1024)){
+ 					                  icon_cls = "icon61"
+								 }
 				            } else if(/^v[0-9]+$/.test(id)){
 				            	 btn_txt = "在线播放";
 								 link_tempate = '<a href="/movie/play/{{v._id}}.html" rel="nofollow" target="_blank" role="button" class="btn target-btn" >{{btn_txt}}</a>'

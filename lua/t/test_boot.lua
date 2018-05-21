@@ -6,4 +6,5 @@
 -- local test_table = require "t.util.test_table"
 -- local test_intact = require "t.util.test_intact"
 -- local test_wxcrypt = require "t.util.test_wxcrypt"
-local test_ssdb_content = require "t.ssdb.test_ssdb_content"
+local test_movie = require "t.util.test_movie"
+-- local test_ssdb_content = require "t.ssdb.test_ssdb_content"

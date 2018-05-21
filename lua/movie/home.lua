@@ -84,6 +84,18 @@ local randomWord
 if data and  data.contents then
 	randomWord = buildSearchWord(data.contents)
 end
+local torrent = {}
+torrent.video = 1
+torrent.id = 'm01022854757'
+torrent.title = '海贼王[One_Piece][823][MP4].mp4'
+torrent.link = 'e3b887af9b06ae2feff095f3f1d5b188470d37b4'
+torrent.img = '/img/video.png'
+local order_contents = {}
+table.insert(order_contents, torrent)
+for _,v in ipairs(data.contents) do
+	table.insert(order_contents, v)
+end
+data.contents = order_contents
 
 local movie_codes  = getContentByChannel("movie","正在热播",30)
 local from = 0

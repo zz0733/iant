@@ -33,14 +33,14 @@ if not target_id then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local resp = ngx.location.capture("/api/movie//link.json?id=" .. target_id)
+local resp = ngx.location.capture("/api/movie/link.json?id=" .. target_id)
 if resp and resp.status ~= 200 then
 	return ngx.exit(resp.status)
 end
 local return_obj = cjson_safe.decode(resp.body)
 local link_doc = return_obj.data
 
--- log(ERR,"cjson_safe:" .. cjson_safe.encode(link_doc))
+log(ERR,"link_doc:" .. cjson_safe.encode(link_doc))
 -- link_doc.secret = 'secret21e'
 local content_doc = {}
 content_doc.header = {
