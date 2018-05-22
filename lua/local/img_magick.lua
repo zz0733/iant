@@ -129,53 +129,58 @@ function handleData(hits)
         if digests then
             local bUpdate = false
             for _,dv in ipairs(digests) do
-                if dv.sort == "img" then
+                if dv.sort == "img" and dv.content then
                     local str_img = dv.content
-                    str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                    local strBody, code = getImageByURL(str_img)
-                    if code == 404 then
-                        log(ERR,"id:"..tostring(v._id)..",imgURL:"..tostring(str_img) .. ",code:" .. tostring(code) )
-                    end
-                    if strBody and string.len(strBody) > 0 then
-                        local md5 = resty_md5:new()
-                        md5:update(strBody)
-                        local digest = md5:final()
-                        digest = resty_string.to_hex(digest)
-                        digest = string_sub(digest,9, 24)
-                        local m = ngx.re.match(str_img, "(\\.[a-zA-Z0-9]+)$")
-                        local suffix = ".jpg"
-                        if m then
-                            suffix = m[0]
+                    if string.match(str_img,"^/img/") then
+                        bUpdate = true
+                    else
+                        str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                        local strBody, code = getImageByURL(str_img)
+                        if code == 404 then
+                            log(ERR,"id:"..tostring(v._id)..",imgURL:"..tostring(str_img) .. ",code:" .. tostring(code) )
                         end
-                        local name =   digest .. suffix
-                        dv.content =  '/img/' .. name
-
-                        local img = magick.load_image_from_blob(strBody)
-                        log(ERR,"load_image:"..tostring(img)..",bodyLen:"..tostring(string.len(strBody)))
-                        if img then
-                            -- log(ERR,"width:" .. img:get_width() .. ",height:" .. img:get_height());
-                            for _,sv in ipairs(size_arr) do
-                                 local sizeDir
-                                 if sv.w < 1 or sv.h < 1 then
-                                    sizeDir = util_context.IMG_DIR .."/origin"
-                                 else
-                                    sizeDir = util_context.IMG_DIR .."/" .. tostring(sv.w) .."x"..tostring(sv.h)
-                                    -- img:resize(sv.w, sv.h)
-                                    -- img:crop(sv.w, sv.h, x, y)
-                                    img:resize_and_crop(sv.w, sv.h)
-                                 end
-                                 lfs.mkdir(sizeDir)
-                                 local newPath = sizeDir.."/".. name
-                                 local resp,err = img:write(newPath)
-                                 if err then
-                                   log(ERR,"newPath:" .. newPath .. ",err:" .. tostring(err))
-                                 else
-                                   log(ERR,"newPath:" .. newPath)
-                                 end
+                        if strBody and string.len(strBody) > 0 then
+                            local md5 = resty_md5:new()
+                            md5:update(strBody)
+                            local digest = md5:final()
+                            digest = resty_string.to_hex(digest)
+                            digest = string_sub(digest,9, 24)
+                            local m = ngx.re.match(str_img, "(\\.[a-zA-Z0-9]+)$")
+                            local suffix = ".jpg"
+                            if m then
+                                suffix = m[0]
                             end
-                            bUpdate = true
+                            local name =   digest .. suffix
+                            dv.content =  '/img/' .. name
+
+                            local img = magick.load_image_from_blob(strBody)
+                            log(ERR,"load_image:"..tostring(img)..",bodyLen:"..tostring(string.len(strBody)))
+                            if img then
+                                -- log(ERR,"width:" .. img:get_width() .. ",height:" .. img:get_height());
+                                for _,sv in ipairs(size_arr) do
+                                     local sizeDir
+                                     if sv.w < 1 or sv.h < 1 then
+                                        sizeDir = util_context.IMG_DIR .."/origin"
+                                     else
+                                        sizeDir = util_context.IMG_DIR .."/" .. tostring(sv.w) .."x"..tostring(sv.h)
+                                        -- img:resize(sv.w, sv.h)
+                                        -- img:crop(sv.w, sv.h, x, y)
+                                        img:resize_and_crop(sv.w, sv.h)
+                                     end
+                                     lfs.mkdir(sizeDir)
+                                     local newPath = sizeDir.."/".. name
+                                     local resp,err = img:write(newPath)
+                                     if err then
+                                       log(ERR,"newPath:" .. newPath .. ",err:" .. tostring(err))
+                                     else
+                                       log(ERR,"newPath:" .. newPath)
+                                     end
+                                end
+                                bUpdate = true
+                            end
                         end
                     end
+                    
                 end
             end
             if bUpdate then
@@ -246,8 +251,8 @@ while true do
           scroll = scroll
         }
      end
-     -- local shits = cjson_safe.encode(data)
-     -- log(ERR,"data:" .. shits .. ",err:" .. tostring(err))
+     local shits = cjson_safe.encode(data)
+     log(ERR,"data:" .. shits .. ",err:" .. tostring(err))
      if data == nil or not data["_scroll_id"] or #data["hits"]["hits"] == 0 then
         local cost = (ngx.now() - begin)
          cost = tonumber(string.format("%.3f", cost))

@@ -245,10 +245,19 @@ function _M:save_docs( docs)
     	  end
     	end
     	local cmd = v[self.bulk_cmd_field]
-    	-- local hasContent = ssdb_content:get(v.id)
-    	-- if hasContent then
-    	-- 	log(ERR,'hasContent:' .. cjson_safe.encode(hasContent))
-    	-- end
+        if v.digests then
+        	local hasContent = ssdb_content:get(v.id)
+	    	if hasContent and hasContent.digests then
+	    		local digests = hasContent.digests
+	  			for _,dv in ipairs(digests) do
+	  				-- dv.content = '/img/a9130b4f2d5e7acd.jpg'
+	  				if dv.sort == 'img' and dv.content and string.match(dv.content,"^/img/") then
+	  					v.digests = digests
+	  					break
+	  				end
+	  			end
+	    	end
+        end
         if 'update' == cmd then
         	ssdb_content:update(v.id, v)
         else
@@ -291,6 +300,7 @@ function _M:addOnlySSDBFields( resp, fields )
 		for _,v in ipairs(resp.hits.hits) do
 			local es_source = v._source
 			local ssdb_source = kv_doc[v._id]
+			log(ERR,"ssdb_source:" .. cjson_safe.encode(ssdb_source))
 			local merge_source = es_source
 			if ssdb_source then
 				merge_source = ssdb_source
