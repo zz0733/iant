@@ -245,6 +245,10 @@ function _M:save_docs( docs)
     	  end
     	end
     	local cmd = v[self.bulk_cmd_field]
+    	-- local hasContent = ssdb_content:get(v.id)
+    	-- if hasContent then
+    	-- 	log(ERR,'hasContent:' .. cjson_safe.encode(hasContent))
+    	-- end
         if 'update' == cmd then
         	ssdb_content:update(v.id, v)
         else

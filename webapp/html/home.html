@@ -41,7 +41,7 @@
                      if v.img and v.video then
                          v.img = ngx.re.sub(v.img, "http:", "https:")
                          if v.video then
-                           v.img = ngx.re.sub(v.img, "/img/", "/img/1030x440/")
+                           v.img = ngx.re.sub(v.img, "/img/", "/img/515x220/")
                          else
                            v.img = ngx.re.sub(v.img, "/img/", "/img/154x100/")
                          end
