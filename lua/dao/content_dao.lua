@@ -246,16 +246,22 @@ function _M:save_docs( docs)
     	end
     	local cmd = v[self.bulk_cmd_field]
         if v.digests then
+        	local localDigests = nil
         	local hasContent = ssdb_content:get(v.id)
 	    	if hasContent and hasContent.digests then
 	    		local digests = hasContent.digests
 	  			for _,dv in ipairs(digests) do
 	  				-- dv.content = '/img/a9130b4f2d5e7acd.jpg'
 	  				if dv.sort == 'img' and dv.content and string.match(dv.content,"^/img/") then
-	  					v.digests = digests
+	  					localDigests = digests
 	  					break
 	  				end
 	  			end
+	    	end
+	    	if localDigests then
+	    	   v.digests = localDigests
+	    	else
+	    	   v.imagick = 0
 	    	end
         end
         if 'update' == cmd then
