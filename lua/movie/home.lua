@@ -91,7 +91,7 @@ torrent.id = 'm1035665326'
 torrent.title = '海贼王[One_Piece][837][MP4].mp4'
 torrent.link = '2dd2e75f2d7a44ce28ebd122a76a7fdd133bdb53'
 torrent.img = '/img/hzw837.png'
-table.insert(order_contents, torrent)
+order_contents[1] = torrent
 
 local torrent = {}
 torrent.video = 1
@@ -99,10 +99,22 @@ torrent.id = 'm0423129078'
 torrent.title = '万界仙踪21.720p'
 torrent.link = '86e815531c1274f891d6a91627cd43b4bc7cb9a4'
 torrent.img = '/img/wjxz.png'
-table.insert(order_contents, torrent)
-for _,v in ipairs(data.contents) do
-	table.insert(order_contents, v)
+order_contents[3] = torrent
+local  contents = data.contents
+local  order_num = 1
+local  order_total = #contents + 2
+local  ci = 1
+for iorder=1,order_total do
+	if not order_contents[iorder] then
+	   order_contents[iorder] = contents[ci]
+	   ci = ci + 1
+	end
+	iorder = iorder + 1
 end
+-- for _,v in ipairs(order_contents) do
+-- 	if order_contents
+-- 	table.insert(order_contents, v)
+-- end
 data.contents = order_contents
 
 local movie_codes  = getContentByChannel("movie","正在热播",30)
