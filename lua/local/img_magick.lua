@@ -6,6 +6,7 @@ local client_utils = require("util.client_utils")
 local util_context = require("util.context")
 
 local content_dao = require "dao.content_dao"
+local ssdb_content = require "ssdb.content"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -123,7 +124,7 @@ function handleData(hits)
     local updateIdArr = {}
     local update_docs = {}
     for _,v in ipairs(hits) do
-        local _source = v._source
+        local _source = ssdb_content:get(v._id)
         local digests = _source.digests
         -- log(ERR,"handle doc:" .. tostring(v._id) .. ",digests:" .. tostring(cjson_safe.encode(digests)))
         if digests then
@@ -184,7 +185,8 @@ function handleData(hits)
                 end
             end
             if bUpdate then
-               local doc = _source
+               ssdb_content:set(v._id, _source)
+               local doc = {}
                doc.id = v._id
                doc.imagick = 1
                table_insert(update_docs, doc)
@@ -212,7 +214,7 @@ local query = cjson_safe.decode(post_body)
 local to_date = ngx.time()
 local from_date = to_date - 1*60*60
 local body = {
-    _source = {"digests"},
+    _source = false,
     sort = { ['article.year'] = { order = "desc"}},
     query = {
         bool = {
