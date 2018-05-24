@@ -84,14 +84,21 @@ local randomWord
 if data and  data.contents then
 	randomWord = buildSearchWord(data.contents)
 end
+local order_contents = {}
 local torrent = {}
 torrent.video = 1
 torrent.id = 'm1035665326'
 torrent.title = '海贼王[One_Piece][837][MP4].mp4'
 torrent.link = '2dd2e75f2d7a44ce28ebd122a76a7fdd133bdb53'
-torrent.link = '2dd2e75f2d7a44ce28ebd122a76a7fdd133bdb53'
 torrent.img = '/img/hzw837.png'
-local order_contents = {}
+table.insert(order_contents, torrent)
+
+local torrent = {}
+torrent.video = 1
+torrent.id = 'm0423129078'
+torrent.title = '万界仙踪21.720p'
+torrent.link = '86e815531c1274f891d6a91627cd43b4bc7cb9a4'
+torrent.img = '/img/wjxz.png'
 table.insert(order_contents, torrent)
 for _,v in ipairs(data.contents) do
 	table.insert(order_contents, v)
