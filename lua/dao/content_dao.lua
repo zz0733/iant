@@ -306,7 +306,6 @@ function _M:addOnlySSDBFields( resp, fields )
 		for _,v in ipairs(resp.hits.hits) do
 			local es_source = v._source
 			local ssdb_source = kv_doc[v._id]
-			log(ERR,"ssdb_source:" .. cjson_safe.encode(ssdb_source))
 			local merge_source = es_source
 			if ssdb_source then
 				merge_source = ssdb_source
