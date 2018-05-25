@@ -152,7 +152,6 @@ function handleData(hits)
                                 suffix = m[0]
                             end
                             local name =   digest .. suffix
-                            dv.content =  '/img/' .. name
 
                             local img = magick.load_image_from_blob(strBody)
                             log(ERR,"load_image:"..tostring(img)..",bodyLen:"..tostring(string.len(strBody)))
@@ -177,6 +176,7 @@ function handleData(hits)
                                        log(ERR,"newPath:" .. newPath)
                                      end
                                 end
+                                dv.content =  '/img/' .. name
                                 bUpdate = true
                             end
                         end
