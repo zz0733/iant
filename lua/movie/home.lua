@@ -90,7 +90,7 @@ torrent.video = 1
 torrent.id = 'm1035665326'
 torrent.title = '海贼王[One_Piece][837][MP4].mp4'
 torrent.link = '2dd2e75f2d7a44ce28ebd122a76a7fdd133bdb53'
-torrent.img = '/img/hzw837.png'
+torrent.img = 'https://icdn.lezomao.com/img/hzw837.png'
 order_contents[1] = torrent
 
 local torrent = {}
@@ -98,7 +98,7 @@ torrent.video = 1
 torrent.id = 'm0423129078'
 torrent.title = '万界仙踪21.720p'
 torrent.link = '86e815531c1274f891d6a91627cd43b4bc7cb9a4'
-torrent.img = '/img/wjxz.png'
+torrent.img = 'https://icdn.lezomao.com/img/wjxz.png'
 order_contents[3] = torrent
 
 local torrent = {}
@@ -106,7 +106,7 @@ torrent.video = 1
 torrent.id = 'm02084390122'
 torrent.title = '黑色四叶草EP33'
 torrent.link = 'bea5874f59841cdd4bc738ecb2eaf12a51d62434'
-torrent.img = '/img/hssyc33.png'
+torrent.img = 'https://icdn.lezomao.com/img/hssyc33.png'
 order_contents[5] = torrent
 local  contents = data.contents
 local  order_num = 1
