@@ -1841,3 +1841,8 @@ h1.post-title {
     border-radius: 120px;
     outline: none;
 }
+
+img.video-img {    
+	width: 515px;
+	height: 220px;
+}
