@@ -127,7 +127,8 @@ function makeOrderContents( ... )
     		if hits[index] then
 				local _source = hits[index]._source
 				local torrent = _source
-				torrent.img = '/img/' .. _source.feedimg
+				torrent.id = _source.lid
+				torrent.img = _source.feedimg
 				order_contents[order] = torrent
 			end
     	end

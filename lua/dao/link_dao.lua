@@ -1,6 +1,7 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
+local util_context = require "util.context"
 local ESClient = require "es.ESClient"
 
 
@@ -12,6 +13,28 @@ local _M = ESClient:new({index = "link", type = "table"})
 _M._VERSION = '0.01'
 
 
+function _M:search(body)
+ local resp, status = _M.client:search{
+    index = _M.index,
+    type = _M.type,
+    body = body
+  }
+  if resp and resp.hits and resp.hits.hits then
+  	local hits = resp.hits.hits
+  	for i,v in ipairs(hits) do
+  		local _source = v._source
+  		if _source and _source.feedimg then
+  			local feedimg = _source.feedimg
+  			-- d30d8b316bbd43b9.png
+			if not string.match(feedimg,"^/img/") then
+				_source.feedimg = util_context.CDN_URI .. '/img/' .. feedimg
+			end
+  		end
+  	end
+
+  end
+  return resp, status
+end
 
 function _M:query_unmatch( from_date, to_date, from, size)
 	local body = {

@@ -70,8 +70,30 @@
     </div>
   </div>
 </div> -->
+              <div class="row">
+                  <div class="col-md-4"></div>
+                  <div class="col-md-8">
+                      <div class="video-share-box">
+                          <div class="video-upload">
+                              <h4>拖动视频到这或双击选择视频上传</h4>
+                              <div class="row video-upload-msg">
+                                  <div class="col-md-4">
+                                      <div id="upload-count">0</div>
+                                  </div>
+                                  <div class="col-md-8 col-log">
+                                      <div id="upload-log">欢迎上传</div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div id="video-share-target">
+                              上传磁力网络，即可在线播放
+                          </div>
+                      </div>
+                  </div>
+              </div>
 
                <ul class="editor-ul">
+
  
                {% if not data or not data.contents or #data.contents < 1 then %}
                   <li class="item-box">暂无内容推荐</li>
@@ -128,10 +150,7 @@
                                   
                                    <div class="kv-avatar">
                                         {%
-                                          local imgURL = '/assets/img/noimg220x220.jpg'
-                                          if v.feedimg then
-                                            imgURL = '/img/515x220/' .. v.feedimg
-                                           end
+                                          local imgURL = v.img or '/assets/img/noimg220x220.jpg'
                                         %}
                                         <input id="input-img-{{v.id}}" name="input-img-{{v.id}}" type="file" data-src="{{imgURL}}" accept="image/*" class="video-img">
                                     </div>

@@ -26,9 +26,8 @@ $document.ready(function() {
             var json = editor.getValue();
             ele.value = JSON.stringify(json, null, 2);
         })
-
-        self.on('keyup', function(event) {
-            try {
+        function validateJSON() {
+        	try {
                 editor.setValue(JSON.parse(ele.value));
             } catch (e) {
                 $formGroup.removeClass('has-success').addClass('has-error')
@@ -43,6 +42,12 @@ $document.ready(function() {
                 $formGroup.removeClass('has-error').addClass('has-success')
                 $updateBtn.attr('disabled', false)
             }
+        }
+        self.on('input', function(event) {
+            validateJSON()
+        })   
+        self.on('change', function(event, prev) {
+            validateJSON()
         })
         $('body').on('paste', function(e) {
             console.log('paste......');
@@ -80,7 +85,7 @@ $document.ready(function() {
             }
             $formGroup.removeClass('has-success has-error')
             var data = editor.getValue()
-            console.log('data:' + JSON.stringify(data));
+            // console.log('data:' + JSON.stringify(data));
             var sBase = window.location.origin;
             var sUrl = sBase + "/api/movie/link.json?method=update_by_id";
             $.ajax({
@@ -146,9 +151,13 @@ $document.ready(function() {
             imgEle.src = imgURL
             fileinput.defaultPreviewContent = imgEle.outerHTML
             $inputImg.fileinput('reset');
+            $updateBtn.attr('disabled', false)
         });
 
     })
 
 
+  	var $scriptEle = document.createElement('script');
+    $scriptEle.src = '/assets/js/movie/stream.js'
+    document.body.appendChild($scriptEle)
 });

@@ -43,12 +43,16 @@ local contents = {}
 data.contents = contents
 for _,v in ipairs(hits.hits) do
 	local _source = v._source
+    local imgURL = _source.feedimg
+    if imgURL then
+    	_source.feedimg = ngx.re.sub(imgURL, ".*?/img/", "")
+    end
 	local torrent = _source
-	torrent.video = _source.webRTC
+	-- torrent.video = _source.webRTC
 	torrent.title = _source.title
 	torrent.link = _source.link
 	torrent.json = cjson_safe.encode(torrent)
-    torrent.img = _source.feedimg
+    torrent.img = imgURL
     torrent.id = _source.lid
 	if torrent.target then
 	   torrent.targetDoc = ssdb_content:get(torrent.target)
