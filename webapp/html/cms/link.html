@@ -1,0 +1,232 @@
+{(decorator/header.html)}
+
+<link rel="canonical" href="{*context.header.canonical*}"/>
+<meta name="description" content="{*context.header.description*}"/>
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+<link href="{{static_host}}/assets/css/fileinput.min.css?v={{version}}" media="all" rel="stylesheet" type="text/css"/>
+<script src="{{static_host}}/assets/js/fileinput.min.js?v={{version}}"></script>
+<!-- <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.8/js/fileinput.js"></script> -->
+<!-- <script src="{{static_host}}/assets/js/locales/zh.js" ></script>
+ -->
+<link href="https://cdn.bootcss.com/bootstrap-modal/2.2.6/css/bootstrap-modal.min.css" rel="stylesheet">
+<script src="https://cdn.bootcss.com/bootstrap-modal/2.2.6/js/bootstrap-modalmanager.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap-modal/2.2.6/js/bootstrap-modal.min.js"></script>
+<style>
+  .kv-avatar .krajee-default.file-preview-frame,.kv-avatar .krajee-default.file-preview-frame:hover {
+    margin: 0;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    text-align: center;
+}
+.kv-avatar {
+    display: inline-block;
+}
+.kv-avatar .file-preview {
+   padding:1px;
+}
+.kv-avatar .file-drop-zone {
+    margin: 4px 6px 4px 4px;
+}
+.krajee-default.file-preview-frame .file-thumbnail-footer {
+    height: 30px;
+}
+
+.kv-avatar .krajee-default.file-preview-frame .kv-file-content {
+    width: 515px;
+    height: 180px;
+}
+</style>
+</head>
+{# end of head #}
+
+<body>
+
+{(decorator/navbar.html)}
+{(decorator/blankbar.html)}
+
+<div class="main data-box">
+  <div class="act">
+    <div class="container">
+
+      <div class="container-fluid">
+      
+               <input type="hidden" id="ltime" name="ltime" value="{{data.ltime}}">
+               <input type="hidden" id="offset" name="offset" value="{{data.offset}}">
+               <input type="hidden" id="hasmore" name="hasmore" value="{{data.hasmore}}">
+
+<!-- Modal -->
+<!-- <div class="modal fade" id="imgModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">图片上传</h4>
+      </div>
+      <div class="modal-body">
+        <input id="input-img" name="input-img" type="file" class="file">
+      </div>
+    </div>
+  </div>
+</div> -->
+
+               <ul class="editor-ul">
+ 
+               {% if not data or not data.contents or #data.contents < 1 then %}
+                  <li class="item-box">暂无内容推荐</li>
+               {% else
+                  for cindex, v in ipairs(data.contents) do
+                     if v.img and v.video then
+                         v.img = ngx.re.sub(v.img, "http:", "https:")
+                         if v.video then
+                           v.img = ngx.re.sub(v.img, "/img/", "/img/515x220/")
+                         else
+                           v.img = ngx.re.sub(v.img, "/img/", "/img/154x100/")
+                         end
+                     end
+                    local targetName = v.target
+                    if v.targetDoc and v.targetDoc.article.title then
+                       targetName = v.targetDoc.article.title
+                    end
+                  %}
+                 {%if v.video then%}
+                   <li class="item-box">
+                   <div class="row">
+                       <div class="col-md-1"> </div>
+                       <div class="col-md-6 feedBox">
+                          <div class="video-inner" >
+                            <div class="title-box">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                       <a href="/movie/torrent/{{v.id}}.html" target="_blank" class="atitle" 
+                                  src="{{v.link}}">
+                                        {{cindex}}).{{v.title}}
+                                      </a>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="video-stat-box">
+                                               <a href="/movie/detail/{{v.target}}.html"> 
+                                                 {%
+                                                  
+                                                 %}
+                                                 <span class="downloaded">{{v.target}}</span>
+                                               </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progressBar" style="width: 0%;"></div>
+                            </div>
+                            <div class="video-box1">
+                               <div class="video-cover">
+                                  
+                                 <!--  <span class='button video-init'>
+                                    <button class="button video-play change-img" >
+                                    </button>
+                                  </span> -->
+                                  <!-- <img src="{{v.img}}" alt="" class="video-img" > -->
+                                  
+                                   <div class="kv-avatar">
+                                        {%
+                                          local imgURL = '/assets/img/noimg220x220.jpg'
+                                          if v.feedimg then
+                                            imgURL = '/img/515x220/' .. v.feedimg
+                                           end
+                                        %}
+                                        <input id="input-img-{{v.id}}" name="input-img-{{v.id}}" type="file" data-src="{{imgURL}}" accept="image/*" class="video-img">
+                                    </div>
+                                    
+                               </div>
+                               <div class="loading abs-center" style="display: none;">
+                                  <div class="sk-fading-circle">
+                                    <div class="sk-circle1 sk-circle"></div>
+                                    <div class="sk-circle2 sk-circle"></div>
+                                    <div class="sk-circle3 sk-circle"></div>
+                                    <div class="sk-circle4 sk-circle"></div>
+                                    <div class="sk-circle5 sk-circle"></div>
+                                    <div class="sk-circle6 sk-circle"></div>
+                                    <div class="sk-circle7 sk-circle"></div>
+                                    <div class="sk-circle8 sk-circle"></div>
+                                    <div class="sk-circle9 sk-circle"></div>
+                                    <div class="sk-circle10 sk-circle"></div>
+                                    <div class="sk-circle11 sk-circle"></div>
+                                    <div class="sk-circle12 sk-circle"></div>
+                                  </div>
+                              </div>
+                           </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="data-edit video-edit">
+                              <div class="form-group">
+                                <div class="input-group">
+                                  <textarea class="edit-area form-control" data-link="{{v.json}}"></textarea>
+                                  <div class="input-group-addon update-btn" disabled="true">更新</div>
+                                </div>
+                              </div>
+                        </div>
+                     </div>
+                     <!-- end .row -->
+                    </div>
+                  </li>
+                 {%else%}
+                  <li class="item-box">
+                  <div class="row">
+                    <div class="col-md-1"> </div>
+                    <div class="col-md-6 feedBox">
+                         <div class="item-inner">
+                            <div class="lbox">
+                              <a class="img-wrap" target="_blank" href="/movie/detail/{{v.id}}.html"> 
+                                <img alt="{{v.title}}" src="{{v.img}}" /> 
+                                {%if v.cost then%}
+                                <i class="ftype video"> <span>{{v.cost}}</span> </i>
+                                {%end%}
+                              </a> 
+                            </div>
+                            <div class="rbox ">
+                                  <div class="rbox-inner"> 
+                                      <div class="title-box"> 
+                                          <a class="atitle" target="_blank" href="/movie/detail/{{v.id}}.html"> {{v.title}}
+                                          </a> 
+                                      </div>
+                                      <div class="tag-box">
+                                        {%if v.score and v.score ~= ngx.null then %}
+                                        <a class="atitle" target="_blank" href="/movie/detail/{{v.target}}.html">
+                                            <span class="tag-score tag-size">{{v.score}}/{{targetName}}</span>
+                                        </a> 
+                                        {%end%}
+                                        {%if v.episode and v.episode ~= ngx.null then %}
+                                        <span class="tag-ep">第{{v.episode}}集</span>
+                                        {%end%}
+                                      </div>  
+                                  </div>
+                            </div>
+                         </div>
+                     <!-- end .col-md-6 -->
+                     </div>
+                     <div class="col-md-5">
+                        <div class="data-edit">
+                              <div class="form-group">
+                                <div class="input-group">
+                                  <textarea class="edit-area form-control" data-link="{{v.json}}"></textarea>
+                                  <div class="input-group-addon update-btn" disabled="true">更新</div>
+                                </div>
+                              </div>
+                        </div>
+                     </div>
+                  </div>
+                  </li>
+                  {%end%}
+                  {%
+                    end
+                end
+               %}
+                </ul>
+              </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{static_host}}/assets/js/jsoneditor.min.js?v={{version}}"></script>
+<script src="{{static_host}}/assets/js/movie/cms.js?v={{version}}"></script>
+{(decorator/footer.html)}

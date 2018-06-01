@@ -24,7 +24,6 @@ if  post_body then
 			params.lid = params.id
 			params.webRTC = params.webRTC or 1
 			params.status = params.status or 0
-			params.status = 0
 			log(ERR,"params:" .. cjson_safe.encode(params))
 			local ids = {}
 			table.insert(ids, params.id)

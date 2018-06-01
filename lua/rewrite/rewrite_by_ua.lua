@@ -9,6 +9,9 @@ end
 if string.match(uri, "^/movie/api/") then
 	return
 end
+if string.match(uri, "^/movie/cms/") then
+	return
+end
 if string.match(uri, "^/api/") then
 	return
 end

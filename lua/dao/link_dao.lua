@@ -314,4 +314,35 @@ function _M:latest_by_title( title, from, size, fields )
 	local resp, status = self:search(body)
 	return resp, status
 end
+
+function _M:latest_feeds_video(from, size, fields )
+	local must_arr = {}
+    table.insert(must_arr, {
+        match = { video = 1 }
+    })
+
+	local must_not_arr = {} 
+	table.insert(must_not_arr, {
+        match = { status = -1 }
+    })
+   
+	local sorts = {}
+	table.insert(sorts, {
+		utime = {order = "desc"}
+	})
+	local body = {
+		from = from,
+		size = size,
+		sort = sorts,
+		_source = fields,
+		query = {
+		  bool = {
+		    must = must_arr,
+		    must_not = must_not_arr
+		  }
+		}
+	}
+	local resp, status = self:search(body)
+	return resp, status
+end
 return _M

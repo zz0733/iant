@@ -36,6 +36,20 @@ if method == "incr_bury_digg" then
   local digg = inputs.digg or 0
   -- log(ERR,"inputs:".. cjson_safe.encode(inputs))
   resp, status = link_dao:incr_bury_digg( id, tid, bury, digg )
+elseif method == "update_by_id" then
+  local data = util_request.post_body(ngx.req)
+  local input_json = cjson_safe.decode(data)
+  if not input_json then
+    message.status = 400
+    message.message = "json param is miss"
+    ngx.say(cjson_safe.encode(message))
+    return
+  end
+  input_json.id = input_json.id or input_json.lid
+  input_json.utime = ngx.time()
+  local inputs = {}
+  table.insert(inputs, input_json)
+  resp, status = link_dao:update_docs(inputs)
 elseif method == "query_by_ids" then
   local ids = {}
   local fields = {"link","md5","secret","title","code","webRTC"}

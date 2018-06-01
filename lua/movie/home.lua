@@ -9,6 +9,7 @@ local template = require "resty.template"
 
 local content_dao = require "dao.content_dao"
 local channel_dao = require "dao.channel_dao"
+local link_dao = require "dao.link_dao"
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -84,45 +85,71 @@ local randomWord
 if data and  data.contents then
 	randomWord = buildSearchWord(data.contents)
 end
-local order_contents = {}
-local torrent = {}
-torrent.video = 1
-torrent.id = 'm2034508201'
-torrent.title = '海贼王EP838.mp4'
-torrent.link = 'b9d29ee1cb5c3dec1157b895030894f87ee5afef'
-torrent.img = 'https://icdn.lezomao.com/img/hzw838.png'
-order_contents[1] = torrent
 
-local torrent = {}
-torrent.video = 1
-torrent.id = 'm1330625258'
-torrent.title = '斗罗大陆EP20.mp4'
-torrent.link = '46e1edaadde60cac2a070fb6b6c2a83a2b0c733c'
-torrent.img = 'https://icdn.lezomao.com/img/dldl20.png'
-order_contents[3] = torrent
+function makeOrderContents( ... )
+	local order_contents = {}
+	local torrent = {}
+	torrent.video = 1
+	torrent.id = 'm2034508201'
+	torrent.title = '海贼王EP838.mp4'
+	torrent.link = 'b9d29ee1cb5c3dec1157b895030894f87ee5afef'
+	torrent.img = 'https://icdn.lezomao.com/img/hzw838.png'
+	order_contents[1] = torrent
 
-local torrent = {}
-torrent.video = 1
-torrent.id = 'm02084390122'
-torrent.title = '黑色四叶草EP33'
-torrent.link = 'bea5874f59841cdd4bc738ecb2eaf12a51d62434'
-torrent.img = 'https://icdn.lezomao.com/img/hssyc33.png'
--- order_contents[5] = torrent
-local  contents = data.contents
-local  order_num = 1
-local  order_total = #contents + 2
-local  ci = 1
-for iorder=1,order_total do
-	if not order_contents[iorder] then
-	   order_contents[iorder] = contents[ci]
-	   ci = ci + 1
-	end
-	iorder = iorder + 1
+	local torrent = {}
+	torrent.video = 1
+	torrent.id = 'm1330625258'
+	torrent.title = '斗罗大陆EP20.mp4'
+	torrent.link = '46e1edaadde60cac2a070fb6b6c2a83a2b0c733c'
+	torrent.img = 'https://icdn.lezomao.com/img/dldl20.png'
+	order_contents[3] = torrent
+
+	local torrent = {}
+	torrent.video = 1
+	torrent.id = 'm02084390122'
+	torrent.title = '黑色四叶草EP33'
+	torrent.link = 'bea5874f59841cdd4bc738ecb2eaf12a51d62434'
+	torrent.img = 'https://icdn.lezomao.com/img/hssyc33.png'
+	-- order_contents[5] = torrent
+	order_contents = {}
+    local resp, status = link_dao:latest_feeds_video(0, 20)
+    if resp and resp.hits then
+    	local hits = resp.hits.hits
+    	local total = #hits
+    	local count = math.min(total, 3)
+    	local orderArr = {1,3,5}
+    	for index, order in pairs(orderArr) do
+    		if index == 3 then
+    			math.randomseed(tostring(os.time()):reverse():sub(1, 6))
+    		    index = math.random(total)
+    		    index = math.max(index, 3)
+    		end
+    		if hits[index] then
+				local _source = hits[index]._source
+				local torrent = _source
+				torrent.img = '/img/' .. _source.feedimg
+				order_contents[order] = torrent
+			end
+    	end
+    end
+    -- log(ERR,'order_contents:' .. cjson_safe.encode(order_contents))
+	return order_contents
 end
--- for _,v in ipairs(order_contents) do
--- 	if order_contents
--- 	table.insert(order_contents, v)
--- end
+local  order_contents = makeOrderContents()
+local  contents = data.contents
+local iorder = 1
+local cindex = 1
+local ctotal = #contents
+while true do
+  if not order_contents[iorder] then
+	   order_contents[iorder] = contents[cindex]
+	   cindex = cindex + 1
+  end
+  iorder = iorder + 1
+  if cindex == ctotal then
+  	break
+  end
+end
 data.contents = order_contents
 
 local movie_codes  = getContentByChannel("movie","正在热播",30)
