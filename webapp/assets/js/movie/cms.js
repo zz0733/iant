@@ -43,12 +43,11 @@ $document.ready(function() {
                 $updateBtn.attr('disabled', false)
             }
         }
-        self.on('input', function(event) {
-            validateJSON()
-        })   
-        self.on('change', function(event, prev) {
+    
+        $formGroup.on('input propertychange','textarea', function() {
             validateJSON()
         })
+    
         $('body').on('paste', function(e) {
             console.log('paste......');
             console.log('e:' + JSON.stringify(e.target));

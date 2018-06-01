@@ -116,6 +116,8 @@ $(document).ready(function() {
 								 if (v_source.space && (v_source.space ==0 || v_source.space == 1024)){
  					                  icon_cls = "icon61"
 								 }
+								 // 暂不可用了
+								 continue
 				            }
 				            if(update_time) {
 					            var updateDate = new Date(update_time * 1000)
