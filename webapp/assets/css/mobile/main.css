@@ -826,13 +826,13 @@ h1.post-title {
     position: relative;
     border-bottom: 1px solid #e8e8e8;
     height: 228px;
-    width: 370px;
+    width: 350px;
     padding-top: 10px;
     padding-right: 15px;
 }
 
 .video-inner .title-box{
-    width: 510px;
+    width: 335px;
     word-wrap: normal;
     word-break: break-all;
     white-space: nowrap;
@@ -844,14 +844,14 @@ h1.post-title {
     max-height: 180px;
 }
 .video-inner .video-box video {
-    width: 355px;
+    width: 335px;
     max-height: 180px;
 }
 
 .video-title a {
     padding-right: 5px;
     float: left;
-    max-width: 230px;
+    max-width: 210px;
     overflow: hidden;
     text-overflow: ellipsis;
     color: #555;
@@ -925,6 +925,6 @@ h1.post-title {
 }
 
 img.video-img {    
-    width: 355px;
+    width: 335px;
     height: 180px;
 }
