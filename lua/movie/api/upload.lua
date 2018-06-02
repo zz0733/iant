@@ -39,7 +39,7 @@ if  post_body then
 			if bSave then
 			   local saveDocs = {}
 			   table.insert(saveDocs, params)
-			   local sresp, status = link_dao:index_docs(saveDocs)
+			   local sresp, status = link_dao:update_docs(saveDocs)
                message.code = status
                if not sresp then
 				    message.code = 500
