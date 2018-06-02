@@ -123,7 +123,10 @@ function makeOrderContents( ... )
     		if index > orderCount - 2 then
     			math.randomseed(tostring(os.time()):reverse():sub(1, 6))
     		    index = math.random(total)
-    		    index = math.max(index, orderCount)
+    		    if index <=  orderCount - 2 then
+    		    	index = index + orderCount
+    		    	index = (index  % total) + 1
+    		    end
     		end
     		if hits[index] then
 				local _source = hits[index]._source
@@ -131,6 +134,7 @@ function makeOrderContents( ... )
 				torrent.id = _source.lid
 				torrent.img = _source.feedimg
 				order_contents[order] = torrent
+				hits[index] = nil
 			end
     	end
     end
