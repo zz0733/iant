@@ -22,7 +22,7 @@ local height = args.height or 220
 
 local size_arr = {}
 -- origin image
--- table_insert(size_arr,{w=0,h=0})
+table_insert(size_arr,{w=0,h=0})
 -- table_insert(size_arr,{w=154,h=100})
 -- table_insert(size_arr,{w=130,h=90})
 -- feed video image

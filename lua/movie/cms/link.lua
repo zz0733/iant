@@ -56,6 +56,15 @@ for _,v in ipairs(hits.hits) do
     torrent.id = _source.lid
 	if torrent.target then
 	   torrent.targetDoc = ssdb_content:get(torrent.target)
+	   if not torrent.img and torrent.targetDoc and torrent.targetDoc.digests then
+	   	  local digests = torrent.targetDoc.digests
+	   	  for _,dv in ipairs(digests) do
+  				if dv.sort == 'img' then
+  					torrent.img = dv.content
+  					break
+  				end
+  			end
+	   end
 	end
 	table.insert(contents, torrent)
 end

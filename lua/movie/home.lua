@@ -116,13 +116,14 @@ function makeOrderContents( ... )
     if resp and resp.hits then
     	local hits = resp.hits.hits
     	local total = #hits
-    	local count = math.min(total, 3)
-    	local orderArr = {1,3,5}
+    	local orderArr = {1,3,5,7,8}
+    	local orderCount = 5
+        local count = math.min(total, orderCount)
     	for index, order in pairs(orderArr) do
-    		if index == 3 then
+    		if index > orderCount - 2 then
     			math.randomseed(tostring(os.time()):reverse():sub(1, 6))
     		    index = math.random(total)
-    		    index = math.max(index, 3)
+    		    index = math.max(index, orderCount)
     		end
     		if hits[index] then
 				local _source = hits[index]._source

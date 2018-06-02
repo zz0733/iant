@@ -99,13 +99,15 @@
                   <li class="item-box">暂无内容推荐</li>
                {% else
                   for cindex, v in ipairs(data.contents) do
-                     if v.img and v.video then
+                     if v.img  then
                          v.img = ngx.re.sub(v.img, "http:", "https:")
-                         if v.video then
+                         if v.video or v.webRTC then
                            v.img = ngx.re.sub(v.img, "/img/", "/img/515x220/")
                          else
                            v.img = ngx.re.sub(v.img, "/img/", "/img/154x100/")
                          end
+                     else
+                       v.img = '/assets/img/noimg220x220.jpg'
                      end
                     local targetName = v.target
                     if v.targetDoc and v.targetDoc.article.title then
@@ -149,10 +151,7 @@
                                   <!-- <img src="{{v.img}}" alt="" class="video-img" > -->
                                   
                                    <div class="kv-avatar">
-                                        {%
-                                          local imgURL = v.img or '/assets/img/noimg220x220.jpg'
-                                        %}
-                                        <input id="input-img-{{v.id}}" name="input-img-{{v.id}}" type="file" data-src="{{imgURL}}" accept="image/*" class="video-img">
+                                        <input id="input-img-{{v.id}}" name="input-img-{{v.id}}" type="file" data-src="{{v.img}}" accept="image/*" class="video-img">
                                     </div>
                                     
                                </div>
