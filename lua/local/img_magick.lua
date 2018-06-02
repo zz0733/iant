@@ -181,8 +181,6 @@ function handleData(hits)
                                    dv.content =  '/img/' .. name
                                    bUpdate = true
                                 end
-                                img:destroy()
-                                img = nil
                             end
                         end
                     end

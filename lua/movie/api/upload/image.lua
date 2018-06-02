@@ -95,6 +95,6 @@ for si, sv in ipairs(size_arr) do
         message.data = '/img/' .. sizeDir .. '/' .. name
      end
 end
-img:destroy()
-img = nil
+ -- 垃圾自动回收，无需这样调用
+-- img:destroy()
 ngx.say(cjson_safe.encode(message))

@@ -12,7 +12,7 @@ _M.weibo_uid = "1766676277"
 
 
 _M.search_page_size = 30
-_M.search_max_page = 100
+_M.search_max_page = 10
 _M.link_page_size = 10
 _M.link_max_page = 20
 
