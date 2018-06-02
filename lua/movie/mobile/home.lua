@@ -85,27 +85,39 @@ local randomWord = buildSearchWord(data.contents)
 -- log(ERR,"randomWord:"..tostring(randomWord))
 function makeOrderContents( ... )
 	local order_contents = {}
+	local torrent = {}
+	torrent.video = 1
+	torrent.id = 'm02084390122'
+	torrent.title = '黑色四叶草EP33'
+	torrent.link = 'bea5874f59841cdd4bc738ecb2eaf12a51d62434'
+	torrent.img = 'https://icdn.lezomao.com/img/hssyc33.png'
+	-- order_contents[5] = torrent
+	order_contents = {}
     local resp, status = link_dao:latest_feeds_video(0, 20)
     if resp and resp.hits then
     	local hits = resp.hits.hits
-    	local total = #hits
-    	local orderArr = {1,3,5,7}
-    	local orderCount = 3
+    	local hits = resp.hits.hits
+    	local keepCount = 2
+    	local shuffleArr = util_arrays.sub(hits, keepCount + 1)
+    	util_arrays.shuffle(shuffleArr)
+    	local orderArr = {1,3,5}
     	for index, order in pairs(orderArr) do
-    		if index > orderCount - 2 then
-    			math.randomseed(tostring(os.time()):reverse():sub(1, 6))
-    		    index = math.random(total)
-    		    if index <=  orderCount - 2 then
-    		    	index = total - index
-    		    end
-    		end
-    		if hits[index] then
-				local _source = hits[index]._source
+    		local _source = nil;
+            if index <= keepCount then
+            	if hits[index] then
+            		_source = hits[index]._source
+            	end
+            else
+            	local destIndex = index - keepCount
+            	if shuffleArr[index] then
+            		_source = shuffleArr[index]._source
+            	end
+            end
+    		if _source then
 				local torrent = _source
 				torrent.id = _source.lid
 				torrent.img = _source.feedimg
 				order_contents[order] = torrent
-				hits[index] = nil
 			end
     	end
     end

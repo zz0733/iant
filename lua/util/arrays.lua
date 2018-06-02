@@ -30,5 +30,18 @@ function _M.byte2string(bytes)
   return s
 end
 
+function _M.swap(array, index1, index2)
+    array[index1], array[index2] = array[index2], array[index1]
+end
+
+function _M.shuffle(array)
+    local counter = #array
+    while counter > 1 do
+        -- math.randomseed(tostring(os.time()):reverse():sub(1, 6))
+        local index = math.random(counter)
+        swap(array, index, counter)
+        counter = counter - 1
+    end
+end
 
 return _M

@@ -1,6 +1,6 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
-local util_table = require "util.table"
+local util_arrays = require "util.arrays"
 local util_time = require "util.time"
 local context = require "util.context"
 local util_string = require "util.string"
@@ -90,22 +90,6 @@ function makeOrderContents( ... )
 	local order_contents = {}
 	local torrent = {}
 	torrent.video = 1
-	torrent.id = 'm2034508201'
-	torrent.title = '海贼王EP838.mp4'
-	torrent.link = 'b9d29ee1cb5c3dec1157b895030894f87ee5afef'
-	torrent.img = 'https://icdn.lezomao.com/img/hzw838.png'
-	order_contents[1] = torrent
-
-	local torrent = {}
-	torrent.video = 1
-	torrent.id = 'm1330625258'
-	torrent.title = '斗罗大陆EP20.mp4'
-	torrent.link = '46e1edaadde60cac2a070fb6b6c2a83a2b0c733c'
-	torrent.img = 'https://icdn.lezomao.com/img/dldl20.png'
-	order_contents[3] = torrent
-
-	local torrent = {}
-	torrent.video = 1
 	torrent.id = 'm02084390122'
 	torrent.title = '黑色四叶草EP33'
 	torrent.link = 'bea5874f59841cdd4bc738ecb2eaf12a51d62434'
@@ -115,25 +99,28 @@ function makeOrderContents( ... )
     local resp, status = link_dao:latest_feeds_video(0, 20)
     if resp and resp.hits then
     	local hits = resp.hits.hits
-    	local total = #hits
-    	local orderArr = {1,3,5,7,8}
-    	local orderCount = 5
-        local count = math.min(total, orderCount)
+    	local hits = resp.hits.hits
+    	local keepCount = 2
+    	local shuffleArr = util_arrays.sub(hits, keepCount + 1)
+    	util_arrays.shuffle(shuffleArr)
+    	local orderArr = {1,3,5,7,9}
     	for index, order in pairs(orderArr) do
-    		if index > orderCount - 2 then
-    			math.randomseed(tostring(os.time()):reverse():sub(1, 6))
-    		    index = math.random(total)
-    		    if index <=  orderCount - 2 then
-    		    	index = total - index
-    		    end
-    		end
-    		if hits[index] then
-				local _source = hits[index]._source
+    		local _source = nil;
+            if index <= keepCount then
+            	if hits[index] then
+            		_source = hits[index]._source
+            	end
+            else
+            	local destIndex = index - keepCount
+            	if shuffleArr[index] then
+            		_source = shuffleArr[index]._source
+            	end
+            end
+    		if _source then
 				local torrent = _source
 				torrent.id = _source.lid
 				torrent.img = _source.feedimg
 				order_contents[order] = torrent
-				hits[index] = nil
 			end
     	end
     end
