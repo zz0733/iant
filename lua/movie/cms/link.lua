@@ -36,8 +36,15 @@ local body = {
 		}
 	}
 local bool = body.query.bool
-if args.status then
-	local must_arr = {} 
+if args.video then
+	local must_arr = bool.must or {} 
+	table.insert(must_arr, {
+	    match = { video = args.video }
+	})
+    bool.must = must_arr
+end
+if args.status  then
+	local must_arr = bool.must or {} 
 	table.insert(must_arr, {
 	    match = { status = args.status }
 	})
