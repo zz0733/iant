@@ -38,7 +38,7 @@
                   <li class="item-box">暂无内容推荐</li>
                {% else
                   for i,v in ipairs(data.contents) do
-                     if v.img and v.video then
+                     if v.img then
                          v.img = ngx.re.sub(v.img, "http:", "https:")
                          if v.video then
                            v.img = ngx.re.sub(v.img, "/img/", "/img/515x220/")

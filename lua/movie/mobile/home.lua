@@ -9,6 +9,7 @@ local template = require "resty.template"
 
 local content_dao = require "dao.content_dao"
 local channel_dao = require "dao.channel_dao"
+local link_dao = require "dao.link_dao"
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -82,6 +83,51 @@ local data = message.data
 local randomWord = buildSearchWord(data.contents)
 -- log(ERR,"data:"..tostring(cjson_safe.encode(data)))
 -- log(ERR,"randomWord:"..tostring(randomWord))
+function makeOrderContents( ... )
+	local order_contents = {}
+    local resp, status = link_dao:latest_feeds_video(0, 20)
+    if resp and resp.hits then
+    	local hits = resp.hits.hits
+    	local total = #hits
+    	local orderArr = {1,3,5,7}
+    	local orderCount = 3
+    	for index, order in pairs(orderArr) do
+    		if index > orderCount - 2 then
+    			math.randomseed(tostring(os.time()):reverse():sub(1, 6))
+    		    index = math.random(total)
+    		    if index <=  orderCount - 2 then
+    		    	index = total - index
+    		    end
+    		end
+    		if hits[index] then
+				local _source = hits[index]._source
+				local torrent = _source
+				torrent.id = _source.lid
+				torrent.img = _source.feedimg
+				order_contents[order] = torrent
+				hits[index] = nil
+			end
+    	end
+    end
+    -- log(ERR,'order_contents:' .. cjson_safe.encode(order_contents))
+	return order_contents
+end
+local  order_contents = makeOrderContents()
+local  contents = data.contents
+local iorder = 1
+local cindex = 1
+local ctotal = #contents
+while true do
+  if not order_contents[iorder] then
+	   order_contents[iorder] = contents[cindex]
+	   cindex = cindex + 1
+  end
+  iorder = iorder + 1
+  if cindex == ctotal then
+  	break
+  end
+end
+data.contents = order_contents
 
 local content_doc = {}
 content_doc.header = buildHeader()

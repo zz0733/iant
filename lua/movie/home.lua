@@ -124,8 +124,7 @@ function makeOrderContents( ... )
     			math.randomseed(tostring(os.time()):reverse():sub(1, 6))
     		    index = math.random(total)
     		    if index <=  orderCount - 2 then
-    		    	index = index + orderCount
-    		    	index = (index  % total) + 1
+    		    	index = total - index
     		    end
     		end
     		if hits[index] then

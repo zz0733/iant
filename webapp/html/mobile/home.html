@@ -26,46 +26,93 @@
                <ul class="feed-ul">
                {%
                 for i,v in ipairs(data.contents) do
-                   if v.img and not string.match(v.img,"^http") then
-                      v.img = '/img/130x90/' .. v.img
-                      v.img = ngx.re.sub(v.img, "http:", "https:")
-                   end
+                   if v.img then
+                         v.img = ngx.re.sub(v.img, "http:", "https:")
+                         if v.video then
+                           v.img = ngx.re.sub(v.img, "/img/", "/img/515x220/")
+                         else
+                           v.img = ngx.re.sub(v.img, "/img/", "/img/154x100/")
+                         end
+                    end
                 %}
-                  <li class="item-box">
-                   <div class="item-inner">
-                      <a  href="/m/movie/detail/{{v.id}}.html"> 
-                        <div class="lbox">
-                            <img class="img-wrap" alt="{{v.title}}" src="{{v.img}}" /> 
-                            {%if v.cost then%}
-                            <i class="ftype video"> <span>{{v.cost}}</span> </i>
-                            {%end%}
-                        </div>
-                        <div class="rbox ">
-                              <div class="rbox-inner"> 
-                                  <div class="title-box"> 
-                                      {{v.title}}
+                {%if v.video then%}
+                     <li class="item-box">
+                          <div  class="video-inner" >
+                            <div class="title-box">
+                                  <div class="title-num">
+                                      <div class="video-title">
+                                         <a href="/movie/torrent/{{v.id}}.html" target="_blank" class="atitle video-title" src="{{v.link}}">
+                                           黑色四叶草EP34.mp4 黑色四叶草EP34.mp4 黑色四叶草EP34.mp4 黑色四叶草EP34.mp4{{v.title}}
+                                        </a>
+                                      </div>
+                                      <div class="video-stat-box">
+                                             <span class="downloaded">0MB</span>/<span class="total">总大小</span>
+                                      </div>
+                                  </div>
+                                <div class="progressBar" style="width: 0%;"></div>
+                            </div>
+                            <div class="video-box">
+                               <div class="video-cover">
+                                  
+                                  <span class='button video-init'>
+                                    <button class="button video-play"></button>
+                                  </span>
+                                  <img src="{{v.img}}" alt="" class="video-img" >
+                               </div>
+                               <div class="loading abs-center" style="display: none;">
+                                  <div class="sk-fading-circle">
+                                    <div class="sk-circle1 sk-circle"></div>
+                                    <div class="sk-circle2 sk-circle"></div>
+                                    <div class="sk-circle3 sk-circle"></div>
+                                    <div class="sk-circle4 sk-circle"></div>
+                                    <div class="sk-circle5 sk-circle"></div>
+                                    <div class="sk-circle6 sk-circle"></div>
+                                    <div class="sk-circle7 sk-circle"></div>
+                                    <div class="sk-circle8 sk-circle"></div>
+                                    <div class="sk-circle9 sk-circle"></div>
+                                    <div class="sk-circle10 sk-circle"></div>
+                                    <div class="sk-circle11 sk-circle"></div>
+                                    <div class="sk-circle12 sk-circle"></div>
                                   </div>
                               </div>
+                           </div>
                         </div>
-                      </a> 
-                      <span class="item-tag-box">
-                        {%if v.media then %}
-                        <span class="tag-txt tag-size">{{v.media}}</span>
-                        {%end%}
-                        {%if v.rate then %}
-                        <span class="tag-txt tag-size">评分
-                           <strong class="tag-score">{{v.rate}}</strong>
-                        </span>
-                        {%end%}
-                        {%if v.epmax then %}
-                        <span class="tag-ep">第{{v.epmax}}集</span>
-                        {%end%}
-                    </span>  
-                   </div>
-                  </li>
-                  {%
-                end
-               %}
+                      </li>
+                {%else%}
+                      <li class="item-box">
+                       <div class="item-inner">
+                          <a  href="/m/movie/detail/{{v.id}}.html"> 
+                            <div class="lbox">
+                                <img class="img-wrap" alt="{{v.title}}" src="{{v.img}}" /> 
+                                {%if v.cost then%}
+                                <i class="ftype video"> <span>{{v.cost}}</span> </i>
+                                {%end%}
+                            </div>
+                            <div class="rbox ">
+                                  <div class="rbox-inner"> 
+                                      <div class="title-box"> 
+                                          {{v.title}}
+                                      </div>
+                                  </div>
+                            </div>
+                          </a> 
+                          <span class="item-tag-box">
+                            {%if v.media then %}
+                            <span class="tag-txt tag-size">{{v.media}}</span>
+                            {%end%}
+                            {%if v.rate then %}
+                            <span class="tag-txt tag-size">评分
+                               <strong class="tag-score">{{v.rate}}</strong>
+                            </span>
+                            {%end%}
+                            {%if v.epmax then %}
+                            <span class="tag-ep">第{{v.epmax}}集</span>
+                            {%end%}
+                        </span>  
+                       </div>
+                      </li>
+                      {%end%}
+                  {%end%}
                 </ul>
               </div>
         </div>
