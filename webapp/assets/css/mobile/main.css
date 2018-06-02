@@ -826,13 +826,13 @@ h1.post-title {
     position: relative;
     border-bottom: 1px solid #e8e8e8;
     height: 228px;
-    width: 330px;
+    width: 320px;
     padding-top: 10px;
     padding-right: 15px;
 }
 
 .video-inner .title-box{
-    width: 315px;
+    width: 305px;
     word-wrap: normal;
     word-break: break-all;
     white-space: nowrap;
@@ -844,7 +844,7 @@ h1.post-title {
     max-height: 180px;
 }
 .video-inner .video-box video {
-    width: 315px;
+    width: 305px;
     max-height: 180px;
 }
 
@@ -925,6 +925,6 @@ h1.post-title {
 }
 
 img.video-img {    
-    width: 315px;
+    width: 305px;
     height: 180px;
 }
