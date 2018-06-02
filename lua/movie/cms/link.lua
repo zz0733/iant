@@ -23,6 +23,7 @@ local  size = context.search_page_size
 local  from = (cur_page - 1) * size
 log(ERR,"qWord:" .. cjson_safe.encode(args))
 local  fields = {"article","digests","lcount","issueds","evaluates","genres"}
+
 local sorts = {}
 table.insert(sorts,{ utime = { order = "desc" } } )
 local body = {
@@ -30,9 +31,24 @@ local body = {
 		size = size,
 		sort = sorts,
 		query = {
-		  ["match_all"] = {}
+		  bool = {
+		  } 
 		}
 	}
+local bool = body.query.bool
+if args.status then
+	local must_arr = {} 
+	table.insert(must_arr, {
+	    match = { status = args.status }
+	})
+    bool.must = must_arr
+else
+	local must_not_arr = {} 
+	table.insert(must_not_arr, {
+	    match = { status = -1 }
+	})
+    bool["must_not"] = must_not_arr
+end
 local resp, status = link_dao:search(body);
 local hits = {}
 if resp and resp.hits then
@@ -51,6 +67,7 @@ for _,v in ipairs(hits.hits) do
 	-- torrent.video = _source.webRTC
 	torrent.title = _source.title
 	torrent.link = _source.link
+	torrent.status = _source.status or 0
 	torrent.json = cjson_safe.encode(torrent)
     torrent.img = imgURL
     torrent.id = _source.lid

@@ -157,6 +157,7 @@ function handleData(hits)
                             log(ERR,"load_image:"..tostring(img)..",bodyLen:"..tostring(string.len(strBody)))
                             if img then
                                 -- log(ERR,"width:" .. img:get_width() .. ",height:" .. img:get_height());
+                                local cropErr = nil
                                 for _,sv in ipairs(size_arr) do
                                      local sizeDir
                                      if sv.w < 1 or sv.h < 1 then
@@ -171,13 +172,17 @@ function handleData(hits)
                                      local newPath = sizeDir.."/".. name
                                      local resp,err = img:write(newPath)
                                      if err then
-                                       log(ERR,"newPath:" .. newPath .. ",err:" .. tostring(err))
-                                     else
-                                       log(ERR,"newPath:" .. newPath)
+                                       log(ERR,"doc:".. tostring(v._id) .. "newPath:" .. newPath .. ",err:" .. tostring(err))
+                                       cropErr = err
+                                       break
                                      end
                                 end
-                                dv.content =  '/img/' .. name
-                                bUpdate = true
+                                if not cropErr then
+                                   dv.content =  '/img/' .. name
+                                   bUpdate = true
+                                end
+                                img:destroy()
+                                img = nil
                             end
                         end
                     end

@@ -95,4 +95,6 @@ for si, sv in ipairs(size_arr) do
         message.data = '/img/' .. sizeDir .. '/' .. name
      end
 end
+img:destroy()
+img = nil
 ngx.say(cjson_safe.encode(message))
