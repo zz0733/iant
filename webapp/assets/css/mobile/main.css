@@ -621,12 +621,12 @@ h1.post-title {
 }
 
 #post-video .video {
-    min-height: 390px;
+    min-height: 180px;
 }
 
 #post-video .video video{
-    height: 390px;
-    width: 850px;
+   width: 300px;
+   max-height: 180px;
 }
 
 .progressBar {
@@ -826,13 +826,13 @@ h1.post-title {
     position: relative;
     border-bottom: 1px solid #e8e8e8;
     height: 228px;
-    width: 320px;
+    width: 315px;
     padding-top: 10px;
     padding-right: 15px;
 }
 
 .video-inner .title-box{
-    width: 305px;
+    width: 300px;
     word-wrap: normal;
     word-break: break-all;
     white-space: nowrap;
@@ -844,7 +844,7 @@ h1.post-title {
     max-height: 180px;
 }
 .video-inner .video-box video {
-    width: 305px;
+    width: 300px;
     max-height: 180px;
 }
 
