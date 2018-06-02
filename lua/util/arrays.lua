@@ -39,7 +39,7 @@ function _M.shuffle(array)
     while counter > 1 do
         -- math.randomseed(tostring(os.time()):reverse():sub(1, 6))
         local index = math.random(counter)
-        swap(array, index, counter)
+        _M.swap(array, index, counter)
         counter = counter - 1
     end
 end
