@@ -647,8 +647,8 @@ h1.post-title {
 
 #loading {
     display: none;
-    width: 200px;
-    height: 200px;
+    width: 100px;
+    height: 100px;
     z-index: 20000
 }
 
@@ -660,13 +660,13 @@ h1.post-title {
 }
 
 .abs-center {
-    padding-left: 40%;
-    padding-top: 12%;
+    padding-left: 45%;
+    padding-top: 18%;
 }
 
 .sk-fading-circle {
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     position: relative
 }
 
@@ -825,8 +825,8 @@ h1.post-title {
     margin-top: 5px;
     position: relative;
     border-bottom: 1px solid #e8e8e8;
-    height: 268px;
-    width: 520px;
+    height: 228px;
+    width: 370px;
     padding-top: 10px;
     padding-right: 15px;
 }
@@ -841,16 +841,17 @@ h1.post-title {
 
 .video-inner .video-box {
     background-color: #999;
-    max-height: 224px;
+    max-height: 180px;
 }
 .video-inner .video-box video {
-    width: 515px;
-    height: 220px;
+    width: 355px;
+    max-height: 180px;
 }
 
-.video-title {
+.video-title a {
+    padding-right: 5px;
     float: left;
-    max-width: 330px;
+    max-width: 230px;
     overflow: hidden;
     text-overflow: ellipsis;
     color: #555;
@@ -858,9 +859,11 @@ h1.post-title {
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
 }
+.video-title a:hover {
+    color: rgba(0, 119, 255, 0.77);
+}
 
 .video-stat-box {
-    float: right;
     padding-right: 10px;
     padding-left: 5px;
 }
@@ -888,8 +891,8 @@ h1.post-title {
 
 .video-cover .video-init {
     position: absolute;
-    left: 220px;
-    bottom: 120px;
+    left: 140px;
+    bottom: 80px;
     height: 36px;
     width: 88px;
     background: rgba(0, 0, 0, 0.69);
@@ -922,6 +925,6 @@ h1.post-title {
 }
 
 img.video-img {    
-    width: 505px;
-    height: 220px;
+    width: 355px;
+    height: 180px;
 }
