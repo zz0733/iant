@@ -1,6 +1,6 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
-local util_table = require "util.table"
+local util_arrays = require "util.arrays"
 local context = require "util.context"
 local util_string = require "util.string"
 local util_time = require "util.time"
@@ -100,7 +100,7 @@ function makeOrderContents( ... )
     	local keepCount = 2
     	local shuffleArr = util_arrays.sub(hits, keepCount + 1)
     	util_arrays.shuffle(shuffleArr)
-    	local orderArr = {1,3,5}
+    	local orderArr = {1,3,5,7}
     	for index, order in pairs(orderArr) do
     		local _source = nil;
             if index <= keepCount then
