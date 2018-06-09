@@ -120,7 +120,7 @@ $document.ready(function() {
             resizePreference: 'width',
             maxFileCount: 1,
             // maximum file size for upload in KB
-            maxFileSize: 600,
+            maxFileSize: 800,
             showClose: false,
             showRemove: false,
             showUpload: true,
