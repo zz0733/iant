@@ -116,10 +116,11 @@ $document.ready(function() {
             /**use to resize*/
             maxImageWidth: 515,
             maxImageHeight: 270,
+            resizeImageQuality: 0.6,
             resizePreference: 'width',
             maxFileCount: 1,
             // maximum file size for upload in KB
-            maxFileSize: 700,
+            maxFileSize: 600,
             showClose: false,
             showRemove: false,
             showUpload: true,
