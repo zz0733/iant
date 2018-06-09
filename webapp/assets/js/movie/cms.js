@@ -26,8 +26,9 @@ $document.ready(function() {
             var json = editor.getValue();
             ele.value = JSON.stringify(json, null, 2);
         })
+
         function validateJSON() {
-        	try {
+            try {
                 editor.setValue(JSON.parse(ele.value));
             } catch (e) {
                 $formGroup.removeClass('has-success').addClass('has-error')
@@ -43,21 +44,21 @@ $document.ready(function() {
                 $updateBtn.attr('disabled', false)
             }
         }
-    
-        $formGroup.on('input propertychange','textarea', function() {
+
+        $formGroup.on('input propertychange', 'textarea', function() {
             validateJSON()
         })
-    
+
         $('body').on('paste', function(e) {
             console.log('paste......');
             console.log('e:' + JSON.stringify(e.target));
             console.log('eeee:' + e);
         });
 
-        //      	var inputText = e.originalEvent.clipboardData.getData('text');
-        //      	console.log('inputText:' + inputText);
+        //          var inputText = e.originalEvent.clipboardData.getData('text');
+        //          console.log('inputText:' + inputText);
         // if(/http.*?\\.(jpg|png|gif)/i.test(inputText)) {
-        // 	var sImgURL = inputText
+        //  var sImgURL = inputText
         //              console.log('pastedData:' + sImgURL);
         //              var xhr = new XMLHttpRequest();
         //           xhr.open('GET', sImgURL, true);
@@ -111,8 +112,14 @@ $document.ready(function() {
 
         $inputImg.fileinput({
             uploadUrl: "/api/movie/image.upload",
+            resizeImage: true,
+            /**use to resize*/
+            maxImageWidth: 515,
+            maxImageHeight: 270,
+            resizePreference: 'width',
             maxFileCount: 1,
-            maxFileSize: 1500,
+            // maximum file size for upload in KB
+            maxFileSize: 700,
             showClose: false,
             showRemove: false,
             showUpload: true,
@@ -156,7 +163,7 @@ $document.ready(function() {
     })
 
 
-  	var $scriptEle = document.createElement('script');
+    var $scriptEle = document.createElement('script');
     $scriptEle.src = '/assets/js/movie/stream.js'
     document.body.appendChild($scriptEle)
 });
