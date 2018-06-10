@@ -165,11 +165,8 @@ $document.ready(function() {
         });
 
         $inputImg.on('doupload', function(event) {
-            console.error("doupload:....:", event);
-            console.error("doupload.detail:....:", event.originalEvent.detail.imgblob);
             $inputImg.fileinput('addToStack', event.originalEvent.detail.imgblob);
             var files = $inputImg.fileinput('getFileStack');
-            console.error("doupload.files:", files[0]);
             if (files && files.length > 0) {
                 $inputImg.fileinput('upload');
             }
