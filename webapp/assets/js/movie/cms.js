@@ -16,6 +16,7 @@ $document.ready(function() {
         var $itemLi = self.parents('.item-box').first()
         var $inputImg = $itemLi.find('[id^=input-img]').first()
         var $videoCover = $itemLi.find('.video-cover').first()
+        var $videoBoxCms = $itemLi.find('.video-box-cms').first()
         var editor = new JSONEditor(ele, options);
         var str_json = self.attr('data-link')
         str_json = str_json || "{}"
@@ -132,16 +133,17 @@ $document.ready(function() {
             layoutTemplates: { main2: '{preview} ' + btnCust + ' {remove} {browse}', footer: tFooter, preview: tPreview },
             allowedFileExtensions: ["jpg", "png", "gif"]
         });
-        // $inputImg.on('filepreupload', function(event, data, previewId, index) {
-        //     var form = data.form,
-        //         files = data.files,
-        //         extra = data.extra,
-        //         response = data.response,
-        //         reader = data.reader;
-        //     console.log('File pre upload triggered:' + JSON.stringify(data));
-        // });
+        $inputImg.on('filepreupload', function(event, data, previewId, index) {
+            var form = data.form,
+                files = data.files,
+                extra = data.extra,
+                response = data.response,
+                reader = data.reader;
+            console.log('File pre upload triggered:' + JSON.stringify(data));
+        });
         $inputImg.on('fileuploaded', function(event, data, previewId, index) {
             var respJSON = data.response
+            console.error("fileuploaded:...." + JSON.stringify(respJSON));
             if (respJSON.code != 200) {
                 return
             }
@@ -159,6 +161,18 @@ $document.ready(function() {
             fileinput.defaultPreviewContent = imgEle.outerHTML
             $inputImg.fileinput('reset');
             $updateBtn.attr('disabled', false)
+            $videoBoxCms.attr('captured', 'uploaded')
+        });
+
+        $inputImg.on('doupload', function(event) {
+            console.error("doupload:....:", event);
+            console.error("doupload.detail:....:", event.originalEvent.detail.imgblob);
+            $inputImg.fileinput('addToStack', event.originalEvent.detail.imgblob);
+            var files = $inputImg.fileinput('getFileStack');
+            console.error("doupload.files:", files[0]);
+            if (files && files.length > 0) {
+                $inputImg.fileinput('upload');
+            }
         });
 
     })

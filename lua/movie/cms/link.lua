@@ -92,7 +92,7 @@ for _,v in ipairs(hits.hits) do
 	end
 	table.insert(contents, torrent)
 end
-log(ERR,"data:" .. cjson_safe.encode(data))
+-- log(ERR,"data:" .. cjson_safe.encode(data))
 
 local header = {}
 header.canonical = "http://www.lezomao.com" .. ngx.var.uri

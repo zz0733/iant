@@ -137,14 +137,15 @@
                                                  {%
                                                   
                                                  %}
-                                                 <span class="downloaded">{{v.target}}</span>
+                                                 <!-- <span class="downloaded">{{v.target}}</span> -->
+                                                 <span class="downloaded">0MB</span>/<span class="total">总大小</span>
                                                </a>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="progressBar" style="width: 0%;"></div>
                             </div>
-                            <div class="video-box1">
+                            <div class="video-box-cms">
                                <div class="video-cover">
                                   
                                  <!--  <span class='button video-init'>
@@ -152,7 +153,9 @@
                                     </button>
                                   </span> -->
                                   <!-- <img src="{{v.img}}" alt="" class="video-img" > -->
-                                  
+                                   <span class='button video-init'>
+                                     <button class="button video-play"></button>
+                                   </span>
                                    <div class="kv-avatar">
                                         <input id="input-img-{{v.id}}" name="input-img-{{v.id}}" type="file" data-src="{{v.img}}" accept="image/*" class="video-img">
                                     </div>
