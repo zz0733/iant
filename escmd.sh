@@ -11,7 +11,7 @@ curl -X POST 'http://127.0.0.1:9200/content/_delete_by_query?pretty' -d '
 {
   "query": {
       "match": {
-        "_id":"03167486"
+        "_id":"710774979"
       }
   }
 }
@@ -172,7 +172,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "query": {
       "match": {
-        "_id":"664854915"
+        "_id":"542974163"
       }
   }
 }
@@ -320,13 +320,13 @@ curl -XPOST 'http://127.0.0.1:9200/script/table/_search?pretty' -d '
 # }
 # '
 
-# curl -X POST 'http://127.0.0.1:9200/task/table/_delete_by_query?pretty' -d '
-# {
-#   "query": { 
-#     "match_all" : {}
-#   }
-# }
-# '
+curl -X POST 'http://127.0.0.1:9200/task/table/_delete_by_query?pretty' -d '
+{
+  "query": { 
+    "match_all" : {}
+  }
+}
+'
 
 exit 0
 curl -X GET 'http://127.0.0.1:9200/task/table/_search?pretty' -d '

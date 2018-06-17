@@ -103,6 +103,6 @@ $document.ready(function() {
 
 	    var $scriptEle = document.createElement('script');
     	$scriptEle.src = '/assets/js/movie/stream.js'
-    	document.body.appendChild($scriptEle)
+    	// document.body.appendChild($scriptEle)
 
 });
