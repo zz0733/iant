@@ -5,8 +5,9 @@ local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
 local servers = {}
-table.insert(servers, {urls = "stun:stun4.l.google.com:19302"})
-table.insert(servers, {urls = "stun:global.stun.twilio.com:3478?transport=udp"})
+table.insert(servers, {urls = "stun:stun.1und1.de"})
+-- table.insert(servers, {urls = "stun:stun4.l.google.com:19302"})
+-- table.insert(servers, {urls = "stun:global.stun.twilio.com:3478?transport=udp"})
 local message = {}
 message.code = 200
 message.data = { iceServers = servers }
