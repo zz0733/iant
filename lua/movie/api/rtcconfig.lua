@@ -9,7 +9,7 @@ local iceConfig = ssdb_ice:getValue()
 if not iceConfig then
 	local servers = {}
 	table.insert(servers, {urls = "stun:stun.1und1.de"})
-	iceConfig = iceConfig
+	iceConfig = servers
 end
 local message = {}
 message.code = 200
