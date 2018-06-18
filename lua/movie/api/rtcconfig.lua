@@ -5,7 +5,7 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
-local iceConfig = ssdb_content:getValue()
+local iceConfig = ssdb_ice:getValue()
 if not iceConfig then
 	local servers = {}
 	table.insert(servers, {urls = "stun:stun.1und1.de"})
