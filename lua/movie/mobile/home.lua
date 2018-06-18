@@ -124,7 +124,8 @@ function makeOrderContents( ... )
     -- log(ERR,'order_contents:' .. cjson_safe.encode(order_contents))
 	return order_contents
 end
-local  order_contents = makeOrderContents()
+-- local  order_contents = makeOrderContents()
+local  order_contents = {}
 local  contents = data.contents
 local iorder = 1
 local cindex = 1
