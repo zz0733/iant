@@ -5,12 +5,12 @@
 <meta name="keywords" content="{*context.header.keywords*}" />
 <meta name="title" content="{*context.header.title*}" />
 
-<link href="{{static_host}}/assets/css/fileinput.min.css?v={{version}}" media="all" rel="stylesheet" type="text/css"/>
-<script src="{{static_host}}/assets/js/piexif.min.js?v={{version}}"></script>
+<link href="{*static_host*}/assets/css/fileinput.min.css?v={{version}}" media="all" rel="stylesheet" type="text/css"/>
+<script src="{*static_host*}/assets/js/piexif.min.js?v={{version}}"></script>
 <!-- <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.8/js/plugins/piexif.min.js"></script> -->
-<script src="{{static_host}}/assets/js/fileinput.min.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/fileinput.min.js?v={{version}}"></script>
 <!-- <script src="https://cdn.bootcss.com/bootstrap-fileinput/4.4.8/js/fileinput.js"></script> -->
-<!-- <script src="{{static_host}}/assets/js/locales/zh.js" ></script>
+<!-- <script src="{*static_host*}/assets/js/locales/zh.js" ></script>
  -->
 <link href="https://cdn.bootcss.com/bootstrap-modal/2.2.6/css/bootstrap-modal.min.css" rel="stylesheet">
 <script src="https://cdn.bootcss.com/bootstrap-modal/2.2.6/js/bootstrap-modalmanager.min.js"></script>
@@ -201,7 +201,7 @@
                          <div class="item-inner">
                             <div class="lbox">
                               <a class="img-wrap" target="_blank" href="/movie/torrent/{{v.id}}.html"> 
-                                <img alt="{{v.title}}" src="{{v.img}}" /> 
+                                <img alt="{{v.title}}" src="{*v.img*}" /> 
                                 {%if v.cost then%}
                                 <i class="ftype video"> <span>{{v.cost}}</span> </i>
                                 {%end%}
@@ -251,7 +251,7 @@
     </div>
   </div>
 </div>
-<script src="{{static_host}}/assets/js/jsoneditor.min.js?v={{version}}"></script>
-<script src="{{static_host}}/assets/js/movie/cms.js?v={{version}}"></script>
-<script src="{{static_host}}/assets/js/movie/stream.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/jsoneditor.min.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/movie/cms.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/movie/stream.js?v={{version}}"></script>
 {(decorator/footer.html)}

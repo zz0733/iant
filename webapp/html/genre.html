@@ -4,7 +4,7 @@
 <meta name="description" content="{*context.header.description*}"/>
 <meta name="keywords" content="{*context.header.keywords*}" />
 <meta name="title" content="{*context.header.title*}" />
-<!-- <script type="text/javascript" src="{{static_host}}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
+<!-- <script type="text/javascript" src="{*static_host*}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
  -->
 </head>
 {# end of head #}
@@ -54,7 +54,7 @@
                    <div class="item-inner">
                       <div class="lbox">
                         <a class="img-wrap" target="_blank" href="/movie/detail/{{v._id}}.html"> 
-                          <img alt="" src="{{str_img}}" /> 
+                          <img alt="" src="{*str_img*}" /> 
                           {%if str_cost then%}
                           <i class="ftype video"> <span>{{str_cost}}</span> </i>
                           {%end%}

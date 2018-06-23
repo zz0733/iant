@@ -4,7 +4,7 @@
 <meta name="description" content="{*context.header.description*}"/>
 <meta name="keywords" content="{*context.header.keywords*}" />
 <meta name="title" content="{*context.header.title*}" />
-<!-- <script type="text/javascript" src="{{static_host}}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
+<!-- <script type="text/javascript" src="{*static_host*}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
  -->
 </head>
 {# end of head #}
@@ -57,7 +57,7 @@
                                   <span class='button video-init'>
                                     <button class="button video-play"></button>
                                   </span>
-                                  <img src="{{v.img}}" alt="" class="video-img" >
+                                  <img src="{*v.img*}" alt="" class="video-img" >
                                </div>
                                <div class="loading abs-center" style="display: none;">
                                   <div class="sk-fading-circle">
@@ -83,7 +83,7 @@
                        <div class="item-inner">
                           <a  href="/m/movie/detail/{{v.id}}.html"> 
                             <div class="lbox">
-                                <img class="img-wrap" alt="{{v.title}}" src="{{v.img}}" /> 
+                                <img class="img-wrap" alt="{{v.title}}" src="{*v.img*}" /> 
                                 {%if v.cost then%}
                                 <i class="ftype video"> <span>{{v.cost}}</span> </i>
                                 {%end%}
@@ -120,6 +120,6 @@
     </div>
   </div>
 </div>
-<script src="{{static_host}}/assets/js/mobile/home.js?v={{version}}"></script>
-<script src="{{static_host}}/assets/js/movie/stream.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/mobile/home.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/movie/stream.js?v={{version}}"></script>
 {(mobile/decorator/footer.html)}

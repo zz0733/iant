@@ -4,7 +4,7 @@
 <meta name="description" content="{*context.header.description*}"/>
 <meta name="keywords" content="{*context.header.keywords*}" />
 <meta name="title" content="{*context.header.title*}" />
-<!-- <script type="text/javascript" src="{{static_host}}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
+<!-- <script type="text/javascript" src="{*static_host*}/assets/js/jquery.ajax-cross-origin.min.js?v={{version}}"></script>
  -->
 </head>
 {# end of head #}
@@ -21,7 +21,7 @@
   <div class="row">
 	   <div class="col-md-8">
        <div class="checking-box" data-example-id="alerts-with-links">
-         <img src="{{static_host}}/assets/img/checking.gif">
+         <img src="{*static_host*}/assets/img/checking.gif">
   			 <span>正在检测，</span>
   	  		  <div class="progress">
   				  <div id="progress" class="progress-bar" role="progressbar" 
@@ -39,8 +39,8 @@
   </div>
 </div>
 
-<script src="{{static_host}}/assets/js/clipboard.min.js?v={{version}}"></script>
-<script src="{{static_host}}/assets/js/custom/jumper.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/clipboard.min.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/custom/jumper.js?v={{version}}"></script>
 
 
 {(decorator/footer.html)}

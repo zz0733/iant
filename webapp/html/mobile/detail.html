@@ -77,11 +77,11 @@
 					  content = content .. "，免费资源为你所用."
 					  local encode_title = string.encodeURI(content)
 	                %}
-                    <a href="http://service.weibo.com/share/share.php?appkey={*config.weibo_app_key*}&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;ralateUid={*config.weibo_uid*}&amp;source=狸猫资讯&amp;sourceUrl=http%3A%2F%2Fwww.lezomao.com&amp;content=utf8&amp;searchPic=false&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_sina.png"></a>
-                    <a href="http://www.jiathis.com/send/?webid=tqq&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_tengwb.png"></a>
-                    <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_wx.png"></a>
-                    <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_friend.png"></a>
-                    <a href="http://www.jiathis.com/send/?webid=renren&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{{static_host}}/assets/img/share_renren.png"></a>
+                    <a href="http://service.weibo.com/share/share.php?appkey={*config.weibo_app_key*}&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;ralateUid={*config.weibo_uid*}&amp;source=狸猫资讯&amp;sourceUrl=http%3A%2F%2Fwww.lezomao.com&amp;content=utf8&amp;searchPic=false&amp;uid={*config.jiathis_uid*}"><img src="{*static_host*}/assets/img/share_sina.png"></a>
+                    <a href="http://www.jiathis.com/send/?webid=tqq&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{*static_host*}/assets/img/share_tengwb.png"></a>
+                    <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{*static_host*}/assets/img/share_wx.png"></a>
+                    <a href="http://www.jiathis.com/send/?webid=weixin&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{*static_host*}/assets/img/share_friend.png"></a>
+                    <a href="http://www.jiathis.com/send/?webid=renren&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{*static_host*}/assets/img/share_renren.png"></a>
 	            </div>
 			 </div>
 			 <div class="article">
@@ -99,7 +99,7 @@
 		                            str_img = ngx.re.sub(str_img, "http:", "https:")
 		                          end
 		                          local str_title = v.title
-							      %}  <img src="{{str_img}}" class="digest-img" alt="{{str_title}}" >  {%
+							      %}  <img src="{*str_img*}" class="digest-img" alt="{{str_title}}" >  {%
 							     else 
 						          local str_title = v.title or v.content;
 							      %} <p>{{str_title}}</p>  {%
@@ -148,7 +148,7 @@
 	</div>
 </div>
 
-<script src="{{static_host}}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
-<script src="{{static_host}}/assets/js/mobile/detail.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/mobile/detail.js?v={{version}}"></script>
 
 {(mobile/decorator/footer.html)}
