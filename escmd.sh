@@ -489,13 +489,9 @@ curl -XGET "http://localhost:9200/content/_search?pretty" -d'
 
 curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 {
-  "size": 20,
-  "sort": {
-    "ctime": "desc"
-  },
+  "size": 1,
   "query": {
-    "match": {
-       "title":"v1051433666"
+    "match_all": {
     }
   }
 }
@@ -503,7 +499,16 @@ curl -XGET "http://localhost:9200/link/_search?pretty" -d'
 
 curl -XPOST "http://localhost:9200/link/_delete_by_query?pretty" -d'
 {
-  "size": 100,
+  "query": {
+    "match": {
+       "title":"jpg"
+    }
+  }
+}
+'
+
+curl -XPOST "http://localhost:9200/link/_delete_by_query?pretty" -d'
+{
   "query": {
     "match": {
        "status":"-1"

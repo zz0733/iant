@@ -1,0 +1,26 @@
+{(decorator/header.html)}
+<link rel="canonical" href="{*context.header.canonical*}" />
+<meta name="description" content="{*context.header.description*}" />
+<meta name="keywords" content="{*context.header.keywords*}" />
+<meta name="title" content="{*context.header.title*}" />
+
+<style>
+.error404 {
+    height: 100px;
+    width: 400px;
+    position: relative;
+    left: 35%;
+    text-align: center;
+    padding-top: 3%;
+    font-size: 20px;
+}
+</style>
+</head>
+{# end of head #}
+
+<body>
+{(decorator/navbar.html)} {(decorator/blankbar.html)}
+<div class="main error{{error.code}}">
+    <strong>{{error.message}}</strong>
+</div>
+{(decorator/footer.html)}
