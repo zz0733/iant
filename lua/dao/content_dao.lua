@@ -253,7 +253,7 @@ function _M:save_docs( docs)
 	  			for _,dv in ipairs(digests) do
 	  				-- dv.content = '/img/a9130b4f2d5e7acd.jpg'
 	  				if dv.sort == 'img' and dv.content and string.match(dv.content,"^/img/") then
-	  					-- localDigests = digests
+	  					localDigests = digests
 	  					break
 	  				end
 	  			end
