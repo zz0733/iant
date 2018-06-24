@@ -104,6 +104,7 @@ function makeOrderContents( ... )
     	local shuffleArr = util_arrays.sub(hits, keepCount + 1)
     	util_arrays.shuffle(shuffleArr)
     	local orderArr = {1,3,5,7,9}
+    	local orderArr = {1}
     	for index, order in pairs(orderArr) do
     		local _source = nil;
             if index <= keepCount then
@@ -127,8 +128,8 @@ function makeOrderContents( ... )
     -- log(ERR,'order_contents:' .. cjson_safe.encode(order_contents))
 	return order_contents
 end
--- local  order_contents = makeOrderContents()
-local  order_contents = {}
+local  order_contents = makeOrderContents()
+-- local  order_contents = {}
 local  contents = data.contents
 local iorder = 1
 local cindex = 1

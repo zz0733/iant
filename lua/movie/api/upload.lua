@@ -1,9 +1,12 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_movie = require "util.movie"
+local util_context = require "util.context"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
+
+local decode_base64 = ngx.decode_base64
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -20,10 +23,22 @@ if  post_body then
 	if params then
 		-- upload webrtc torrent source
 		params.id = params.id or util_movie.makeId(params.link)
-		if params.id and params.title then
+		if params.id and params.title and params.torrentFile then
 			params.lid = params.id
 			params.webRTC = params.webRTC or 1
 			params.status = params.status or 0
+			local torrentFile =  params.torrentFile
+            local torrentPath = util_context.TORRENT_DIR .. "/" .. params.infoHash .. ".torrent"
+            local writeFile, openerr = io.open(torrentPath, "w+")
+            if openerr then 
+            	log(ERR,"open torrent:" .. torrentPath  .. ",cause:" .. openerr)
+            end
+            torrentFile = decode_base64(torrentFile)
+            writeFile:write(torrentFile)
+            writeFile:close()
+			params.torrentFile = nil
+			params.infoHash = nil
+
 			log(ERR,"params:" .. cjson_safe.encode(params))
 			local ids = {}
 			table.insert(ids, params.id)
@@ -48,7 +63,7 @@ if  post_body then
 			end
 			message.data = ret
 	    else
-	    	message.error = 'miss id or title'
+	    	message.error = 'miss id or title or torrentFile'
 	    end
 		
 	else

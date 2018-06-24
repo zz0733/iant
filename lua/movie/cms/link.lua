@@ -72,13 +72,13 @@ else
 end
 local resp, status = link_dao:search(body);
 local hits = {}
-if resp and resp.hits then
-	hits = resp.hits
+if resp and resp.hits and resp.hits.hits then
+	hits = resp.hits.hits
 end
 local data = {}
 local contents = {}
 data.contents = contents
-for _,v in ipairs(hits.hits) do
+for _,v in ipairs(hits) do
 	local _source = v._source
     local imgURL = _source.feedimg
     if imgURL then
