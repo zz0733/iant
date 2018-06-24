@@ -100,7 +100,8 @@ function makeOrderContents( ... )
     	local keepCount = 2
     	local shuffleArr = util_arrays.sub(hits, keepCount + 1)
     	util_arrays.shuffle(shuffleArr)
-    	local orderArr = {1,3,5,7}
+    	-- local orderArr = {1,3,5,7}
+    	local orderArr = {1}
     	for index, order in pairs(orderArr) do
     		local _source = nil;
             if index <= keepCount then
