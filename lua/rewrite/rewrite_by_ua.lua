@@ -1,8 +1,13 @@
 local util_table = require "util.table"
+local cjson_safe = require "cjson.safe"
+
 local log = ngx.log
 local ERR = ngx.ERR
 
 local uri = ngx.var.uri
+if not (ngx.var.request_method == 'GET') then
+   return
+end
 if string.match(uri, "^/assets/") then
 	return
 end
@@ -31,6 +36,12 @@ if string.match(uri, "%.ico$") then
 	return
 end
 if string.match(uri, "%.xml$") then
+	return
+end
+if string.match(uri, "%.mp4$") then
+	return
+end
+if string.match(uri, "%.torrent$") then
 	return
 end
 local user_agent = ngx.req.get_headers().user_agent
@@ -66,9 +77,6 @@ log(ERR,"uri:" .. uri .. ",ua:"..user_agent..",is_mobile:" .. tostring(is_mobile
 local target = uri
 if is_mobile and not string.match(uri,"^/m/") then
 	target = "/m" .. uri
-	if conditions then
-		
-	end
 elseif not is_mobile and string.match(uri,"^/m/") then
 	target = ngx.re.sub(uri,"^/m/","/")
 end
