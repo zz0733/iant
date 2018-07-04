@@ -39,7 +39,7 @@ if  post_body then
 			params.torrentFile = nil
 			params.infoHash = nil
 
-			log(ERR,"params:" .. cjson_safe.encode(params))
+			-- log(ERR,"params:" .. cjson_safe.encode(params))
 			local ids = {}
 			table.insert(ids, params.id)
 			local resp = link_dao:query_by_ids(ids)
