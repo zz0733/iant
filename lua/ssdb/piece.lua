@@ -57,4 +57,38 @@ function _M:getValue(hash, start)
    return ret
 end
 
+function _M:keys(hash, limit)
+   local client =  open();
+   local keyStart = 'piece_' .. hash
+   local keyEnd = ''
+   local ret, err = client:keys(keyStart, keyEnd, limit)
+   close(client)
+   if err then
+      return nil, err
+   end
+   if ret == ngx.null then
+     return nil
+   end
+   return ret
+end
+
+function _M:remove(hash, limit)
+   local client =  open();
+   local keyStart = 'piece_' .. hash
+   local keyEnd = ''
+   local keyArr, err = client:keys(keyStart, keyEnd, limit)
+   local kCount = 0
+   if keyArr then
+      kCount, err = client:multi_del(unpack(keyArr))
+   end
+   close(client)
+   if err then
+      return nil, err
+   end
+   if ret == ngx.null then
+     return nil
+   end
+   return kCount, err
+end
+
 return _M

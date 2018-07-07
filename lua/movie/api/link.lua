@@ -4,6 +4,8 @@ local util_table = require "util.table"
 local link_dao = require "dao.link_dao"
 local meta_dao = require "dao.meta_dao"
 local context = require "util.context"
+local ssdb_piece = require "ssdb.piece"
+local util_context = require "util.context"
 
 local decodeURI = ngx.unescape_uri
 
@@ -45,11 +47,42 @@ elseif method == "update_by_id" then
     ngx.say(cjson_safe.encode(message))
     return
   end
+ 
   input_json.id = input_json.id or input_json.lid
   input_json.utime = ngx.time()
   local inputs = {}
   table.insert(inputs, input_json)
   resp, status = link_dao:update_docs(inputs)
+  if input_json.status == -1 then
+     function toInfoHash( uri )
+      if not uri then
+        return
+      end
+      local m = ngx.re.match(uri, 'btih:([0-9a-z]{10,})','ijo')
+      if m then
+        return m[1]
+      end
+    end
+    function deletePieces( infoHash )
+      local batchCount = 100
+      local sumRemove = 0
+      while true do
+         local rmCount, err = ssdb_piece:remove(infoHash, batchCount)
+         sumRemove = sumRemove + rmCount
+         if  rmCount < batchCount then
+           break
+         end
+      end
+      return sumRemove
+    end
+    function deleteMeta( infoHash )
+      local torrentPath = util_context.TORRENT_DIR .. "/" .. infoHash .. ".torrent"
+      return os.remove(torrentPath)
+    end
+    local infoHash = toInfoHash(input_json.link)
+     message.rmPiece= deletePieces(infoHash)
+     message.rmMeta = deleteMeta(infoHash)
+  end
 elseif method == "query_by_ids" then
   local ids = {}
   local fields = {"link","md5","secret","title","code","webRTC"}

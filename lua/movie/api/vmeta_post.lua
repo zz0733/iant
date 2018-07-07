@@ -27,8 +27,9 @@ if  post_body then
 			params.lid = params.id
 			params.webRTC = params.webRTC or 1
 			params.status = params.status or 0
+			local infoHash =  params.infoHash
 			local torrentFile =  params.torrentFile
-            local torrentPath = util_context.TORRENT_DIR .. "/" .. params.infoHash .. ".torrent"
+            local torrentPath = util_context.TORRENT_DIR .. "/" .. infoHash .. ".torrent"
             local writeFile, openerr = io.open(torrentPath, "w+")
             if openerr then 
             	log(ERR,"open torrent:" .. torrentPath  .. ",cause:" .. openerr)
@@ -40,16 +41,16 @@ if  post_body then
 			params.infoHash = nil
 
 			-- log(ERR,"params:" .. cjson_safe.encode(params))
-			local ids = {}
-			table.insert(ids, params.id)
-			local resp = link_dao:query_by_ids(ids)
 			local bSave = true
-			if resp and resp.hits and resp.hits.hits and resp.hits.hits[1] then
-			   	 local hasOne = resp.hits.hits[1]._source
-			   	 if hasOne.status and hasOne.status ~= 0 then
-			   	 	bSave = false
-			   	 end
-			end
+			-- local ids = {}
+			-- table.insert(ids, params.id)
+			-- local resp = link_dao:query_by_ids(ids)
+			-- if resp and resp.hits and resp.hits.hits and resp.hits.hits[1] then
+			--    	 local hasOne = resp.hits.hits[1]._source
+			--    	 if hasOne.status and hasOne.status ~= 0 then
+			--    	 	bSave = false
+			--    	 end
+			-- end
 			local ret = { save = bSave, id =  params.id}
 			if bSave then
 			   local saveDocs = {}
@@ -61,6 +62,7 @@ if  post_body then
 				    message.error = status
 				end
 			end
+	
 			message.data = ret
 	    else
 	    	message.error = 'miss id or title or torrentFile'
