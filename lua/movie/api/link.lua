@@ -68,6 +68,10 @@ elseif method == "update_by_id" then
       local sumRemove = 0
       while true do
          local rmCount, err = ssdb_piece:remove(infoHash, batchCount)
+         if err then
+            log(ERR,'deletePieces,cause:', err)
+            break
+         end
          sumRemove = sumRemove + rmCount
          if  rmCount < batchCount then
            break
@@ -79,7 +83,7 @@ elseif method == "update_by_id" then
       local torrentPath = util_context.TORRENT_DIR .. "/" .. infoHash .. ".torrent"
       return os.remove(torrentPath)
     end
-    local infoHash = toInfoHash(input_json.link)
+    local infoHash = toInfoHash(input_json.link) or input_json.link
      message.rmPiece= deletePieces(infoHash)
      message.rmMeta = deleteMeta(infoHash)
   end
