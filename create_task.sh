@@ -28,4 +28,4 @@ TASK_BODY="[{
   \"status\": 0
 }]"
 echo "SNAP_SERVER[$SNAP_SERVER],TASK_BODY=$TASK_BODY"
-curl -k -X POST "$SNAP_SERVER/api/task.json?method=insert" -d "$TASK_BODY"
+curl -s -X POST "$SNAP_SERVER/api/task.json?method=insert" -d "$TASK_BODY"

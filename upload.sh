@@ -5,5 +5,5 @@ if [[ $# -gt 0 ]]; then
 fi
 echo "[`date`] upload file:$FILE_PATH"
 echo "[`date`] curl -X POST $SNAP_SERVER/api/script.json?method=insert"
-curl -X POST "$SNAP_SERVER/api/script.json?method=insert" \
+curl -s -X POST "$SNAP_SERVER/api/script.json?method=insert" \
 -F "filename=@$FILE_PATH;type=application/octet-stream"

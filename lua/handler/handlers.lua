@@ -112,10 +112,8 @@ _M.meta = function(id, source)
      return nil, "es[source.data] is not json"
    elseif not data.data then
      return nil, "content[data] is nil"
-   elseif not data.data.docs  then
-   return nil, "content[data].docs is nil"
    end
-   local docs = data.data.docs
+   local docs = data.data
    local type = source.type
    for _,v in ipairs(docs) do
       if not v.id then
@@ -124,7 +122,7 @@ _M.meta = function(id, source)
       ensure_doc(v)
    end
    log(ERR,"handle[meta],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
-   return meta_dao:bulk_docs(docs)
+   return meta_dao:save_metas(docs)
 end
 
 

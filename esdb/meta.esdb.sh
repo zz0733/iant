@@ -1,16 +1,16 @@
 #!/bin/bash
 #创建索引
-curl -XPUT http://localhost:9200/meta_v1
+curl -XPUT http://localhost:9200/meta_v2
 
 #取别名
-curl -XPUT http://localhost:9200/meta_v1/_alias/meta 
+curl -XPUT http://localhost:9200/meta_v2/_alias/meta 
 # curl -XGET http://localhost:9200/content_v1/_alias/*
 # curl -XGET http://localhost:9200/*/_alias/content
 
 
-curl -XPOST 'localhost:9200/meta_v1/_close'
+curl -XPOST 'localhost:9200/meta_v2/_close'
 
-curl -XPUT http://localhost:9200/meta_v1/_settings?pretty -d '
+curl -XPUT http://localhost:9200/meta_v2/_settings?pretty -d '
 {
   "index": {
     "analysis": {
@@ -49,8 +49,8 @@ curl -XPUT http://localhost:9200/meta_v1/_settings?pretty -d '
   }
 }
 '
-curl -XPOST 'localhost:9200/meta_v1/_open'
-curl -XPUT http://localhost:9200/meta_v1/_settings?pretty -d '
+curl -XPOST 'localhost:9200/meta_v2/_open'
+curl -XPUT http://localhost:9200/meta_v2/_settings?pretty -d '
 {
   "index": {
     "number_of_replicas": 0
@@ -58,8 +58,11 @@ curl -XPUT http://localhost:9200/meta_v1/_settings?pretty -d '
 }
 '
 #电影、动漫、电视剧等内容资源,一集条记录
-curl -XPUT 'http://localhost:9200/meta_v1/_mapping/table?pretty' -d '
+curl -XPUT 'http://localhost:9200/meta_v2/_mapping/table?pretty' -d '
 {
+   "_source": {
+        "enabled": false
+  },
   "include_in_all": false,
   "dynamic_templates": [
     {
@@ -86,32 +89,34 @@ curl -XPUT 'http://localhost:9200/meta_v1/_mapping/table?pretty' -d '
       "analyzer": "ik_max_word_synonym",
       "search_analyzer": "ik_max_word_synonym"
     },
-    "url": {
-      "type": "string",
-      "index": "no"
-    },
     "media": {
-      "type": "keyword"
+      "type": "integer"
+    },
+    "sort": {
+      "type": "integer"
     },
     "source": {
-      "type": "keyword"
+      "type": "integer"
     },
     "cost": {
       "type": "integer"
+    },
+    "space": {
+      "type": "long"
     },
     "year": {
       "type": "integer"
     },
     "lang": {
-      "type": "keyword"
+      "type": "integer"
     },
     "imdb": {
       "type": "keyword"
     }, 
-    "directors": {
-      "type": "keyword"
-    },
     "season": {
+      "type": "integer"
+    },
+    "episode": {
       "type": "integer"
     },
     "epcount": {
@@ -120,17 +125,35 @@ curl -XPUT 'http://localhost:9200/meta_v1/_mapping/table?pretty' -d '
     "epindex": {
       "type": "integer"
     },  
-    "playcount": {
-      "type": "integer"
-    },    
-    "voteup": {
-      "type": "integer"
-    },  
-    "score": {
+    "vip": {
       "type": "integer"
     },
-    "status": {
+    "cstatus": {
       "type": "integer"
+    },
+    "pstatus": {
+      "type": "integer"
+    },
+    "issueds": {
+      "type": "keyword"
+    },   
+    "regions": {
+      "type": "keyword"
+    },  
+    "countrys": {
+      "type": "keyword"
+    },
+    "names": {
+      "type": "keyword"
+    },
+    "genres": {
+      "type": "keyword"
+    },
+    "directors": {
+      "type": "keyword"
+    },
+    "actors": {
+      "type": "keyword"
     },
     "ctime": {
       "type": "date"
@@ -142,4 +165,4 @@ curl -XPUT 'http://localhost:9200/meta_v1/_mapping/table?pretty' -d '
 }
 '
 
-curl -XPOST 'localhost:9200/meta_v1/_open'
+curl -XPOST 'localhost:9200/meta_v2/_open'
