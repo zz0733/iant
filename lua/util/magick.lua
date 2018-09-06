@@ -55,9 +55,9 @@ function _M.saveCorpImage(img, width, height, saveName)
 	 local resp, err = img:write(newPath)
 	 if err then
 	    log(ERR,"doc:".. tostring(v._id) .. "newPath:" .. newPath .. ",err:" .. tostring(err))
-	    return newPath, err
+	    return saveName, err
 	 else
-	 	return newPath
+	 	return saveName
 	 end
 end
 

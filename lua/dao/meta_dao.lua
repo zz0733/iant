@@ -114,11 +114,12 @@ function _M:corpDigest(oDoc)
   local imgName = md5Val .. oDoc.suffix
   local width = oDoc.width or 0
   local height = oDoc.height or 0
-  local savePath, err = util_magick.saveCorpImage(img, width, height, imgName)
+  local saveName, err = util_magick.saveCorpImage(img, width, height, imgName)
   if err then
-    log(ERR,"saveCorpImage:" .. newPath .. ",cause:", err)
+    log(ERR,"saveCorpImage:" .. saveName .. ",cause:", err)
     return nil, err
   else 
+
     local cstatus = hasMeta.cstatus or 0
     local es_body = {}
     local upDoc = {}
@@ -128,6 +129,9 @@ function _M:corpDigest(oDoc)
     local resp, status = self:update_docs( es_body )
     log(ERR,"corpDigest.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
     if status == 200 then
+        if hasMeta.digests then
+           hasMeta.digests[oDoc.index] = '/img/' .. saveName
+        end
         hasMeta.cstatus = upDoc.cstatus
         ssdb_meta:set(oDoc.id, hasMeta)
     end
