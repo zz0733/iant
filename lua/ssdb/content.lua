@@ -91,23 +91,23 @@ function _M:set(content_id, content_val)
    if util_table.is_table(content_val) then
    	 content_val =  cjson_safe.encode(content_val)
    end
-   local client =  self.open();
-   local ret, err = client:set(self.toSSDBKey(content_id), content_val)
-   self.close(client)
+   local client =  self:open();
+   local ret, err = client:set(self:toSSDBKey(content_id), content_val)
+   self:close(client)
    return ret, err
 end
 
 function _M:get(content_id)
-   local client =  self.open();
-   local ret, err = client:get(self.toSSDBKey(content_id))
-   self.close(client)
+   local client =  self:open();
+   local ret, err = client:get(self:toSSDBKey(content_id))
+   self:close(client)
    if err then
       return nil, err
    end
    if ret == ngx.null then
      return nil
    end
-   return self.toJSONBean(ret)
+   return self:toJSONBean(ret)
 end
 
 
@@ -128,19 +128,17 @@ function _M:multi_get(keys)
    if not keys then
       return {}
    end
-   log(ERR,'multi_get.inkeys:' .. cjson_safe.encode(keys))
-
    for i = 1, #keys do
-     keys[i] =  self.toSSDBKey(keys[i]) 
+     keys[i] =  self:toSSDBKey(keys[i]) 
    end
    log(ERR,'multi_get.keys:' .. cjson_safe.encode(keys))
-   local client = self.open();
+   local client = self:open();
    local ret, err = client:multi_get(unpack(keys))
    if ret then
       local dest = {}
       for k,v in pairs(ret) do
            k = string.sub(k,3)
-           dest[k] =  self.toJSONBean(v)
+           dest[k] =  self:toJSONBean(v)
       end
       return dest
    else
