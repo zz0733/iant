@@ -128,6 +128,8 @@ function _M:multi_get(keys)
    if not keys then
       return {}
    end
+   log(ERR,'multi_get.inkeys:' .. cjson_safe.encode(keys))
+
    for i = 1, #keys do
      keys[i] =  self.toSSDBKey(keys[i]) 
    end
