@@ -44,7 +44,7 @@ function _M:close( client )
 end
 
 function _M:toSSDBKey( key )
-  return "M_" .. key
+  return "M_" .. tostring(key)
 end
 
 function _M:toJSONBean( sVal )
