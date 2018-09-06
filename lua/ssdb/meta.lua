@@ -57,10 +57,10 @@ function toJSONBean( sVal )
    end
    if jsonVal and jsonVal.digests then
       local digests = jsonVal.digests
-      for _,dv in ipairs(digests) do
+      for index,imgName in ipairs(digests) do
          -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-         if dv.sort == 'img' and string.match(dv.content,"^/img/") then
-            dv.content = util_context.CDN_URI .. dv.content
+         if string.match(imgURL,"^/img/") then
+            digests[index] = util_context.CDN_URI .. imgName
          end
       end
    end

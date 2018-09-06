@@ -3,7 +3,7 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
-local channel_dao = require "dao.channel_dao"
+local content_dao = require "dao.content_dao"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -15,32 +15,18 @@ local CRIT = ngx.CRIT
 local message = {}
 message.code = 200
 
-local to_date = ngx.time()
-local from_date = to_date - 1*60*60
-local from_issued = to_date - 30*24*60*60
+local from_date = tonumber(args.from) or (ngx.time() - 2*60*60)
 
-local timeby = os.date("%Y%m%d%H", from_date)
-local media = 'all'
-local groupby = 'issued'
-local source = 'all'
-local channel = 'newest'
--- tv;douban;recommend;201705;韩剧
-local doc_id = media ..";" .. source ..";".. groupby ..";".. timeby ..";".. channel
+local timeby = from_date
 
+ -- # -1:失效,0:默认,1:有效,2:自动匹配,3:人工匹配
 local must_array = {}
-table.insert(must_array,{match = { cstatus = 0 }})
-table.insert(must_array,{match = { pstatus = 0 }})
+table.insert(must_array,{range = { utime = { gte = from_date } }})
+-- table.insert(must_array,{range = { status = { gte = 1 } }})
 
 local body = {
     query = {
         bool = {
-            filter = {
-              range = {
-                ctime ={
-                  gte = from_date
-                }
-              }
-            },
             must = must_array
         }
     }
@@ -56,6 +42,7 @@ scanParams.scroll = scroll
 scanParams.size = 100
 scanParams.body = body
 
+local lindex = 0;
 local scan_count = 0
 local scrollId = nil
 local index = 0
@@ -85,8 +72,8 @@ while true do
      else
          total = data.hits.total
          local hits = data.hits.hits
-         local shits = cjson_safe.encode(hits)
-         log(ERR,"hits:" .. shits)
+         -- local shits = cjson_safe.encode(hits)
+         -- log(ERR,"hits:" .. shits)
          scan_count = scan_count + #hits
          ngx.update_time()
          local cost = (ngx.now() - start)
@@ -94,44 +81,28 @@ while true do
          log(ERR,"timeby:"..timeby..",scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
                 .. ",scan:" .. tostring(scan_count)..",index:"..index..",cost:" .. cost)
         local elements = {}
-     
-        local did_map = {}
+        
         for _,v in ipairs(hits) do
-            local targets = v._source.targets
-            if targets then
-                for _,tv in ipairs(targets) do
-                    if (not tv.bury or tv.bury < 10) and not did_map[tv.id] then
-                        local ele = {}
-                        ele.code = tv.id
-                        ele.lid = v._id
-                        ele.score = tv.score
-                        ele.tscore = tv.tscore
-                        ele.dcount = #targets
-                        ele.title = v._source.title
-                        table.insert(elements,ele)
-                        did_map[ele.code] = 1
+            local source = v._source;
+            local targets = source.targets
+            if targets and #targets == 1 then
+                local tv = targets[1]
+                if (not tv.bury or tv.bury < 10) then
+                    local lpipe = {}
+                    lpipe.lid = v._id
+                    lpipe.index = lindex
+                    lpipe.time = source.ctime
+                    lpipe.epmax = source.episode
+                    log(ERR,"tv.id:" .. tv.id .. ",lpipe:" .. cjson_safe.encode(lpipe))
+                    local lresp,lstauts = content_dao:update_link_pipe(tv.id, lpipe)
+                    if not lresp then
+                        log(ERR,"update_link_pipe["..tostring(tv.id).."],lpipe:" .. cjson_safe.encode(lpipe)..",status:" ..  cjson_safe.encode(lstauts))
+                    else
+                       save = save + 1;
                     end
+                    lindex = lindex + 1;
                 end
             end
-        end
-        if #elements > 0 then
-            local doc = {}
-            doc.id = doc_id
-            doc.timeby = timeby
-            doc.media = media
-            doc.groupby = groupby
-            doc.source = source
-            doc.channel = channel
-            doc.elements = elements
-            doc.total = #elements
-            doc._doc_cmd = 'update'
-            local channel_docs = {}
-            table.insert(channel_docs, doc)
-            save = save + 1
-            local resp, status = channel_dao:save_docs(channel_docs)
-            local msg = cjson_safe.encode(channel_docs)
-            local str_resp = cjson_safe.encode(resp)
-            log(ERR,"timeby:"..timeby..",saveChannel.:" .. msg..",resp:" .. str_resp .. ",status:" ..  tostring(status))
         end
         scrollId = data["_scroll_id"]
      end
@@ -141,6 +112,5 @@ if not scrollId then
     params.scroll_id = scrollId
     sourceClient:clearScroll(params)
 end
-
 local body = cjson_safe.encode(message)
 ngx.say(body)

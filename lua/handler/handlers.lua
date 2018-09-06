@@ -184,12 +184,31 @@ _M.channel = function(id, source)
    return channel_dao:save_docs(docs)
 end
 
+_M.digest = function(id, source)
+   if not source then
+       return nil, "source is nil"
+   elseif not source.data then
+       return nil, "source.data is nil"
+   end
+   local str_date = decode_base64(source.data)
+   local data = cjson_safe.decode(str_date)
+   if not data then
+       return nil, "es[source.data] is not json"
+   elseif not data.data then
+       return nil, "content[data] is nil"
+   end
+   log(ERR,"handle[digest],id:" .. id )
+   return meta_dao:corpDigest(data)
+end
+
+
 
 local commands = {}
 commands[#commands + 1] = "link"
 commands[#commands + 1] = "content"
 commands[#commands + 1] = "channel"
 commands[#commands + 1] = "meta"
+commands[#commands + 1] = "digest"
 _M.commands = commands
 
 return _M
