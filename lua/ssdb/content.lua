@@ -25,14 +25,14 @@ for i = 1, #fields do
     _M._ONGLYS[cmd] = 1
 end
 
-function open( )
+function _M:open( )
    local client,err = ssdb_client:newClient();
    if err then
       return nil, err
    end
    return client
 end
-function close( client )
+function _M:close( client )
    if not client then
       return
    end
@@ -42,11 +42,11 @@ function close( client )
    end
 end
 
-function toSSDBKey( key )
+function _M:toSSDBKey( key )
   return "D_" .. key
 end
 
-function toJSONBean( sVal )
+function _M:toJSONBean( sVal )
    if not sVal then
       return nil
    end
@@ -91,23 +91,23 @@ function _M:set(content_id, content_val)
    if util_table.is_table(content_val) then
    	 content_val =  cjson_safe.encode(content_val)
    end
-   local client =  open();
-   local ret, err = client:set(toSSDBKey(content_id), content_val)
-   close(client)
+   local client =  self.open();
+   local ret, err = client:set(self.toSSDBKey(content_id), content_val)
+   self.close(client)
    return ret, err
 end
 
 function _M:get(content_id)
-   local client =  open();
-   local ret, err = client:get(toSSDBKey(content_id))
-   close(client)
+   local client =  self.open();
+   local ret, err = client:get(self.toSSDBKey(content_id))
+   self.close(client)
    if err then
       return nil, err
    end
    if ret == ngx.null then
      return nil
    end
-   return toJSONBean(ret)
+   return self.toJSONBean(ret)
 end
 
 
@@ -129,15 +129,15 @@ function _M:multi_get(keys)
       return {}
    end
    for i = 1, #keys do
-     keys[i] =  toSSDBKey(keys[i]) 
+     keys[i] =  self.toSSDBKey(keys[i]) 
    end
-   local client = open();
+   local client = self.open();
    local ret, err = client:multi_get(unpack(keys))
    if ret then
       local dest = {}
       for k,v in pairs(ret) do
            k = string.sub(k,3)
-           dest[k] =  toJSONBean(v)
+           dest[k] =  self.toJSONBean(v)
       end
       return dest
    else
