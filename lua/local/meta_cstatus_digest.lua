@@ -17,7 +17,7 @@ local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 local from_date = tonumber(args.from) or (ngx.time() - 2*60*60)
 
-local resp, status = meta_dao:searchUnDigest(from_date, 50)
+local resp, status = meta_dao:searchUnDigest(from_date, 100)
 -- log(ERR,"searchUnDigest:" .. cjson_safe.encode(resp) .. ",status:" .. status)
 local count = 0
 if resp and resp.hits and resp.hits.hits then
