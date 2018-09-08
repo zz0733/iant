@@ -76,10 +76,10 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
 # '
 # exit 0
 
-curl -X GET 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+curl -X GET 'http://127.0.0.1:9200/collect/table/_search?pretty' -d '
 {
   "from": 0,
-  "size": 1,
+  "size": 5,
   "query": {
       "match_all": {
       }
@@ -319,14 +319,6 @@ curl -XPOST 'http://127.0.0.1:9200/script/table/_search?pretty' -d '
 #     }
 # }
 # '
-
-curl -X POST 'http://127.0.0.1:9200/task/table/_delete_by_query?pretty' -d '
-{
-  "query": { 
-    "match_all" : {}
-  }
-}
-'
 
 exit 0
 curl -X GET 'http://127.0.0.1:9200/task/table/_search?pretty' -d '

@@ -110,6 +110,7 @@ elseif 'nexts' == method then
           if task.params then
              oParams = cjson_safe.decode(task.params)
           end
+          -- log(ERR,"task:" .. cjson_safe.encode(task))
           for _,v in ipairs(nextTasks) do
               -- log(ERR,"next:" .. v)
               local new_task = {}

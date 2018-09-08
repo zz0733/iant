@@ -1,4 +1,5 @@
 local util_table = require "util.table"
+local cjson_safe = require "cjson.safe"
 local _M = util_table.new_table(0, 1)
 _M._VERSION = '0.01'
 
@@ -42,6 +43,19 @@ function _M.shuffle(array)
         _M.swap(array, index, counter)
         counter = counter - 1
     end
+end
+
+function _M.emptyArray(inObj, ... )
+   if not inObj then
+    return 
+  end
+  local fields = {...}
+  for _,key in ipairs(fields) do
+    local val_obj = inObj[key]
+    if val_obj and util_table.is_empty_table(val_obj) then
+       inObj[key] = cjson_safe.empty_array
+    end
+  end
 end
 
 return _M

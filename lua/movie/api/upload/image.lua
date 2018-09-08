@@ -5,7 +5,7 @@ local cjson_safe = require "cjson.safe"
 local magick = require("magick.gmwand")
 local resty_string = require "resty.string"
 local util_context = require("util.context")
-local lfs = require("lfs")
+local lfs = require("lfs_ffi")
 
 local string_sub = string.sub
 local string_len = string.len

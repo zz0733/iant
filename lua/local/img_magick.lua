@@ -13,7 +13,7 @@ local args = ngx.req.get_uri_args()
 
 -- local http = require("socket.http")
 local magick = require("magick.gmwand")
-local lfs = require("lfs")
+local lfs = require("lfs_ffi")
 local ltn12 = require("ltn12")
 
 local http = require("resty.http")

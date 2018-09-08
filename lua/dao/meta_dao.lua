@@ -2,6 +2,7 @@ local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
 local util_context = require "util.context"
+local util_arrays = require "util.arrays"
 local util_magick = require "util.magick"
 local ESClient = require "es.ESClient"
 local ssdb_meta = require "ssdb.meta"
@@ -16,6 +17,9 @@ local decode_base64 = ngx.decode_base64
 
 local _M = ESClient:new({index = "meta", type = "table"})
 _M._VERSION = '0.01'
+
+
+local ARRAY_FIELDS = {"names","genres","actors","directors","images","digests","issueds","countrys","regions"}
 
 function _M:save_metas( docs)
     if not docs then
@@ -48,22 +52,26 @@ function _M:save_metas( docs)
 		  				-- dv.content = '/img/a9130b4f2d5e7acd.jpg'
 		  				if string.match(vimg,"^/img/") then
 		  					v.digests = hasDigests
+                            if (not hasMeta.cstatus ) or (bit.band(hasMeta.cstatus, 1) ~= 1) then
+                                hasMeta.cstatus = 1
+                            end
 		  					break
 		  				end
 		  			end
 	    		end
-	  			v.cstatus = nil
-                v.pstatus = nil
+                if (not v.cstatus) or (hasMeta.cstatus and v.cstatus < hasMeta.cstatus) then
+                    v.cstatus = hasMeta.cstatus
+                end
+                if (not v.pstatus) or (hasMeta.pstatus and v.pstatus < hasMeta.pstatus) then
+                    v.pstatus = hasMeta.pstatus
+                end
 	    	end
         end
-        if 'update' == cmd then
-        	ssdb_meta:update(v.id, v)
-        else
-        	ssdb_meta:set(v.id, v)
-        end
+        util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
+        ssdb_meta:set(v.id, v)
         v = ssdb_meta:removeOnlyFields(v)
     end
-	return self:bulk_docs(docs)
+	return self:index_docs(docs)
 end
 
 function _M:to_synonym(body, analyzer)
@@ -78,64 +86,82 @@ function _M:to_synonym(body, analyzer)
     return body
 end
 
-function _M:search(body)
+function _M:search(body, withSSDB )
  local resp, status = _M.client:search{
     index = _M.index,
     type = _M.type,
     body = body
   }
-  if resp and resp.hits and resp.hits.hits then
-    local hits = resp.hits.hits
-    for i,v in ipairs(hits) do
-        local _source = v._source
-        if _source and _source.digests then
-            local digests = _source.digests
-            for _,dv in ipairs(digests) do
-                -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-                if dv.sort == 'img' and string.match(dv.content,"^/img/") then
-                    dv.content = util_context.CDN_URI .. dv.content
-                end
-            end
+  
+  if withSSDB then
+    if resp and resp.hits and resp.hits.hits then
+        local hits = resp.hits.hits
+        local idArr = {}
+        for i,v in ipairs(hits) do
+            table.insert(idArr, v._id)
+        end
+        local meta_dict = ssdb_meta:multi_get(idArr)
+        for i,v in ipairs(hits) do
+            v._source = meta_dict[v._id]
         end
     end
-
   end
   return resp, status
 end
+      
 
 function _M:corpDigest(oDoc)
   local hasMeta = ssdb_meta:get(oDoc.id)
   if not hasMeta then
-     return nil, 'miss meta:' .. oDoc.id
+     return nil, 'miss meta:' .. cjson_safe.encode(oDoc)
   end
   local imgBody  = decode_base64(oDoc.image)
   local md5Val = util_magick.toMD5(imgBody)
   local img = util_magick.toImage(imgBody)
-  local imgName = md5Val .. oDoc.suffix
+  local imgName = md5Val ..".".. oDoc.suffix
   local width = oDoc.width or 0
   local height = oDoc.height or 0
   local saveName, err = util_magick.saveCorpImage(img, width, height, imgName)
   if err then
-    log(ERR,"saveCorpImage:" .. saveName .. ",cause:", err)
+    log(ERR,"saveCorpImageErr:" .. saveName .. ",cause:", err)
     return nil, err
   else 
-
     local cstatus = hasMeta.cstatus or 0
-    local es_body = {}
-    local upDoc = {}
-    upDoc.id = oDoc.id
-    upDoc.cstatus =  bit.bor(cstatus, 1)
-    table.insert(es_body, upDoc)
-    local resp, status = self:update_docs( es_body )
-    log(ERR,"corpDigest.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
-    if status == 200 then
-        if hasMeta.digests then
-           hasMeta.digests[oDoc.index] = '/img/' .. saveName
-        end
-        hasMeta.cstatus = upDoc.cstatus
-        ssdb_meta:set(oDoc.id, hasMeta)
+    hasMeta.cstatus = bit.bor(cstatus, 1)
+    if hasMeta.digests then
+       local index =  oDoc.index or 1
+       hasMeta.digests[index] = '/img/' .. saveName
     end
+    -- log(ERR,"corpDigest.hasMeta:" ..  cjson_safe.encode(hasMeta) .. ",old cstatus:" .. tostring(cstatus) )
+    local es_body = {}
+    table.insert(es_body, hasMeta)
+    local resp, status = self:save_metas( es_body )
+    log(ERR,"corpDigest.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
     return status, nil
   end
+end
+
+function _M:searchUnDigest(fromDate, size)
+    local must_array = {}
+    table.insert(must_array,{range = { utime = { gte = fromDate } }})
+
+    local must_nots = {}
+    -- 完成题图的所有取值，新增cstatus需改动
+    local cstatus_digests = {}
+    table.insert(cstatus_digests,1)
+    table.insert(cstatus_digests,2)
+    table.insert(must_nots,{terms = { cstatus = cstatus_digests }})
+
+    local body = {
+        size = size,
+        query = {
+            bool = {
+                must = must_array,
+                must_not = must_nots
+            }
+        }
+    }
+    local resp, status = _M:search(body, true)
+    return resp, status
 end
 return _M

@@ -22,3 +22,11 @@ curl -X POST 'http://127.0.0.1:9200/link/_delete_by_query?pretty' -d '
   }
 }
 '
+
+curl -X POST 'http://127.0.0.1:9200/task/table/_delete_by_query?pretty' -d '
+{
+  "query": { 
+    "match_all" : {}
+  }
+}
+'

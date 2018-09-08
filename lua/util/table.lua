@@ -28,7 +28,7 @@ end
 
 -- next 未被jit优化，少用
 function _M.is_empty_table(t)
-    if t == nil or next(t) == nil then
+    if _M.is_table(t) and (t == nil or  next(t) == nil) then
         return true
     else
         return false

@@ -131,7 +131,6 @@ function _M:multi_get(keys)
    for i = 1, #keys do
      keys[i] =  self:toSSDBKey(keys[i]) 
    end
-   log(ERR,'multi_get.keys:' .. cjson_safe.encode(keys))
    local client = self:open();
    local ret, err = client:multi_get(unpack(keys))
    if ret then

@@ -4,7 +4,7 @@ _M._VERSION = '0.01'
 
 local util_context = require("util.context")
 local magick = require("magick.gmwand")
-local lfs = require("lfs")
+local lfs = require("lfs_ffi")
 
 
 local resty_md5 = require "resty.md5"
@@ -12,6 +12,11 @@ local resty_string = require "resty.string"
 
 local string_sub = string.sub
 local string_len = string.len
+
+
+local log = ngx.log
+local ERR = ngx.ERR
+local CRIT = ngx.CRIT
 
 
 function _M.toImgSuffix(imgURL)
@@ -54,7 +59,6 @@ function _M.saveCorpImage(img, width, height, saveName)
 	 local newPath = sizeDir.."/".. saveName
 	 local resp, err = img:write(newPath)
 	 if err then
-	    log(ERR,"doc:".. tostring(v._id) .. "newPath:" .. newPath .. ",err:" .. tostring(err))
 	    return saveName, err
 	 else
 	 	return saveName

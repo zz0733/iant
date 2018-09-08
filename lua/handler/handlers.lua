@@ -121,8 +121,10 @@ _M.meta = function(id, source)
       end
       ensure_doc(v)
    end
-   log(ERR,"handle[meta],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
-   return meta_dao:save_metas(docs)
+   local resp, status = meta_dao:save_metas(docs)
+   log(ERR,"handle[meta],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs) )
+   log(ERR,"handle[meta],id:" .. id .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status)
+   return resp, status
 end
 
 
@@ -197,8 +199,9 @@ _M.digest = function(id, source)
    elseif not data.data then
        return nil, "content[data] is nil"
    end
+   local oDoc = data.data
    log(ERR,"handle[digest],id:" .. id )
-   return meta_dao:corpDigest(data)
+   return meta_dao:corpDigest(oDoc)
 end
 
 

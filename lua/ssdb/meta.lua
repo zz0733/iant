@@ -59,7 +59,6 @@ function _M:toJSONBean( sVal )
       local digests = jsonVal.digests
       for index,imgName in ipairs(digests) do
          -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-         log(ERR, "digests:" .. cjson_safe.encode(imgName))
          if string.match(imgName,"^/img/") then
             digests[index] = util_context.CDN_URI .. imgName
          end

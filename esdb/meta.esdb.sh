@@ -4,8 +4,8 @@ curl -XPUT http://localhost:9200/meta_v2
 
 #取别名
 curl -XPUT http://localhost:9200/meta_v2/_alias/meta 
-# curl -XGET http://localhost:9200/content_v1/_alias/*
-# curl -XGET http://localhost:9200/*/_alias/content
+# curl -XGET http://localhost:9200/meta_v1/_alias/*
+# curl -XGET http://localhost:9200/*/_alias/meta
 
 
 curl -XPOST 'localhost:9200/meta_v2/_close'
