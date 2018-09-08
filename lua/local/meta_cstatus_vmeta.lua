@@ -16,37 +16,42 @@ message.code = 200
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 local from_date = tonumber(args.from) or (ngx.time() - 2*60*60)
-
-local resp, status = meta_dao:searchUnDigest(from_date, 50)
--- log(ERR,"searchUnDigest:" .. cjson_safe.encode(resp) .. ",status:" .. status)
+-- 在线视频
+local media = 1
+-- "豆瓣": 0,
+-- "爱奇艺": 1,
+-- "腾讯视频": 2,
+-- "优酷视频": 3
+local source_arr = {}
+table.insert(source_arr, 1)
+-- table.insert(source_arr, 2)
+-- table.insert(source_arr, 3)
+local source_type_dict = {
+  [1] = "odflv-video-cache",
+  [2] = "",
+  [3] = ""
+}
+local resp, status = meta_dao:searchUnVideo(from_date, media, source_arr, 50)
+log(ERR,"searchUnVideo:" .. cjson_safe.encode(resp) .. ",status:" .. status)
 local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
    local taskArr = {}
    for mi,mv in ipairs(hits) do
-     local _source = mv._source
-     local digests = _source.digests
-     -- log(ERR,"digests:" .. cjson_safe.encode(digests) )
-     if digests then
-       for di,dv in ipairs(digests) do
-         if string.match(dv,"^/img/") or string.find(dv, util_context.CDN_URI, 1, true) then
-            local metaDocs = {}
-            table.insert(metaDocs, mv)
-            meta_dao.save_metas(metaDocs)
-            break
-         end
-         local digestTask = {}
-         digestTask.type = 'common-image'
-         digestTask.url = dv
-         digestTask.level = 2
+       local _source = mv._source
+       local destType = source_type_dict[_source.source]
+       if not destType or destType == "" then
+          log(ERR,"ignoreUnkownType,id:" .. mv._id .. ",meta:" .. cjson_safe.encode(mv))
+       else
+         local newTask = {}
+         newTask.type = destType
+         newTask.url = _source.url
+         newTask.level = 1
          local params = {}
          params.metaId = mv._id
-         params.index = di
-         digestTask.params = params
-         table.insert(taskArr, digestTask)
-         break
+         newTask.params = params
+         table.insert(taskArr, newTask)
        end
-     end
    end
    count = #taskArr
    local tresp, tstatus = task_dao:insert_tasks( taskArr )

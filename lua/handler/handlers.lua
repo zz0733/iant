@@ -94,7 +94,7 @@ _M.content = function(id, source)
    	  end
       ensure_doc(v)
    end
-   log(ERR,"handle[content],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   log(ERR,"handle_content,id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
    return content_dao:save_docs(docs)
 end
 
@@ -122,8 +122,7 @@ _M.meta = function(id, source)
       ensure_doc(v)
    end
    local resp, status = meta_dao:save_metas(docs)
-   log(ERR,"handle[meta],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs) )
-   log(ERR,"handle[meta],id:" .. id .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status)
+   log(ERR,"handle_meta,id:" .. id .. ",docs:" ..  cjson_safe.encode(docs) )
    return resp, status
 end
 
@@ -156,7 +155,7 @@ _M.link = function(id, source)
         ensure_doc(newDoc)
         table.insert(newDocs,newDoc)
    end
-   log(ERR,"handle[link],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   log(ERR,"handle_link,id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
    return link_dao:bulk_docs(newDocs)
 end
 
@@ -182,7 +181,7 @@ _M.channel = function(id, source)
          v.id = tostring(type) .. tostring(id)
         end
    end
-   log(ERR,"handle[channel],id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   log(ERR,"handle_channel,id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
    return channel_dao:save_docs(docs)
 end
 
@@ -200,10 +199,27 @@ _M.digest = function(id, source)
        return nil, "content[data] is nil"
    end
    local oDoc = data.data
-   log(ERR,"handle[digest],id:" .. id )
+   log(ERR,"handle_digest,id:" .. id )
    return meta_dao:corpDigest(oDoc)
 end
 
+_M.vmeta = function(id, source)
+   if not source then
+       return nil, "source is nil"
+   elseif not source.data then
+       return nil, "source.data is nil"
+   end
+   local str_date = decode_base64(source.data)
+   local data = cjson_safe.decode(str_date)
+   if not data then
+       return nil, "es[source.data] is not json"
+   elseif not data.data then
+       return nil, "content[data] is nil"
+   end
+   local oDoc = data.data
+   log(ERR,"handle_vmeta,id:" .. id )
+   return meta_dao:fillVideoMeta(oDoc)
+end
 
 
 local commands = {}
@@ -212,6 +228,7 @@ commands[#commands + 1] = "content"
 commands[#commands + 1] = "channel"
 commands[#commands + 1] = "meta"
 commands[#commands + 1] = "digest"
+commands[#commands + 1] = "vmeta"
 _M.commands = commands
 
 return _M

@@ -43,30 +43,37 @@ function _M:save_metas( docs)
     	  end
     	end
     	local cmd = v[self.bulk_cmd_field]
-        if v.digests then
-        	local hasMeta = ssdb_meta:get(v.id)
-	    	if hasMeta then
-	    		if hasMeta.digests then
-	    			local hasDigests = hasMeta.digests
-		  			for kk,vimg in ipairs(hasDigests) do
-		  				-- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-		  				if string.match(vimg,"^/img/") then
-		  					v.digests = hasDigests
+        local hasMeta = ssdb_meta:get(v.id)
+        if hasMeta then
+            -- 在线视频元数据
+            v.vmeta = v.vmeta or hasMeta.vmeta
+            if (not v.cstatus) or (hasMeta.cstatus and v.cstatus < hasMeta.cstatus) then
+                v.cstatus = hasMeta.cstatus
+                if v.digests and hasMeta.digests then
+                    local hasDigests = hasMeta.digests
+                    for kk,vimg in ipairs(hasDigests) do
+                        -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
+                        if string.match(vimg,"^/img/") or string.find(vimg, util_context.CDN_URI, 1, true) then
+                            v.digests = hasDigests
                             if (not hasMeta.cstatus ) or (bit.band(hasMeta.cstatus, 1) ~= 1) then
                                 hasMeta.cstatus = 1
                             end
-		  					break
-		  				end
-		  			end
-	    		end
-                if (not v.cstatus) or (hasMeta.cstatus and v.cstatus < hasMeta.cstatus) then
-                    v.cstatus = hasMeta.cstatus
+                            break
+                        end
+                    end
+                    for dkk,dimg in ipairs(v.digests) do
+                        v.digests[dkk] = ngx.re.sub(dimg, util_context.CDN_URI, "")
+                    end
                 end
-                if (not v.pstatus) or (hasMeta.pstatus and v.pstatus < hasMeta.pstatus) then
-                    v.pstatus = hasMeta.pstatus
-                end
-	    	end
+            end
+            if (not v.pstatus) or (hasMeta.pstatus and v.pstatus < hasMeta.pstatus) then
+                v.pstatus = hasMeta.pstatus
+            end
+            if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
+               v.pstatus = 1
+            end
         end
+        
         util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
         ssdb_meta:set(v.id, v)
         v = ssdb_meta:removeOnlyFields(v)
@@ -132,6 +139,7 @@ function _M:corpDigest(oDoc)
        local index =  oDoc.index or 1
        hasMeta.digests[index] = '/img/' .. saveName
     end
+
     -- log(ERR,"corpDigest.hasMeta:" ..  cjson_safe.encode(hasMeta) .. ",old cstatus:" .. tostring(cstatus) )
     local es_body = {}
     table.insert(es_body, hasMeta)
@@ -141,16 +149,61 @@ function _M:corpDigest(oDoc)
   end
 end
 
+function _M:fillVideoMeta(oDoc)
+    local hasMeta = ssdb_meta:get(oDoc.id)
+    if not hasMeta or not oDoc.vmeta then
+       return nil, 'miss vmeta:' .. cjson_safe.encode(oDoc)
+    end
+    hasMeta.vmeta = oDoc.vmeta
+    local cstatus = hasMeta.cstatus or 0
+    hasMeta.cstatus = bit.bor(cstatus, 2)
+
+    -- log(ERR,"corpDigest.hasMeta:" ..  cjson_safe.encode(hasMeta) .. ",old cstatus:" .. tostring(cstatus) )
+    local es_body = {}
+    table.insert(es_body, hasMeta)
+    local resp, status = self:save_metas( es_body )
+    log(ERR,"fillVideoMeta.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
+    return resp, status
+end
+
 function _M:searchUnDigest(fromDate, size)
     local must_array = {}
     table.insert(must_array,{range = { utime = { gte = fromDate } }})
 
     local must_nots = {}
-    -- 完成题图的所有取值，新增cstatus需改动
+    -- 完成题图的所有取值，新增cstatus需改动,cstatus=1
     local cstatus_digests = {}
     table.insert(cstatus_digests,1)
-    table.insert(cstatus_digests,2)
+    table.insert(cstatus_digests,3)
     table.insert(must_nots,{terms = { cstatus = cstatus_digests }})
+
+    local body = {
+        size = size,
+        query = {
+            bool = {
+                must = must_array,
+                must_not = must_nots
+            }
+        }
+    }
+    local resp, status = _M:search(body, true)
+    return resp, status
+end
+
+function _M:searchUnVideo(fromDate, media, sources, size)
+    local must_array = {}
+    table.insert(must_array,{range = { utime = { gte = fromDate } }})
+    table.insert(must_array,{match = { media = media }})
+    if not util_table.is_empty_table(sources) then
+       table.insert(must_array,{terms = { source = sources }})
+    end
+
+    local must_nots = {}
+    -- 获取视频资源所有取值，新增cstatus需改动,cstatus=2
+    local cstatus_video_arr = {}
+    table.insert(cstatus_video_arr,2)
+    table.insert(cstatus_video_arr,3)
+    table.insert(must_nots,{terms = { cstatus = cstatus_video_arr }})
 
     local body = {
         size = size,
