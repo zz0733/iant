@@ -10,6 +10,7 @@ local template = require "resty.template"
 local content_dao = require "dao.content_dao"
 local channel_dao = require "dao.channel_dao"
 local link_dao = require "dao.link_dao"
+local meta_dao = require "dao.meta_dao"
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -96,9 +97,26 @@ function makeOrderContents( ... )
 	torrent.img = 'https://icdn.lezomao.com/img/hssyc33.png'
 	-- order_contents[5] = torrent
 	order_contents = {}
-    local resp, status = link_dao:latest_feeds_video(0, 20)
+    -- local resp, status = link_dao:latest_feeds_video(0, 20)
+    local must_arr = {}
+    table.insert(must_arr, { match = { media = 1}})
+    local body = {
+	  from = 0,
+	  size = 20,
+	  sort = {
+	    ctime = {
+	      order = "desc"
+	    }
+	  },
+	  query = {
+	    bool = {
+		    must = must_arr
+	    }
+	  }
+	}
+    local resp, status = meta_dao:search(body, true)
+    log(ERR,'meta_dao:search.resp:' .. cjson_safe.encode(resp))
     if resp and resp.hits then
-    	local hits = resp.hits.hits
     	local hits = resp.hits.hits
     	local keepCount = 2
     	local shuffleArr = util_arrays.sub(hits, keepCount + 1)
@@ -110,6 +128,7 @@ function makeOrderContents( ... )
             if index <= keepCount then
             	if hits[index] then
             		_source = hits[index]._source
+            		_source.id = hits[index]._id
             	end
             else
             	local destIndex = index - keepCount
@@ -118,11 +137,20 @@ function makeOrderContents( ... )
             	end
             end
     		if _source then
-				local torrent = _source
-				torrent.id = _source.lid
-				torrent.link = 'https://youku163.zuida-bofang.com/20180706/8863_f778785e/index.m3u8'
-				torrent.img = _source.feedimg
+				local torrent = {}
+				torrent.video = 1
+				torrent.id = _source.id
+				torrent.title = _source.title
+				torrent.link = _source.vmeta.url
+				torrent.img = _source.digests[1]
 				order_contents[order] = torrent
+
+				log(ERR,'torrent:' .. cjson_safe.encode(torrent))
+				-- local torrent = _source
+				-- torrent.id = _source.lid
+				-- torrent.link = 'https://youku163.zuida-bofang.com/20180706/8863_f778785e/index.m3u8'
+				-- torrent.img = _source.feedimg
+				-- order_contents[order] = torrent
 			end
     	end
     end

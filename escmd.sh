@@ -172,7 +172,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "query": {
       "match": {
-        "_id":"542974163"
+        "_id":"549354085"
       }
   }
 }
@@ -720,6 +720,35 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
         },
         "size": 2000
       }
+    }
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
+{
+  "size": 5,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "terms": {
+            "cstatus": [
+              1,2,3
+            ]
+          }
+        },
+        {
+          "match": {
+            "media": 1
+          }
+        },
+        {
+          "match": {
+            "title": "海贼王853"
+          }
+        }
+      ]
     }
   }
 }

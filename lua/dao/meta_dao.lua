@@ -47,17 +47,15 @@ function _M:save_metas( docs)
         if hasMeta then
             -- 在线视频元数据
             v.vmeta = v.vmeta or hasMeta.vmeta
-            if (not v.cstatus) or (hasMeta.cstatus and v.cstatus < hasMeta.cstatus) then
-                v.cstatus = hasMeta.cstatus
+            if (not v.cstatus) then
+                v.cstatus = hasMeta.cstatus or 0
                 if v.digests and hasMeta.digests then
                     local hasDigests = hasMeta.digests
                     for kk,vimg in ipairs(hasDigests) do
                         -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
                         if string.match(vimg,"^/img/") or string.find(vimg, util_context.CDN_URI, 1, true) then
                             v.digests = hasDigests
-                            if (not hasMeta.cstatus ) or (bit.band(hasMeta.cstatus, 1) ~= 1) then
-                                hasMeta.cstatus = 1
-                            end
+                            v.cstatus = bit.bor(v.cstatus, 1)
                             break
                         end
                     end
