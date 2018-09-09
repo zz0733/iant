@@ -67,7 +67,7 @@ function _M:toJSONBean( sVal )
 end
 
 function _M:hasOnlyFields(fields)
-   if not fields then
+   if not fields or fields == ngx.null or fields == nil then
       -- all fields
       return true
    end

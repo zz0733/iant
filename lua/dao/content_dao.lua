@@ -309,8 +309,10 @@ function _M:addOnlySSDBFields( resp, fields )
 			local merge_source = es_source
 			if ssdb_source then
 				merge_source = ssdb_source
-				for k,v in pairs(es_source) do
-					merge_source[k] = v
+				if es_source then
+					for k,v in pairs(es_source) do
+						merge_source[k] = v
+					end
 				end
 			end
 			local select_source = nil

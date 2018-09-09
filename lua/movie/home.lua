@@ -120,6 +120,7 @@ function makeOrderContents( ... )
     		if _source then
 				local torrent = _source
 				torrent.id = _source.lid
+				torrent.link = 'https://youku163.zuida-bofang.com/20180706/8863_f778785e/index.m3u8'
 				torrent.img = _source.feedimg
 				order_contents[order] = torrent
 			end
