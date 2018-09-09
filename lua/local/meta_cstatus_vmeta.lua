@@ -31,7 +31,7 @@ local source_type_dict = {
   [2] = "",
   [3] = ""
 }
-local resp, status = meta_dao:searchUnVideo(from_date, media, source_arr, 500)
+local resp, status = meta_dao:searchUnVideo(from_date, media, source_arr, 100)
 log(ERR,"searchUnVideo:" .. cjson_safe.encode(resp) .. ",status:" .. status)
 local count = 0
 if resp and resp.hits and resp.hits.hits then
