@@ -13,7 +13,7 @@ if not ok or type(new_tab) ~= "function" then
     new_tab = function (narr, nrec) return {} end
 end
 local _M = new_tab(0, 2)
-_M._VERSION = '0.01'
+_M._VERSION = '0.02'
 
 local fields = {
     "digests", "url", "html", "fill"
@@ -47,7 +47,7 @@ function _M:toSSDBKey( key )
   return "M_" .. tostring(key)
 end
 
-function _M:toJSONBean( sVal )
+function _M:toMetaBean( sVal )
    if not sVal then
       return nil
    end
@@ -57,10 +57,14 @@ function _M:toJSONBean( sVal )
    end
    if jsonVal and jsonVal.digests then
       local digests = jsonVal.digests
-      for index,imgName in ipairs(digests) do
+      for index,imgURL in ipairs(digests) do
          -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-         if string.match(imgName,"^/img/") then
-            digests[index] = util_context.CDN_URI .. imgName
+         if util_table.is_table(imgURL) then
+            log(ERR,"table imgURL:" .. cjson_safe.encode(imgURL) .. ",sVal:" .. sVal)
+         else
+           if string.match(imgURL,"^/img/") then
+              digests[index] = util_context.CDN_URI .. imgURL
+           end
          end
       end
    end
@@ -108,7 +112,7 @@ function _M:get(content_id)
    if ret == ngx.null then
      return nil
    end
-   return self:toJSONBean(ret)
+   return self:toMetaBean(ret)
 end
 
 
@@ -138,7 +142,7 @@ function _M:multi_get(keys)
       local dest = {}
       for k,v in pairs(ret) do
            k = string.sub(k,3)
-           dest[k] =  self:toJSONBean(v)
+           dest[k] =  self:toMetaBean(v)
       end
       return dest
    else
