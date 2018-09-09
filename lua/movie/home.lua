@@ -100,6 +100,7 @@ function makeOrderContents( ... )
     -- local resp, status = link_dao:latest_feeds_video(0, 20)
     local must_arr = {}
     table.insert(must_arr, { match = { media = 1}})
+    table.insert(must_arr, { match = { pstatus = 1}})
     local body = {
 	  from = 0,
 	  size = 20,
@@ -115,14 +116,14 @@ function makeOrderContents( ... )
 	  }
 	}
     local resp, status = meta_dao:search(body, true)
-    log(ERR,'meta_dao:search.resp:' .. cjson_safe.encode(resp))
+    -- log(ERR,'meta_dao:search.resp:' .. cjson_safe.encode(resp))
     if resp and resp.hits then
     	local hits = resp.hits.hits
     	local keepCount = 2
     	local shuffleArr = util_arrays.sub(hits, keepCount + 1)
     	util_arrays.shuffle(shuffleArr)
     	local orderArr = {1,3,5,7,9}
-    	local orderArr = {1,3}
+    	local orderArr = {1,3,5}
     	for index, order in pairs(orderArr) do
     		local _source = nil;
             if index <= keepCount then
