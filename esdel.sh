@@ -23,6 +23,26 @@ curl -X POST 'http://127.0.0.1:9200/link/_delete_by_query?pretty' -d '
 }
 '
 
+ curl -XPOST 'http://127.0.0.1:9200/task/table/_delete_by_query?pretty' -d '
+{
+  "query": {
+    "bool": {
+      "filter": {
+        "term": {
+          "level": 0
+        }
+      },
+      "must":{
+        "terms":{
+          "type":["douban-movie-detail"]
+        }
+      }
+    }
+  },
+  "size": 100000
+}
+ '
+
 curl -X POST 'http://127.0.0.1:9200/task/table/_delete_by_query?pretty' -d '
 {
   "query": { 

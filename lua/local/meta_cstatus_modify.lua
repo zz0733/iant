@@ -44,8 +44,6 @@ local resp, status = meta_dao:search(body, true)
 local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
-   local modifyArr = {}
-   local copyMetaArr = {}
    for mi,mv in ipairs(hits) do
        local _source = mv._source
        if _source.vmeta and _source.vmeta.url then
@@ -64,15 +62,17 @@ if resp and resp.hits and resp.hits.hits then
              table.insert(copyMeta.prefixs, vmetaURL)
              ssdb_vmeta:set(mv._id, copyMeta)
          end
+         count = count + 1
+
          _source.vmeta = nil
          _source._cover = 1
+         local modifyArr = {}
          table.insert(modifyArr, _source)
+         local str_modify_arr = cjson_safe.encode(modifyArr)
+         local tresp, tstatus = meta_dao:save_metas( modifyArr )
+         log(ERR,"modifyCStatus.modifyArr:" .. str_modify_arr )
        end
    end
-   count = #modifyArr
-   local str_modify_arr = cjson_safe.encode(modifyArr)
-   local tresp, tstatus = meta_dao:save_metas( modifyArr )
-   log(ERR,"modifyCStatus.modifyArr:" .. str_modify_arr )
 end
 message.count = count
 local body = cjson_safe.encode(message)
