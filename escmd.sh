@@ -753,3 +753,27 @@ curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
   }
 }
 '
+
+curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
+{
+  "size": 5,
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "terms": {
+            "pstatus": [
+              1
+            ]
+          }
+        },
+        {
+          "match": {
+            "media": 1
+          }
+        }
+      ]
+    }
+  }
+}
+'

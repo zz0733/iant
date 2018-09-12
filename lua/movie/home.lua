@@ -143,7 +143,8 @@ function makeOrderContents( ... )
 				torrent.id = _source.id
 				torrent.title = _source.title
 				-- torrent.link = _source.vmeta.url
-				torrent.link = util_context.CDN_URI .. "/vmeta/".. _source.id .. ".m3u8"
+				-- torrent.link = util_context.CDN_URI .. "/vmeta/".. _source.id .. ".m3u8"
+				torrent.link = "/vmeta/".. _source.id .. ".m3u8"
 				torrent.img = _source.digests[1]
 				order_contents[order] = torrent
 
