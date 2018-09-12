@@ -1,9 +1,11 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
+local util_movie = require "util.movie"
 local util_context = require "util.context"
 local task_dao = require "dao.task_dao"
 local meta_dao = require "dao.meta_dao"
+local ssdb_vmeta = require "ssdb.vmeta"
 
 local bit = require("bit") 
 
@@ -43,12 +45,29 @@ local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
    local modifyArr = {}
+   local copyMetaArr = {}
    for mi,mv in ipairs(hits) do
        local _source = mv._source
-       _source.id = mv._id
-       _source.cstatus = bit.bxor(_source.cstatus, 2)
-       _source.pstatus = 0
-       table.insert(modifyArr, _source)
+       if _source.vmeta and _source.vmeta.url then
+         local vmeta = _source.vmeta
+          _source.id = mv._id
+         if string.match(_source.vmeta.url, "/odflv/api.php") then
+            _source.cstatus = bit.bxor(_source.cstatus, 2)
+            _source.pstatus = 0
+         else
+             local vmetaURL = vmeta.url
+             local vmetaCode = util_movie.toUnsignHashCode(vmetaURL)
+             local copyMeta = {}
+             copyMeta.site = vmeta.site
+             copyMeta.body = '#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n@' .. vmetaCode .. "@"
+             copyMeta.prefixs = {}
+             table.insert(copyMeta.prefixs, vmetaURL)
+             ssdb_vmeta:set(mv._id, copyMeta)
+         end
+         _source.vmeta = nil
+         _source._cover = 1
+         table.insert(modifyArr, _source)
+       end
    end
    count = #modifyArr
    local str_modify_arr = cjson_safe.encode(modifyArr)

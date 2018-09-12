@@ -42,36 +42,37 @@ function _M:save_metas( docs)
     	  	 end
     	  end
     	end
-    	local cmd = v[self.bulk_cmd_field]
-        local hasMeta = ssdb_meta:get(v.id)
-        if hasMeta then
-            -- 在线视频元数据
-            v.vmeta = v.vmeta or hasMeta.vmeta
-            if (not v.cstatus) then
-                v.cstatus = hasMeta.cstatus or 0
-                if v.digests and hasMeta.digests then
-                    local hasDigests = hasMeta.digests
-                    for kk,vimg in ipairs(hasDigests) do
-                        -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-                        if string.match(vimg,"^/img/") or string.find(vimg, util_context.CDN_URI, 1, true) then
-                            v.digests = hasDigests
-                            v.cstatus = bit.bor(v.cstatus, 1)
-                            break
+        if not v._cover or v._cover ~= 1 then
+            local hasMeta = ssdb_meta:get(v.id)
+            if hasMeta then
+                -- 在线视频元数据
+                v.vmeta = v.vmeta or hasMeta.vmeta
+                if (not v.cstatus) then
+                    v.cstatus = hasMeta.cstatus or 0
+                    if v.digests and hasMeta.digests then
+                        local hasDigests = hasMeta.digests
+                        for kk,vimg in ipairs(hasDigests) do
+                            -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
+                            if string.match(vimg,"^/img/") or string.find(vimg, util_context.CDN_URI, 1, true) then
+                                v.digests = hasDigests
+                                v.cstatus = bit.bor(v.cstatus, 1)
+                                break
+                            end
+                        end
+                        for dkk,dimg in ipairs(v.digests) do
+                            v.digests[dkk] = ngx.re.sub(dimg, util_context.CDN_URI, "")
                         end
                     end
-                    for dkk,dimg in ipairs(v.digests) do
-                        v.digests[dkk] = ngx.re.sub(dimg, util_context.CDN_URI, "")
-                    end
+                end
+                if (not v.pstatus) or (hasMeta.pstatus and v.pstatus < hasMeta.pstatus) then
+                    v.pstatus = hasMeta.pstatus
+                end
+                if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
+                   v.pstatus = 1
                 end
             end
-            if (not v.pstatus) or (hasMeta.pstatus and v.pstatus < hasMeta.pstatus) then
-                v.pstatus = hasMeta.pstatus
-            end
-            if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
-               v.pstatus = 1
-            end
         end
-        
+        v._cover = nil
         util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
         ssdb_meta:set(v.id, v)
         v = ssdb_meta:removeOnlyFields(v)

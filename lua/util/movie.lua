@@ -41,6 +41,13 @@ function _M.toHashCode(source)
     return hash
 end
 
+function _M.toUnsignHashCode(source)
+    local hash = _M.toHashCode(source)
+    local sCode = tostring(hash)
+    sCode = sCode:gsub("^-","0")  
+    return sCode
+end
+
 function _M.iterator_regex( iterator,index,limit )
     local matchArr = {}
     if not iterator then

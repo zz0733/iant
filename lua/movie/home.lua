@@ -2,7 +2,7 @@ local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_arrays = require "util.arrays"
 local util_time = require "util.time"
-local context = require "util.context"
+local util_context = require "util.context"
 local util_string = require "util.string"
 
 local template = require "resty.template"
@@ -142,7 +142,8 @@ function makeOrderContents( ... )
 				torrent.video = 1
 				torrent.id = _source.id
 				torrent.title = _source.title
-				torrent.link = _source.vmeta.url
+				-- torrent.link = _source.vmeta.url
+				torrent.link = util_context.CDN_URI .. "/vmeta/".. _source.id .. ".m3u8"
 				torrent.img = _source.digests[1]
 				order_contents[order] = torrent
 
@@ -193,7 +194,7 @@ end
 
 local content_doc = {}
 content_doc.header = buildHeader()
-context.withGlobal(content_doc)
+util_context.withGlobal(content_doc)
 content_doc.data  = data or {}
 content_doc.playing_movie = playing_movie
 content_doc.qWord  = randomWord
