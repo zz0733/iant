@@ -33,6 +33,8 @@ local vmeta, err = ssdb_vmeta:get(metaId)
 if not vmeta then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
+if not vmeta.body and vmeta.url then
+	vmeta.body = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. vmeta.url
+end
 -- log(ERR,"vmeta:" .. cjson_safe.encode(vmeta))
 ngx.say(vmeta.body)
--- ngx.say("#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\nhttps://video.fjhps.com/20180501/XMOKD4BQ/index.m3u8")

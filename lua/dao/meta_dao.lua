@@ -90,26 +90,36 @@ end
       
 
 function _M:corpDigest(oDoc)
-  local hasMeta = ssdb_meta:get(oDoc.id)
-  if not hasMeta then
-     return nil, 'miss meta:' .. cjson_safe.encode(oDoc)
-  end
-  local imgBody  = decode_base64(oDoc.image)
-  local md5Val = util_magick.toMD5(imgBody)
-  local img = util_magick.toImage(imgBody)
-  local imgName = md5Val ..".".. oDoc.suffix
-  local width = oDoc.width or 0
-  local height = oDoc.height or 0
-  local saveName, err = util_magick.saveCorpImage(img, width, height, imgName)
-  if err then
-    log(ERR,"saveCorpImageErr:" .. saveName .. ",cause:", err)
-    return nil, err
-  else 
+    local hasMeta = ssdb_meta:get(oDoc.id)
+    if not hasMeta then
+       return nil, 'miss meta:' .. cjson_safe.encode(oDoc)
+    end
+    local imgBody  = decode_base64(oDoc.image)
+    local md5Val = util_magick.toMD5(imgBody)
+    local img = util_magick.toImage(imgBody)
+    if not img then
+       return "illegal image:" .. oDoc.id, 400
+    end
+    local imgName = md5Val ..".".. oDoc.suffix
+    local sizeArr = oDoc.sizes or {}
+    if oDoc.width and oDoc.height then
+       table.insert(sizeArr, {width=oDoc.width, height=oDoc.height})
+    end
+    for _, size in ipairs(sizeArr) do
+       local width = size.width or 0
+       local height = size.height or 0
+       local saveName, err = util_magick.saveCorpImage(img, width, height, imgName)
+       if err then
+          log(ERR,"saveCorpImageErr:" .. saveName .. ",width:" .. width ..",height:"..height.. ",cause:", err)
+          return err, 500
+       end
+    end
+ 
     local cstatus = hasMeta.cstatus or 0
     hasMeta.cstatus = bit.bor(cstatus, 1)
     if hasMeta.digests then
        local index =  oDoc.index or 1
-       hasMeta.digests[index] = '/img/' .. saveName
+       hasMeta.digests[index] = '/img/' .. imgName
     end
     -- log(ERR,"corpDigest.hasMeta:" ..  cjson_safe.encode(hasMeta) .. ",old cstatus:" .. tostring(cstatus) )
     local es_body = {}
@@ -117,7 +127,6 @@ function _M:corpDigest(oDoc)
     local resp, status = self:save_metas( es_body )
     log(ERR,"corpDigest.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
     return resp,status
-  end
 end
 
 function _M:fillVideoMeta(oDoc)
@@ -132,7 +141,7 @@ function _M:fillVideoMeta(oDoc)
     local cstatus = hasMeta.cstatus or 0
     hasMeta.cstatus = bit.bor(cstatus, 2)
     hasMeta.vmeta = nil
-    
+
     local es_body = {}
     table.insert(es_body, hasMeta)
     local resp, status = self:save_metas( es_body )
