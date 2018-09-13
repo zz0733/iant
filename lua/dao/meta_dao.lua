@@ -158,6 +158,8 @@ function _M:searchUnDigest(fromDate, size)
     local cstatus_digests = {}
     table.insert(cstatus_digests,1)
     table.insert(cstatus_digests,3)
+    table.insert(cstatus_video_arr,6)
+    table.insert(cstatus_video_arr,7)
     table.insert(must_nots,{terms = { cstatus = cstatus_digests }})
 
     local body = {
@@ -186,6 +188,8 @@ function _M:searchUnVideo(fromDate, media, sources, size)
     local cstatus_video_arr = {}
     table.insert(cstatus_video_arr,2)
     table.insert(cstatus_video_arr,3)
+    table.insert(cstatus_video_arr,6)
+    table.insert(cstatus_video_arr,7)
     table.insert(must_nots,{terms = { cstatus = cstatus_video_arr }})
 
     local body = {
