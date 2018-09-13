@@ -6,6 +6,7 @@ local util_arrays = require "util.arrays"
 local util_magick = require "util.magick"
 local ESClient = require "es.ESClient"
 local ssdb_meta = require "ssdb.meta"
+local ssdb_vmeta = require "ssdb.vmeta"
 
 local bit = require("bit") 
 
@@ -42,37 +43,9 @@ function _M:save_metas( docs)
     	  	 end
     	  end
     	end
-        if not v._cover or v._cover ~= 1 then
-            local hasMeta = ssdb_meta:get(v.id)
-            if hasMeta then
-                -- 在线视频元数据
-                v.vmeta = v.vmeta or hasMeta.vmeta
-                if (not v.cstatus) then
-                    v.cstatus = hasMeta.cstatus or 0
-                    if v.digests and hasMeta.digests then
-                        local hasDigests = hasMeta.digests
-                        for kk,vimg in ipairs(hasDigests) do
-                            -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-                            if string.match(vimg,"^/img/") or string.find(vimg, util_context.CDN_URI, 1, true) then
-                                v.digests = hasDigests
-                                v.cstatus = bit.bor(v.cstatus, 1)
-                                break
-                            end
-                        end
-                        for dkk,dimg in ipairs(v.digests) do
-                            v.digests[dkk] = ngx.re.sub(dimg, util_context.CDN_URI, "")
-                        end
-                    end
-                end
-                if (not v.pstatus) or (hasMeta.pstatus and v.pstatus < hasMeta.pstatus) then
-                    v.pstatus = hasMeta.pstatus
-                end
-                if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
-                   v.pstatus = 1
-                end
-            end
+        if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
+           v.pstatus = 1
         end
-        v._cover = nil
         util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
         ssdb_meta:set(v.id, v)
         v = ssdb_meta:removeOnlyFields(v)
@@ -138,13 +111,12 @@ function _M:corpDigest(oDoc)
        local index =  oDoc.index or 1
        hasMeta.digests[index] = '/img/' .. saveName
     end
-
     -- log(ERR,"corpDigest.hasMeta:" ..  cjson_safe.encode(hasMeta) .. ",old cstatus:" .. tostring(cstatus) )
     local es_body = {}
     table.insert(es_body, hasMeta)
     local resp, status = self:save_metas( es_body )
     log(ERR,"corpDigest.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
-    return status, nil
+    return resp,status
   end
 end
 
@@ -153,11 +125,14 @@ function _M:fillVideoMeta(oDoc)
     if not hasMeta or not oDoc.vmeta then
        return nil, 'miss vmeta:' .. cjson_safe.encode(oDoc)
     end
-    hasMeta.vmeta = oDoc.vmeta
+    local ret, err = ssdb_vmeta:set(oDoc.id, oDoc.vmeta)
+    if err then
+        return err, 500
+    end
     local cstatus = hasMeta.cstatus or 0
     hasMeta.cstatus = bit.bor(cstatus, 2)
-
-    -- log(ERR,"corpDigest.hasMeta:" ..  cjson_safe.encode(hasMeta) .. ",old cstatus:" .. tostring(cstatus) )
+    hasMeta.vmeta = nil
+    
     local es_body = {}
     table.insert(es_body, hasMeta)
     local resp, status = self:save_metas( es_body )
