@@ -94,6 +94,12 @@ end
 
 function _M:set(content_id, content_val)
    if util_table.is_table(content_val) then
+      local digests = content_val.digests
+      for index,imgURL in ipairs(digests) do
+         if not util_table.is_table(imgURL) then
+           digests[index] = ngx.re.sub(imgURL, util_context.CDN_URI, "")
+         end
+      end
    	 content_val =  cjson_safe.encode(content_val)
    end
    local client =  self:open();
