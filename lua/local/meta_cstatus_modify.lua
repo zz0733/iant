@@ -62,16 +62,16 @@ if resp and resp.hits and resp.hits.hits then
              table.insert(copyMeta.prefixs, vmetaURL)
              ssdb_vmeta:set(mv._id, copyMeta)
          end
-         count = count + 1
-
          _source.vmeta = nil
-         _source._cover = 1
-         local modifyArr = {}
-         table.insert(modifyArr, _source)
-         local str_modify_arr = cjson_safe.encode(modifyArr)
-         local tresp, tstatus = meta_dao:save_metas( modifyArr )
-         log(ERR,"modifyCStatus.modifyArr:" .. str_modify_arr )
+       else
+         _source.cstatus = bit.bor(_source.cstatus, 4)
        end
+       count = count + 1
+       local modifyArr = {}
+       table.insert(modifyArr, _source)
+       local str_modify_arr = cjson_safe.encode(modifyArr)
+       local tresp, tstatus = meta_dao:save_metas( modifyArr )
+       log(ERR,"modifyCStatus.modifyArr:" .. str_modify_arr )
    end
 end
 message.count = count
