@@ -16,6 +16,7 @@ message.code = 200
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 local from_date = tonumber(args.from) or (ngx.time() - 2*60*60)
+local size = tonumber(args.size) or (100)
 -- 在线视频
 local media = 1
 -- "豆瓣": 0,
@@ -31,8 +32,8 @@ local source_type_dict = {
   [2] = "",
   [3] = ""
 }
-local resp, status = meta_dao:searchUnVideo(from_date, media, source_arr, 100)
-log(ERR,"searchUnVideo:" .. cjson_safe.encode(resp) .. ",status:" .. status)
+local resp, status = meta_dao:searchUnVideo(from_date, media, source_arr, size)
+-- log(ERR,"searchUnVideo:" .. cjson_safe.encode(resp) .. ",status:" .. status)
 local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
