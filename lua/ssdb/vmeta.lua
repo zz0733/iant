@@ -59,7 +59,7 @@ function _M:toVMetaBean( sVal )
       local digests = jsonVal.digests
       for index, prefix in ipairs(jsonVal.prefixs) do 
          local sCode =  util_movie.toUnsignHashCode(prefix)
-         jsonVal.body = ngx.re.sub(jsonVal.body, "@" .. sCode .. "@", prefix)
+         jsonVal.body = ngx.re.gsub(jsonVal.body, "@" .. sCode .. "@", prefix)
          jsonVal.body = ngx.re.sub(jsonVal.body, "#EXT-X-TARGETDURATION:10", "#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608")
       end
    end
