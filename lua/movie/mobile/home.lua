@@ -112,7 +112,7 @@ function makeOrderContents( ... )
 	    }
 	  }
 	}
-    local resp, status = meta_dao:search(body, true)
+    local resp, status = meta_dao:search(body, false)
     -- log(ERR,'meta_dao:search.resp:' .. cjson_safe.encode(resp))
     if resp and resp.hits then
     	local hits = resp.hits.hits
@@ -125,7 +125,7 @@ function makeOrderContents( ... )
     		local _source = nil;
             if index <= keepCount then
             	if hits[index] then
-            		_source = hits[index]._source
+            		_source = meta_dao:get(hits[index]._id)
             		_source.id = hits[index]._id
             	end
             else
