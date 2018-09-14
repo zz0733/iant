@@ -43,6 +43,24 @@ function _M:save_metas( docs)
     	  	 end
     	  end
     	end
+        if (not v.cstatus) then
+           -- 内容重复抓取更新
+           local hasMeta = ssdb_meta:get(v.id)
+            if hasMeta then
+                v.cstatus = hasMeta.cstatus or 0
+                if v.digests and hasMeta.digests then
+                    local hasDigests = hasMeta.digests
+                    for kk,vimg in ipairs(hasDigests) do
+                        -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
+                        if string.match(vimg,"^/img/") or string.find(vimg, util_context.CDN_URI, 1, true) then
+                            v.digests = hasDigests
+                            v.cstatus = bit.bor(v.cstatus, 1)
+                            break
+                        end
+                    end
+                end
+            end
+        end
         if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
            v.pstatus = 1
         end
