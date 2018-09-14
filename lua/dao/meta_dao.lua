@@ -176,8 +176,7 @@ function _M:searchUnDigest(fromDate, size)
     local cstatus_digests = {}
     table.insert(cstatus_digests,1)
     table.insert(cstatus_digests,3)
-    table.insert(cstatus_video_arr,6)
-    table.insert(cstatus_video_arr,7)
+    table.insert(cstatus_digests,7)
     table.insert(must_nots,{terms = { cstatus = cstatus_digests }})
 
     local body = {
