@@ -107,7 +107,7 @@ function _M:search(body, withSSDB )
 end
 
 function _M:get(id)
-  local hasMeta, status = ssdb_meta:get(oDoc.id)
+  local hasMeta, status = ssdb_meta:get(id)
 end
       
 
