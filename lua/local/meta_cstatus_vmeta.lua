@@ -37,7 +37,6 @@ local resp, status = meta_dao:searchUnVideo(from_date, media, source_arr, size)
 local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
-   local taskArr = {}
    for mi,mv in ipairs(hits) do
        local _source = mv._source
        local destType = source_type_dict[_source.source]
@@ -51,12 +50,14 @@ if resp and resp.hits and resp.hits.hits then
          local params = {}
          params.metaId = mv._id
          newTask.params = params
+         local taskArr = {}
          table.insert(taskArr, newTask)
+         local tresp, tstatus = task_dao:insert_tasks( taskArr )
+         log(ERR,"searchUnVideo.taskArr:" .. cjson_safe.encode(taskArr) )
+         count = count + 1
        end
    end
-   count = #taskArr
-   local tresp, tstatus = task_dao:insert_tasks( taskArr )
-   log(ERR,"searchUnDigest.taskArr:" .. cjson_safe.encode(taskArr) )
+   
 end
 message.count = count
 local body = cjson_safe.encode(message)
