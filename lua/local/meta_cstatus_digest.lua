@@ -16,13 +16,13 @@ message.code = 200
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 local from_date = tonumber(args.from) or (ngx.time() - 2*60*60)
+local size = tonumber(args.size) or (100)
 
-local resp, status = meta_dao:searchUnDigest(from_date, 100)
+local resp, status = meta_dao:searchUnDigest(from_date, size)
 -- log(ERR,"searchUnDigest:" .. cjson_safe.encode(resp) .. ",status:" .. status)
 local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
-   local taskArr = {}
    for mi,mv in ipairs(hits) do
      local _source = mv._source
      local digests = _source.digests
@@ -43,14 +43,15 @@ if resp and resp.hits and resp.hits.hits then
          params.metaId = mv._id
          params.index = di
          digestTask.params = params
+         local taskArr = {}
          table.insert(taskArr, digestTask)
+         local tresp, tstatus = task_dao:insert_tasks( taskArr )
+         log(ERR,"searchUnDigest.taskArr:" .. cjson_safe.encode(taskArr) )
+         count = count + 1
          break
        end
      end
    end
-   count = #taskArr
-   local tresp, tstatus = task_dao:insert_tasks( taskArr )
-   log(ERR,"searchUnDigest.taskArr:" .. cjson_safe.encode(taskArr) )
 end
 message.count = count
 local body = cjson_safe.encode(message)
