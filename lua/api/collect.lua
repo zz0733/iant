@@ -1,7 +1,8 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
-local collect_dao = require "dao.collect_dao"
+local handlers = require "handler.handlers"
+
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -12,7 +13,6 @@ local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 local exptime = 600
 
-local shared_dict = ngx.shared.shared_dict
 
 local message = {}
 message.code = 200
@@ -31,13 +31,42 @@ if not body_json then
 	return
 end
 if 'insert' == method  then
-	local resp, status = collect_dao:insert_docs(body_json )
-    -- message.data = resp
-    if status == 200 then
-    	message.code = 200
-    else
-    	message.code = 500
-    	message.error = status
-    end
+	-- local resp, status = collect_dao:insert_docs(body_json )
+	function can_insert( task , data, status )
+		if not task or not data or status ~= 1 then
+			return false
+		end
+		local handlers = data.handlers
+		if not handlers or #handlers < 1 then
+	      return false
+		end
+		if #handlers == 1 and handlers[1] == "nexts" then
+			return false
+		end
+		return true
+	end
+
+    local count = 0
+    message.code = 200
+	for _,v in ipairs(body_json) do
+		local task = v.task
+	    local data = v.data
+	    local status = v.status
+	    if can_insert(task, data, status) then
+	    	local source = {}
+	    	source.type = task.type
+	    	source.task = task
+		    source.data = data
+		    local cur_handlers = data.handlers
+			for _, cmd in ipairs(cur_handlers) do
+		         local resp, estatus = handlers.execute(cmd, task.id, source)
+		         if not resp then
+		         	 message.code = 500
+		         	 message.error = estatus
+		             log(CRIT,"handlers[" .. cmd .."],id:" .. tostring(task.id) .. ",status:" .. tostring(estatus) )
+		         end
+			end
+	    end
+	end
     ngx.say(cjson_safe.encode(message))
 end

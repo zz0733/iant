@@ -76,8 +76,9 @@ _M.content = function(id, source)
    elseif not source.data then
    	 return nil, "source.data is nil"
    end
-   local str_date = decode_base64(source.data)
-   local data = cjson_safe.decode(str_date)
+   -- local str_date = decode_base64(source.data)
+   -- local data = cjson_safe.decode(str_date)
+   local data = source.data
    log(ERR,"handle[content],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
    if not data then
    	 return nil, "es[source.data] is not json"
@@ -105,8 +106,9 @@ _M.meta = function(id, source)
    elseif not source.data then
      return nil, "source.data is nil"
    end
-   local str_date = decode_base64(source.data)
-   local data = cjson_safe.decode(str_date)
+   -- local str_date = decode_base64(source.data)
+   -- local data = cjson_safe.decode(str_date)
+   local data = source.data
    log(ERR,"handle[meta],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
    if not data then
      return nil, "es[source.data] is not json"
@@ -133,8 +135,9 @@ _M.link = function(id, source)
    elseif not source.data then
        return nil, "source.data is nil"
    end
-   local str_date = decode_base64(source.data)
-   local data = cjson_safe.decode(str_date)
+   -- local str_date = decode_base64(source.data)
+   -- local data = cjson_safe.decode(str_date)
+   local data = source.data
    log(ERR,"handle[link],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
    if not data then
        return nil, "es[source.data] is not json"
@@ -165,8 +168,9 @@ _M.channel = function(id, source)
    elseif not source.data then
        return nil, "source.data is nil"
    end
-   local str_date = decode_base64(source.data)
-   local data = cjson_safe.decode(str_date)
+   -- local str_date = decode_base64(source.data)
+   -- local data = cjson_safe.decode(str_date)
+   local data = source.data
    if not data then
        return nil, "es[source.data] is not json"
    elseif not data.data then
@@ -191,8 +195,9 @@ _M.digest = function(id, source)
    elseif not source.data then
        return nil, "source.data is nil"
    end
-   local str_date = decode_base64(source.data)
-   local data = cjson_safe.decode(str_date)
+   -- local str_date = decode_base64(source.data)
+   -- local data = cjson_safe.decode(str_date)
+   local data = source.data
    if not data then
        return nil, "es[source.data] is not json"
    elseif not data.data then
@@ -209,8 +214,9 @@ _M.vmeta = function(id, source)
    elseif not source.data then
        return nil, "source.data is nil"
    end
-   local str_date = decode_base64(source.data)
-   local data = cjson_safe.decode(str_date)
+   -- local str_date = decode_base64(source.data)
+   -- local data = cjson_safe.decode(str_date)
+   local data = source.data
    if not data then
        return nil, "es[source.data] is not json"
    elseif not data.data then
