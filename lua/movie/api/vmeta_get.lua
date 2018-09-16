@@ -39,7 +39,7 @@ end
 if not vmeta.body and vmeta.url then
 	vmeta.body = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. vmeta.url
 end
-if string.match(vmeta.body, "/odflv/api.php") then
+if string.match(vmeta.body, "/odflv/api.php") or string.match(vmeta.body, "/404.mp4") then
 	local hasMeta = ssdb_meta:get(metaId)
     hasMeta.id = metaId
     hasMeta.cstatus = bit.bxor(hasMeta.cstatus or 0, 2)

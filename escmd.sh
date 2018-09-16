@@ -728,13 +728,14 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
 {
   "size": 5,
+  "sort":{"epindex":{"order":"desc"}},
   "query": {
     "bool": {
       "must": [
         {
           "terms": {
-            "cstatus": [
-              1,2,3
+            "pstatus": [
+              1
             ]
           }
         },
