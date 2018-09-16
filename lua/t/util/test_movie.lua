@@ -16,6 +16,15 @@ function tb:test_0equals()
     end
 end
 
-
+function tb:test_match()
+    local body = "http://data.video.iqiyi.com/videos/v0/20150416/b9/60/b44c5df8ad4da4b3b1b71c9b44e0440e.ts?qypid=103541100"
+    local res = string.match(body,"%.ts%?")
+    local expect = ".ts?"
+    if not res  then
+       error(body .. ",string.match expect["..expect.."],but[" .. tostring(res) .. "]")
+    else
+       self:log(body .. ",string.match expect["..expect.."],and actual[" .. tostring(res) .. "]")
+    end
+end
 
 tb:run()
