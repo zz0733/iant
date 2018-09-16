@@ -25,9 +25,9 @@ function tb:test_match()
     else
        self:log(body .. ",string.match expect["..expect.."],and actual[" .. tostring(res) .. "]")
     end
-    local sourcURL = "http://data.video.iqiyi.com"
-    local actual = ngx.re.gsub(sourcURL, "^http:", "https:")
-    local expect = "https://data.video.iqiyi.com"
+    local sourcURL = "http://data.video.iqiyi.com\nhttp://data.video.iqiyi.com2"
+    local actual = ngx.re.gsub(sourcURL, "http://", "//")
+    local expect = "//data.video.iqiyi.com\n//data.video.iqiyi.com2"
     if expect ~=  actual then
        error(body .. ",ngx.re.gsub expect["..expect.."],but[" .. tostring(actual) .. "]")
     else
