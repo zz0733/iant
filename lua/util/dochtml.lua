@@ -10,12 +10,10 @@ local CRIT = ngx.CRIT
 
 function _M.detail_header(doc)
    local header = {}
-   local id = doc._id
-   local source = doc._source
-   local article = source.article
-   local media = article.media
-   local directors = source.directors
-   local actors = source.actors
+   local id = doc.id
+   local media = doc.media
+   local directors = doc.directors
+   local actors = doc.actors
    local keywords = "狸猫资讯、lezomao"
    local description = "狸猫资讯(LezoMao.com)"
    if directors then
@@ -28,8 +26,8 @@ function _M.detail_header(doc)
    	  keywords = keywords .. ",主演：" .. str_actors
    	  description = description .. ",主演：" .. str_actors
    end
-   local title = article.title or ""
-   local year = article.year or 1970
+   local title = doc.title or ""
+   local year = doc.year or 1970
    local head_title = title
    if string.match(title, tostring(year)) then
    	keywords = keywords .."," ..  title

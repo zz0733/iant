@@ -163,6 +163,17 @@ while true do
                         end
                    end
                 end
+                if source.evaluates then
+                   for ei,ev in ipairs(source.evaluates) do
+                       for nk,nv in pairs(ev) do
+                           if nk ~= "source" and ev.source then
+                              local numKey = ev.source .. "_" .. nk
+                              metaDoc[numKey] = nv
+                           end
+                       end
+                   end
+                end
+                
                 metaDoc.url = article.url
                 if source.contents then
                     for ci,cv in ipairs(source.contents) do

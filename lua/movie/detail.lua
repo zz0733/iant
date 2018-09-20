@@ -3,7 +3,9 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local dochtml = require "util.dochtml"
 local context = require "util.context"
+local util_const = require "util.const"
 local ssdb_content = require "ssdb.content"
+local ssdb_meta = require "ssdb.meta"
 
 local template = require "resty.template"
 
@@ -34,10 +36,43 @@ if not content_id then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local has_content = ssdb_content:get(content_id)
+-- local has_content = ssdb_content:get(content_id)
+local has_content = ssdb_meta:get(content_id)
 if not has_content then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
+
+    -- oDoc.id = ""
+    -- oDoc.albumId = ""
+    -- oDoc.title = ""
+    -- oDoc.media = 0
+    -- oDoc.sort = 0
+    -- oDoc.lang = 0
+    -- oDoc.source = 0
+    -- oDoc.cost = 0
+    -- oDoc.space = 0
+    -- oDoc.year = 0
+    -- oDoc.imdb = 0
+    -- oDoc.season = 0
+    -- oDoc.episode = 0
+    -- oDoc.epcount = 0
+    -- oDoc.epindex = 0
+    -- oDoc.cstatus = 0
+    -- oDoc.pstatus = 0
+    -- oDoc.vip = 0
+    -- oDoc.issueds = []
+    -- oDoc.regions = []
+    -- oDoc.countrys = []
+    -- oDoc.genres = []
+    -- oDoc.names = []
+    -- oDoc.directors = []
+    -- oDoc.actors = []
+
+    -- // not index
+    -- oDoc.digests = []
+    -- oDoc.url = ""
+    -- oDoc.html = ""
+    -- oDoc.fill = {}
 
 local content_doc = { ["_id"] = content_id }
 content_doc._source = has_content
@@ -79,21 +114,25 @@ local media_names = {
    tv = "电视剧",
    movie = "电影"
 }
-local media = source.article.media
-local year = source.article.year
-crumbs[#crumbs + 1] = {name = media_names[media], link1 = "/media/" .. media  ..".html"}
-if issueds then
-	crumbs[#crumbs + 1] = {name = issueds.region, link = "/movie/region/" .. issueds.region  ..".html"}
+local sortName = util_const.index2Name("SORT_DICT",has_content.sort)
+has_content.sortName = sortName
+local year = has_content.year
+local regions = has_content.regions
+table.insert(crumbs , {name = sortName, link1 = "/media/" .. sortName  ..".html"})
+if regions and regions[1] then
+	local region = regions[1]
+	table.insert(crumbs , {name = region, link = "/movie/region/" .. region  ..".html"})
 end
-crumbs[#crumbs + 1] = {name = year, link1 = "/movie/year/" .. tostring(year)  ..".html"}
-content_doc.header = dochtml.detail_header(content_doc)
-context.withGlobal(content_doc)
-content_doc.crumbs   = crumbs
+table.insert(crumbs , {name = year, link1 = "/movie/year/" .. tostring(year)  ..".html"})
+has_content.header = dochtml.detail_header(has_content)
+context.withGlobal(has_content)
+has_content.crumbs   = crumbs
 -- content_doc.link_hits  = link_hits
-content_doc.recmd_map  = recmd_map
-content_doc.config  = {
+has_content.recmd_map  = recmd_map
+has_content.config  = {
 	jiathis_uid = context.jiathis_uid,
 	weibo_uid = context.weibo_uid,
 	weibo_app_key = context.weibo_app_key
 }
-template.render("detail.html", content_doc)
+log(ERR,"has_content:" .. cjson_safe.encode(has_content))
+template.render("detail.html", has_content)

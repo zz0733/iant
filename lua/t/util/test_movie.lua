@@ -33,6 +33,7 @@ function tb:test_match()
     else
        self:log(body .. ",ngx.re.gsub expect["..expect.."],and actual[" .. tostring(actual) .. "]")
     end
+    self:log("type(sourcURL)=" .. type(sourcURL))
 end
 
 tb:run()

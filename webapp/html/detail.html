@@ -26,14 +26,14 @@
 		   {% end %}
 		    
 		{% end %}
-        <li class="active"><strong>{*_source.article.title*}</strong></li>
+        <li class="active"><strong>{{title}}</strong></li>
       </ol>
 
       <div class="container-fluid">
 					<div class="row top-margin">
 						  <div class="col-xs-12 col-sm-4 col-md-3 movie-left">
 						       {%
-						          local digests = _source.digests
+						          local digests = digests
 								  local str_img
 				                  if digests then
 				                     for _,v in ipairs(digests) do
@@ -51,24 +51,24 @@
 		                          end
 						       %}
 						       <img src="{{str_img}}" 
-						       class="img-thumbnail movie-img" alt="{*_source.article.title*}"/>
+						       class="img-thumbnail movie-img" alt="{{title}}"/>
 					      </div>
 					      <div class="col-xs-12 col-sm-8 col-md-9 movie-right">
 							      <ul class="list-group">
 								    <li class="list-group-item">
 										    <h1 class="movie-title-margin">
-											  {*_source.article.title*}
-										      <span class="badge movie-badge">{*_source.article.year*}</span>
+											  {{title}}
+										      <span class="badge movie-badge">{{year}}</span>
 										    </h1>
 								    <li class="list-group-item tag-info">
 								       <strong>导演：</strong>
-								       {% local directors = _source.directors or {}; %}
+								       {% local directors = directors or {}; %}
 								       {* table.concat(directors,' ') *}
 								    </li>
 								    <li class="list-group-item tag-info">
 								       <strong>主演：</strong>
 								       {%
-								         local actors = _source.actors or {} 
+								         local actors =  actors or {} 
 								         local suffix = ""
 										 if #actors > 10 then
 										   local inputs = actors
@@ -84,22 +84,23 @@
 								    </li>
 								    <li class="list-group-item tag-info">
 								      <strong>类型：</strong>
-								      {% local genres = _source.genres or {} %}
+								      {% local genres =  genres or {} %}
 								      {*   table.concat(genres,' ') *}
 								    </li>
 								    <li class="list-group-item tag-info">
 								    	<strong>上映：</strong>
 								        {%
-								          local issueds = _source.issueds or {};
+								          local issueds = issueds or {};
+								          local countrys = countrys or {};
 								          for i,v in ipairs(issueds) do
 											 if i > 1 then 
 											  %}  &nbsp  {%
 											 end 
-											 local issued = v.time;  
+											 local issued = v;  
 											 if string.len(tostring(issued)) > 10 then 
 											    issued = math.modf( issued / 1000)  
 											 end 
-											 %} {{v.country}}( {* os.date("%Y-%m-%d",issued) *}) {%
+											 %} {{countrys[i]}}( {* os.date("%Y-%m-%d",issued) *}) {%
 										   end 
 										%}
 								    </li>
@@ -110,33 +111,29 @@
 			</div>
 		</div>
 
-       <input type="hidden" id="did" name="did" value="{{context._id}}">
-       <input type="hidden" id="title" name="title" value="{{context._source.article.title}}">
+       <input type="hidden" id="did" name="did" value="{{id}}">
+       <input type="hidden" id="title" name="title" value="{{title}}">
        <div class="container top-margin">
 		   <div class="story">
 
 				<div class="story-header">
 				<div class="share-group">
 				                {%
-				                  local media_names = { 
-									   tv = "电视剧",
-									   movie = "电影"
-								  }
-				                  local directors = _source.directors or {}; 
-				                  local media = _source.article.media
+
+				                  local directors =  directors or {}; 
 				                  local content = ""
+				                  local sortName = sortName or ""
 								  if directors and directors[1] then
 								     content = directors[1] .. "导演的"
-									 content = content .. media_names[media]
+									 content = content .. sortName
 								  end
-							      content = content .. "《" .. _source.article.title .."》"
-				                  local evaluates = _source.evaluates;
-				                  if evaluates and evaluates[1] then
-				                       local rate = evaluates[1].rate
+							      content = content .. "《" .. title .."》"
+				                  if douban_rate then
+				                       local rate = douban_rate
 				                       content = content .. ",豆瓣评分" .. rate;
 				                  end
-				                  if _source.article.cost then
-					                   content = content .. ",约" .. _source.article.cost .."分钟";
+				                  if  cost then
+					                   content = content .. ",约" .. cost .."分钟";
 				                  end
 								  content = content .. "，免费资源为你所用."
 								  local encode_title = string.encodeURI(content)
@@ -151,15 +148,7 @@
 					  </h4>
 				</div>
 				<div class="story-body">
-				  {% 
-				  for index, page in ipairs(context._source.contents) do 
-				     if page.sort == "img" then
-				      %} <img src="{{page.text}}" >  {%
-				     else 
-				      %} <p>{{page.text}}</p>  {%
-				     end 
-				  end 
-				  %}
+				  <p>{{html}}</p>
 				 </div>
 			</div>
 		</div>

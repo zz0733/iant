@@ -116,6 +116,9 @@ function _M:corpDigest(oDoc)
     if not hasMeta then
        return nil, 'miss meta:' .. cjson_safe.encode(oDoc)
     end
+    if not oDoc.image or type(oDoc.image)~="string" then
+       return nil, 'miss oDoc.image or bad value:' .. cjson_safe.encode(oDoc)
+    end
     local imgBody  = decode_base64(oDoc.image)
     local md5Val = util_magick.toMD5(imgBody)
     local img = util_magick.toImage(imgBody)
