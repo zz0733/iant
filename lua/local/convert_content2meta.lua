@@ -6,6 +6,7 @@ local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require("dao.content_dao")
 local meta_dao = require("dao.meta_dao")
+local ssdb_vmeta = require("ssdb.vmeta")
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()

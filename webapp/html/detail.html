@@ -37,12 +37,10 @@
 								  local str_img
 				                  if digests then
 				                     for _,v in ipairs(digests) do
-				                        if v.sort == 'img' then
-				                           str_img = v.content
-				                           str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-				                           str_img = ngx.re.sub(str_img, "http:", "https:")
-				                           break
-				                        end
+				                        str_img = v
+			                            str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+			                            str_img = ngx.re.sub(str_img, "http:", "https:")
+			                            break
 				                     end
 				                  end
 				                  if str_img and not string.match(str_img,"^http") then
