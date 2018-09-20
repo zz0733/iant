@@ -128,8 +128,8 @@
 									 content = content .. sortName
 								  end
 							      content = content .. "《" .. title .."》"
-				                  if douban_rate then
-				                       local rate = douban_rate
+				                  if douban and douban.rate then
+				                       local rate = douban.rate
 				                       content = content .. ",豆瓣评分" .. rate;
 				                  end
 				                  if  cost then

@@ -111,7 +111,6 @@ while true do
          log(ERR,"scrollId["..tostring(scrollId) .. "],total:" .. total ..",hits:" .. tostring(#hits) 
                 .. ",scan:" .. tostring(scan_count)..",index:"..index..",cost:" .. cost)
          -- match_handler.build_similars(hits)
-         local metaDocArr = {}
          for _,v in ipairs(hits) do
              local source = v._source
              if  source  and source.article then
@@ -165,12 +164,8 @@ while true do
                 end
                 if source.evaluates then
                    for ei,ev in ipairs(source.evaluates) do
-                       for nk,nv in pairs(ev) do
-                           if nk ~= "source" and ev.source then
-                              local numKey = ev.source .. "_" .. nk
-                              metaDoc[numKey] = nv
-                           end
-                       end
+                       metaDoc[ev.source] = ev
+                       ev.source = nil
                    end
                 end
                 
@@ -185,14 +180,16 @@ while true do
                 end
                 -- metaDoc.fill = {}
                 log(ERR, "toMetaDoc:" .. cjson_safe.encode(metaDoc))
+                local metaDocArr = {}
+                local id = metaDoc.id
                 table_insert(metaDocArr, metaDoc)
+                local mresp, mstatus = meta_dao:save_metas(metaDocArr)
+                aCount = aCount + 1
+                log(ERR, "save_metas,count:" .. aCount .. ",id:" .. id .. ",mresp:" .. cjson_safe.encode(mresp) .. ",status:" .. tostring(mstatus))
              else
                 log(ERR, "sourceErr:" .. v._id .. ",hit:" .. cjson_safe.encode(v))
              end
-            aCount = aCount + 1
          end
-         local mresp, mstatus = meta_dao:save_metas(metaDocArr)
-         log(ERR, "save_metas,count:" .. #metaDocArr .. ",mresp:" .. cjson_safe.encode(mresp) .. ",status:" .. tostring(mstatus))
          scrollId = data["_scroll_id"]
      end
 end

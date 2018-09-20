@@ -16,7 +16,7 @@ local _M = new_tab(0, 2)
 _M._VERSION = '0.02'
 
 local fields = {
-    "digests", "url", "html", "fill"
+    "digests", "url", "html", "fill","douban"
 }
 
 
