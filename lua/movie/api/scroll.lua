@@ -41,10 +41,15 @@ if method == "home" then
   local must_arr = {}
   table.insert(must_arr, { match = { media = 0 }})
   table.insert(must_arr, { match = { pstatus = 1 }})
+
+  local sort_arr = {}
+  table.insert(sort_arr, { issueds = { order = "desc" }})
+  -- table.insert(sort_arr, { year = { order = "desc" }})
+  table.insert(sort_arr, { utime = { order = "desc" }})
   local body = {
       from = from,
       size = size,
-      sort = { issueds = { order = "desc"}, year = { order = "desc"}},
+      sort = sort_arr
       query = {
         bool = {
            filter = filters,
@@ -54,7 +59,7 @@ if method == "home" then
     }
   -- resp, status = content_dao:search(body)
   resp, status = meta_dao:search(body, true)
-  log(ERR,"resp:"..tostring(cjson_safe.encode(resp)) .. ",status:" ..tostring(status))
+  -- log(ERR,"resp:"..tostring(cjson_safe.encode(resp)) .. ",status:" ..tostring(status))
   if resp and resp.hits and resp.hits.total > 0  then
     local hits = resp.hits
     local data = {}
