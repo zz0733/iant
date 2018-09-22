@@ -49,7 +49,7 @@ if method == "home" then
   local body = {
       from = from,
       size = size,
-      sort = sort_arr
+      sort = sort_arr,
       query = {
         bool = {
            filter = filters,
