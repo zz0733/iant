@@ -4,6 +4,7 @@ local util_movie = require "util.movie"
 local util_context = require "util.context"
 local ssdb_vmeta = require "ssdb.vmeta"
 local ssdb_meta = require "ssdb.meta"
+local meta_dao = require "dao.meta_dao"
 
 local bit = require("bit") 
 

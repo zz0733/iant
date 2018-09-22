@@ -53,10 +53,15 @@
                         <div class="title-box">
                             <div class="row">
                                 <div class="col-md-8">
-                                   <a href="/movie/torrent/{{v.id}}.html" target="_blank" class="atitle" 
-                              src="{{v.link}}">
-                                    {{v.title}}
-                                  </a>
+                                  {%
+                                    if v.albumId then
+                                     %}
+                                     <a href="/movie/album/{{v.albumId}}.html" target="_blank" class="atitle"  src="{{v.link}}">
+                                      {{v.title}}
+                                      </a>
+                                     {%
+                                    end
+                                  %}
                                 </div>
                                 <div class="col-md-4">
                                     <div class="video-stat-box">

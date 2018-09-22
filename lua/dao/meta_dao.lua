@@ -26,7 +26,7 @@ function _M:save_metas( docs)
     if not docs then
       return nil, 400
     end
-    for _,v in ipairs(docs) do
+    for mi,v in ipairs(docs) do
     	if v.regions then
     	  local regions = v.regions
     	  for k,v in ipairs(regions) do
@@ -66,7 +66,8 @@ function _M:save_metas( docs)
         end
         util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
         ssdb_meta:set(v.id, v)
-        v = ssdb_meta:removeOnlyFields(v)
+        local esDoc = ssdb_meta:makeESDoc(v)
+        docs[mi] = esDoc
     end
 	return self:index_docs(docs)
 end

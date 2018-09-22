@@ -80,6 +80,10 @@ if resp and resp.status ~= 200 then
 end
 local message = cjson_safe.decode(resp.body)
 local data = message.data
+if not data then
+	log(ERR,"miss data, cause:"..tostring(cjson_safe.encode(message)))
+	return ngx.exit(500)
+end
 -- log(ERR,"data:"..tostring(cjson_safe.encode(message)))
 -- log(ERR,"randomWord:"..tostring(randomWord))
 local randomWord
@@ -143,6 +147,7 @@ function makeOrderContents( ... )
 				torrent.video = 1
 				torrent.id = _source.id
 				torrent.title = _source.title
+				torrent.albumId = _source.albumId
 				-- torrent.link = _source.vmeta.url
 				-- torrent.link = util_context.CDN_URI .. "/vmeta/".. _source.id .. ".m3u8"
 				torrent.link = "/vmeta/".. _source.id .. ".m3u8"

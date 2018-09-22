@@ -15,16 +15,27 @@ end
 local _M = new_tab(0, 2)
 _M._VERSION = '0.02'
 
-local fields = {
-    "digests", "url", "html", "fill","douban"
+
+local ES_FIELDS = {
+    "id", "albumId", "title", "media","sort",
+    "lang", "source", "cost", "space","year",
+    "epindex","cstatus","pstatus","vip",
+    "issueds","regions","genres",
+    "names","directors","actors",
+    "ctime","utime"
 }
 
+-- local SSDB_FIELDS = {}
+-- table.insert(SSDB_FIELDS, "douban")
+-- table.insert(SSDB_FIELDS, "digests")
+-- for _,iv in ipairs(ES_FIELDS) do
+--   table.insert(SSDB_FIELDS, v)
+-- end
 
-_M._ONGLYS = {}
-for i = 1, #fields do
-    local cmd = fields[i]
-    _M._ONGLYS[cmd] = 1
-end
+-- local fields = {
+--     "digests", "url", "html", "fill","douban"
+-- }
+
 
 function _M:open( )
    local client,err = ssdb_client:newClient();
@@ -71,25 +82,15 @@ function _M:toMetaBean( sVal )
    return jsonVal
 end
 
-function _M:hasOnlyFields(fields)
-   if not fields then
-      -- all fields
-      return true
+function _M:makeESDoc(inDoc, rmField)
+   local indexDoc = {}
+   for i,v in ipairs(ES_FIELDS) do
+       indexDoc[v] = inDoc[v]
+       if rmField then
+          inDoc[v] = nil
+       end
    end
-   for i = 1, #fields do
-     local fld = fields[i]
-     if _M._ONGLYS[fld] then
-        return true
-     end
-   end
-   return false
-end
-
-function _M:removeOnlyFields(content_val)
-   for k,v in pairs(_M._ONGLYS) do
-      content_val[k] = nil
-   end
-   return content_val
+   return indexDoc
 end
 
 function _M:set(content_id, content_val)
@@ -119,20 +120,6 @@ function _M:get(content_id)
      return nil
    end
    return self:toMetaBean(ret)
-end
-
-
-
-function _M:update(content_id, content)
-   local has_content_val = self:get(content_id)
-   local save_content = content
-   if has_content_val then
-      save_content = has_content_val
-      for k,v in pairs(content) do
-         save_content[k] = v
-      end
-   end
-   return self:set(content_id, save_content)
 end
 
 function _M:multi_get(keys)
