@@ -3,11 +3,14 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local context = require "util.context"
 local util_time = require "util.time"
+local util_const = require "util.const"
 
 local decodeURI = ngx.unescape_uri
 
 local content_dao = require "dao.content_dao"
 local ssdb_content = require "ssdb.content"
+
+local meta_dao = require "dao.meta_dao"
 
 local ngx_re_sub = ngx.re.sub
 
@@ -31,34 +34,35 @@ if method == "home" then
   local from = offset
   local size = 30
   local filters = {}
-  local filter = {range = {["article.year"] = { lte = year }}}
+  local filter = {range = { year = { lte = year }}}
   table.insert(filters, filter)
-  filter = {range = {["lpipe.time"] = { lte = ltime }}}
+  filter = {range = { issueds = { lte = ltime }}}
   table.insert(filters, filter)
   local body = {
       from = from,
       size = size,
-      sort = { ["lpipe.time"] = { order = "desc"},["article.year"] = { order = "desc"}},
+      sort = { issueds = { order = "desc"}, year = { order = "desc"}},
       query = {
         bool = {
         filter = filters,
         must = {
-             range = {
-              lcount = { gte = 1}
+             match = {
+              pstatus = 1
             }
          }
         }
       }
     }
-  resp, status = content_dao:search(body)
-  -- log(ERR,"resp:"..tostring(cjson_safe.encode(resp)) .. ",status:" ..tostring(status))
+  -- resp, status = content_dao:search(body)
+  resp, status = meta_dao:search(body, true)
+  log(ERR,"resp:"..tostring(cjson_safe.encode(resp)) .. ",status:" ..tostring(status))
   if resp and resp.hits and resp.hits.total > 0  then
     local hits = resp.hits
     local data = {}
     local contents = {}
     data.contents = contents
     local mintime = ltime
-    -- local kv_doc = ssdb_content:multi_get(idArr)
+   
     for _,v in ipairs(hits.hits) do
         local _id = v._id
         local _es_source = v._source
@@ -67,45 +71,43 @@ if method == "home" then
         local article = source.article;
         local genres = source.genres;
         local digests = source.digests;
-        local evaluates = source.evaluates;
-        local lpipe = source.lpipe;
-        local rate
-        if evaluates and evaluates[1] then
-             rate = evaluates[1].rate
+        -- local evaluates = source.evaluates;
+        -- local lpipe = source.lpipe;
+        local rate 
+        if source.douban and source.douban.rate then
+             rate = source.douban.rate
         end
         local str_cost
-        if article.cost then
-           local lcost = article.cost / 60
-           str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+        if source.cost then
+           local minute = source.cost / 60
+           local hour = minute / 60
+           str_cost =  math.modf(hour) .. ":" .. math.fmod(minute, 60 ) .. ":00"
         end
         local str_img
         if digests then
            for _,v in ipairs(digests) do
-              if v.sort == 'img' then
-                 str_img = v.content
-                 str_img = ngx_re_sub(str_img, "[%.]webp", ".jpg")
-                 str_img = ngx_re_sub(str_img, "http:", "https:")
-                 break
-              end
+              str_img = v
+              str_img = ngx_re_sub(str_img, "[%.]webp", ".jpg")
+              str_img = ngx_re_sub(str_img, "http:", "https:")
            end
         end
         local media_names = { 
            tv = "电视剧",
            movie = "电影"
         }
-        local media_name = media_names[article.media]
+        local sortName = util_const.index2Name("SORT_DICT",source.sort)
         local content = {}
         content.id = _id
-        content.title = article.title
+        content.title = source.title
         content.img = str_img
         content.cost = str_cost
-        content.media = media_name
+        content.media = sortName
         content.rate = rate
-        if lpipe and lpipe.epmax then
-          content.epmax = lpipe.epmax
+        if source.epmax then
+          content.epmax = source.epmax
         end
-        if lpipe and lpipe.time and lpipe.time < mintime then
-           mintime = lpipe.time
+        if source.issueds and source.issueds[1] and source.issueds[1] < mintime then
+           mintime = source.issueds[1]
         end
         if genres then
           local link_genres = {}

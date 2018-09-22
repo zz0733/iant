@@ -76,7 +76,7 @@ curl -X POST 'http://127.0.0.1:9200/content/table/_search' -d '
 # '
 # exit 0
 
-curl -X GET 'http://127.0.0.1:9200/collect/table/_search?pretty' -d '
+curl -X GET 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
 {
   "from": 0,
   "size": 5,
@@ -168,11 +168,11 @@ exit 0
 # '
 # exit 0
 
-curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/meta/table/_search?pretty' -d '
 {
   "query": {
       "match": {
-        "_id":"549354085"
+        "_id":"0240179108"
       }
   }
 }

@@ -73,8 +73,12 @@ function _M:update_scripts(params )
    return self:update_docs( params, configs )
 end
 
-function _M:search_by_type( id )
-	local ret, err = ssdb_script:get(id)
+function _M:search_by_type( taskType )
+	local ret, err = ssdb_script:get(taskType)
+	local versionDoc = ssdb_version:get(taskType)
+	if versionDoc then
+		ret.version = versionDoc.version
+	end
 	return ret, err
 	-- local resp, status = _M:search{
 	-- 	query =  { 
