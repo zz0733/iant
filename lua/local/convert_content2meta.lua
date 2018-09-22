@@ -179,6 +179,13 @@ while true do
                 if source.lcount and source.lcount > 0 then
                    metaDoc.cstatus = bit.bor(metaDoc.cstatus, 2)
                 end
+                if source.lpipe then
+                   local lpipe = source.lpipe
+                   local epmax = {}
+                   epmax.index = lpipe.epmax
+                   epmax.lid = lpipe.lid
+                   metaDoc.epmax = epmax
+                end
                 -- metaDoc.fill = {}
                 log(ERR, "toMetaDoc:" .. cjson_safe.encode(metaDoc))
                 local metaDocArr = {}

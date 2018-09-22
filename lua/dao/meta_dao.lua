@@ -46,7 +46,7 @@ function _M:save_metas( docs)
         if (not v.cstatus) then
            -- 内容重复抓取更新
            local hasMeta = ssdb_meta:get(v.id)
-            if hasMeta then
+           if hasMeta then
                 v.cstatus = hasMeta.cstatus or 0
                 if v.digests and hasMeta.digests then
                     local hasDigests = hasMeta.digests
@@ -59,6 +59,8 @@ function _M:save_metas( docs)
                         end
                     end
                 end
+                -- 保留匹配标记
+                v.epmax = v.epmax or hasMeta.epmax
             end
         end
         if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then

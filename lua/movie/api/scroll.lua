@@ -38,18 +38,17 @@ if method == "home" then
   table.insert(filters, filter)
   filter = {range = { issueds = { lte = ltime }}}
   table.insert(filters, filter)
+  local must_arr = {}
+  table.insert(must_arr, { match = { media = 0 }})
+  table.insert(must_arr, { match = { pstatus = 1 }})
   local body = {
       from = from,
       size = size,
       sort = { issueds = { order = "desc"}, year = { order = "desc"}},
       query = {
         bool = {
-        filter = filters,
-        must = {
-             match = {
-              pstatus = 1
-            }
-         }
+           filter = filters,
+           must = must_arr
         }
       }
     }
@@ -104,7 +103,8 @@ if method == "home" then
         content.media = sortName
         content.rate = rate
         if source.epmax then
-          content.epmax = source.epmax
+          local epmax = source.epmax
+          content.epmax = epmax.index
         end
         if source.issueds and source.issueds[1] and source.issueds[1] < mintime then
            mintime = source.issueds[1]
