@@ -185,6 +185,7 @@ while true do
                    epmax.index = lpipe.epmax
                    epmax.lid = lpipe.lid
                    metaDoc.epmax = epmax
+                   metaDoc.epmax_time = lpipe.time
                 end
                 -- metaDoc.fill = {}
                 log(ERR, "toMetaDoc:" .. cjson_safe.encode(metaDoc))
