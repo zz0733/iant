@@ -22,7 +22,7 @@ local ES_FIELDS = {
     "epindex","cstatus","pstatus","vip",
     "issueds","regions","genres",
     "names","directors","actors",
-    "ctime","utime"
+    "ctime","utime","epmax_time"
 }
 
 -- local SSDB_FIELDS = {}
