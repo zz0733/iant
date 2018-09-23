@@ -83,7 +83,8 @@ while true do
         local elements = {}
         
         for _,v in ipairs(hits) do
-            local target = v._source;
+            local source = v._source;
+            local target = source.target;
             if target then
                local epmax = {}
                epmax.lid = v._id
