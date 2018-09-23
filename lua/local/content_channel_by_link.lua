@@ -83,25 +83,21 @@ while true do
         local elements = {}
         
         for _,v in ipairs(hits) do
-            local source = v._source;
-            local targets = source.targets
-            if targets and #targets == 1 then
-                local tv = targets[1]
-                if (not tv.bury or tv.bury < 10) then
-                    local epmax = {}
-                    epmax.lid = v._id
-                    epmax.time = source.ctime
-                    epmax.index = source.episode
-                    log(ERR,"tv.id:" .. tv.id .. ",epmax:" .. cjson_safe.encode(epmax))
-                    -- local lresp,lstauts = content_dao:update_link_pipe(tv.id, lpipe)
-                    local lresp,lstauts = meta_dao:update_epmax(tv.id, epmax)
-                    if not lresp then
-                        log(ERR,"update_epmax["..tostring(tv.id).."],epmax:" .. cjson_safe.encode(epmax)..",status:" ..  cjson_safe.encode(lstauts))
-                    else
-                       save = save + 1;
-                    end
-                    lindex = lindex + 1;
-                end
+            local target = v._source;
+            if target then
+               local epmax = {}
+               epmax.lid = v._id
+               epmax.time = source.ctime
+               epmax.index = source.episode
+               log(ERR,"tv.target:" .. target .. ",epmax:" .. cjson_safe.encode(epmax))
+               -- local lresp,lstauts = content_dao:update_link_pipe(tv.id, lpipe)
+               local lresp,lstauts = meta_dao:update_epmax(target, epmax)
+               if not lresp then
+                   log(ERR,"update_epmax.target:"..tostring(target)..",epmax:" .. cjson_safe.encode(epmax)..",status:" ..  cjson_safe.encode(lstauts)..",lresp:" .. cjson_safe.encode(lresp))
+               else
+                  save = save + 1;
+               end
+               lindex = lindex + 1;
             end
         end
         scrollId = data["_scroll_id"]
