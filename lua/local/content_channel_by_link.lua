@@ -17,7 +17,6 @@ local message = {}
 message.code = 200
 
 local from_date = tonumber(args.from) or (ngx.time() - 5*60*60)
-
 local timeby = from_date
 
  -- # -1:失效,0:默认,1:有效,2:自动匹配,3:人工匹配
@@ -68,7 +67,7 @@ while true do
         local cost = (ngx.now() - begin)
          cost = tonumber(string.format("%.3f", cost))
         log(ERR, "done.match,index:"..index..",scan:"..scan_count..",total:" .. tostring(total) .. ",cost:" .. cost)
-        message.data = {cost = cost,index = index, scan = scan_count, total = total,save = save,id = doc_id}
+        message.data = {cost = cost,index = index, scan = scan_count, total = total,lindex = lindex, save = save,id = doc_id}
         break
      else
          total = data.hits.total
