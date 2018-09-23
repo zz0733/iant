@@ -45,8 +45,8 @@ if method == "home" then
   table.insert(must_arr, { match = { pstatus = 1 }})
 
   local sort_arr = {}
-  table.insert(sort_arr, { epmax_time = { order = "desc" }})
   table.insert(sort_arr, { year = { order = "desc" }})
+  table.insert(sort_arr, { epmax_time = { order = "desc" }})
   -- table.insert(sort_arr, { issueds = { order = "desc" }})
 
   local body = {

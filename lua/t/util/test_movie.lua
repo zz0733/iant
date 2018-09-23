@@ -34,6 +34,10 @@ function tb:test_match()
        self:log(body .. ",ngx.re.gsub expect["..expect.."],and actual[" .. tostring(actual) .. "]")
     end
     self:log("type(sourcURL)=" .. type(sourcURL))
+    local sort_arr = {}
+    table.insert(sort_arr, { epmax_time = { order = "desc" }})
+    table.insert(sort_arr, { year = { order = "desc" }})
+    self:log("sort_arr=" .. cjson_safe.encode(sort_arr))
 end
 
 tb:run()
