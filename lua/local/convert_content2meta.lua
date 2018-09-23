@@ -190,7 +190,7 @@ while true do
                    metaDoc.epmax_time = lpipe.time
                    if epmax.lid and (not epmax.index) then
                         local  lidArr = {}
-                        table.inser(lidArr, epmax.lid)
+                        table.insert(lidArr, epmax.lid)
                         local lresp = link_dao:query_by_ids(lidArr,"episode")
                         if lresp and lresp.hits and lresp.hits.hits then
                             local lHit = lresp.hits.hits[1]
