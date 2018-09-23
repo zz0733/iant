@@ -197,7 +197,7 @@ while true do
                    epmax.lid = lpipe.lid
                    metaDoc.epmax = epmax
                    metaDoc.epmax_time = lpipe.time
-                   if epmax.lid and (not epmax.index) then
+                   if epmax.lid and isNull(epmax.index) then
                         local  lidArr = {}
                         table.insert(lidArr, epmax.lid)
                         local lresp = link_dao:query_by_ids(lidArr,"episode")
