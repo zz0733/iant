@@ -75,7 +75,7 @@ function _M:save_metas( docs)
 end
 
 function _M:update_epmax( id, epmax)
-    if not doc then
+    if not id or not epmax then
         return nil, 400
     end
     local hasMeta = ssdb_meta:get(v.id)
