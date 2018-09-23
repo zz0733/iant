@@ -17,7 +17,7 @@ local CRIT = ngx.CRIT
 local commands = handlers.commands
 local str_handlers = cjson_safe.encode(commands)
 local from = 0
-local size = 1
+local size = 5
 
 
 local check
@@ -53,8 +53,7 @@ local check
                     delay = delay + 1
                     delay = math.min(delay, max_delay)
                 else
-                    delay = delay - 1
-                    delay = math.max(delay, min_delay)
+                    delay = min_delay
                 end
                 log(ERR,"ssdb_result_keys,limit:" .. size ..",data:" .. #keyArr ..",cost:" .. cost ..",gc:" .. gcMem)
              else
