@@ -39,6 +39,8 @@ if method == "home" then
   filter = {range = { issueds = { lte = ltime }}}
   table.insert(filters, filter)
   local must_arr = {}
+  table.insert(must_arr, { range = { year = { lte = year} }})
+  table.insert(must_arr, { range = { epmax_time = { lte = ltime} }})
   table.insert(must_arr, { match = { media = 0 }})
   table.insert(must_arr, { match = { pstatus = 1 }})
 
@@ -53,7 +55,6 @@ if method == "home" then
       sort = sort_arr,
       query = {
         bool = {
-           filter = filters,
            must = must_arr
         }
       }
