@@ -80,6 +80,10 @@ local LANG_DICT = {
     ["粤语"]= 21,
 }
 
+function isNull( val )
+   return (not val) or (val == ngx.null)
+end
+
 while true do
      index = index + 1;
      local data,err;
@@ -183,6 +187,11 @@ while true do
 
                 local lpipe = source.lpipe
                 if lpipe then
+                   for lk,lv in pairs(lpipe) do
+                       if isNull(lv) then
+                         lpipe[lk] = nil
+                       end
+                   end
                    local epmax = {}
                    epmax.index = lpipe.epmax
                    epmax.lid = lpipe.lid
@@ -194,11 +203,12 @@ while true do
                         local lresp = link_dao:query_by_ids(lidArr,"episode")
                         if lresp and lresp.hits and lresp.hits.hits then
                             local lHit = lresp.hits.hits[1]
-                            if lHit then
+                            if lHit and not isNull(lHit._source.episode) then
                                 epmax.index = lHit._source.episode
                             end
                         end
                    end
+
                 end
                 -- metaDoc.fill = {}
                 log(ERR, "toMetaDoc:" .. cjson_safe.encode(metaDoc))
