@@ -26,7 +26,7 @@ local check
      if not premature then
          -- do the health check or other routine work
          local gcMem = gcinfo()
-         if gcMem < 20000 then
+         if gcMem < 2000 then
              local start = ngx.now()
              local keyArr, err = ssdb_result:keys(size)
              ngx.update_time()
