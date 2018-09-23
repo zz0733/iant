@@ -5,6 +5,7 @@ local util_context = require "util.context"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require("dao.content_dao")
+local link_dao = require("dao.link_dao")
 local meta_dao = require("dao.meta_dao")
 local ssdb_vmeta = require("ssdb.vmeta")
 
@@ -187,6 +188,17 @@ while true do
                    epmax.lid = lpipe.lid
                    metaDoc.epmax = epmax
                    metaDoc.epmax_time = lpipe.time
+                   if epmax.lid and (not epmax.index) then
+                        local  lidArr = {}
+                        table.inser(lidArr, epmax.lid)
+                        local lresp = link_dao:query_by_ids(lidArr,"episode")
+                        if lresp and lresp.hits and lresp.hits.hits then
+                            local lHit = lresp.hits.hits[1]
+                            if lHit then
+                                epmax.index = lHit._source.episode
+                            end
+                        end
+                   end
                 end
                 -- metaDoc.fill = {}
                 log(ERR, "toMetaDoc:" .. cjson_safe.encode(metaDoc))
