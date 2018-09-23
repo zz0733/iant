@@ -44,8 +44,10 @@ if method == "home" then
 
   local sort_arr = {}
   -- table.insert(sort_arr, { issueds = { order = "desc" }})
-  table.insert(sort_arr, { year = { order = "desc" }})
   table.insert(sort_arr, { epmax_time = { order = "desc" }})
+  table.insert(sort_arr, { issueds = { order = "desc" }})
+  table.insert(sort_arr, { year = { order = "desc" }})
+
   local body = {
       from = from,
       size = size,
