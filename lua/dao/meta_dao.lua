@@ -78,7 +78,7 @@ function _M:update_epmax( id, epmax)
     if not id or not epmax then
         return nil, 400
     end
-    local hasMeta = ssdb_meta:get(v.id)
+    local hasMeta = ssdb_meta:get(id)
     if not hasMeta then
          return "miss meta:" .. tostring(id), 404
     end
