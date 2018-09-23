@@ -4,6 +4,7 @@ local util_table = require "util.table"
 local match_handler = require("handler.match_handler")
 local client_utils = require("util.client_utils")
 local content_dao = require "dao.content_dao"
+local meta_dao = require "dao.meta_dao"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -88,15 +89,15 @@ while true do
             if targets and #targets == 1 then
                 local tv = targets[1]
                 if (not tv.bury or tv.bury < 10) then
-                    local lpipe = {}
-                    lpipe.lid = v._id
-                    lpipe.index = lindex
-                    lpipe.time = source.ctime
-                    lpipe.epmax = source.episode
-                    log(ERR,"tv.id:" .. tv.id .. ",lpipe:" .. cjson_safe.encode(lpipe))
-                    local lresp,lstauts = content_dao:update_link_pipe(tv.id, lpipe)
+                    local epmax = {}
+                    epmax.lid = v._id
+                    epmax.time = source.ctime
+                    epmax.index = source.episode
+                    log(ERR,"tv.id:" .. tv.id .. ",epmax:" .. cjson_safe.encode(epmax))
+                    -- local lresp,lstauts = content_dao:update_link_pipe(tv.id, lpipe)
+                    local lresp,lstauts = meta_dao:update_epmax(tv.id, epmax)
                     if not lresp then
-                        log(ERR,"update_link_pipe["..tostring(tv.id).."],lpipe:" .. cjson_safe.encode(lpipe)..",status:" ..  cjson_safe.encode(lstauts))
+                        log(ERR,"update_epmax["..tostring(tv.id).."],epmax:" .. cjson_safe.encode(epmax)..",status:" ..  cjson_safe.encode(lstauts))
                     else
                        save = save + 1;
                     end

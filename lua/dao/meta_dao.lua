@@ -74,6 +74,30 @@ function _M:save_metas( docs)
 	return self:index_docs(docs)
 end
 
+function _M:update_epmax( id, epmax)
+    if not doc then
+        return nil, 400
+    end
+    local hasMeta = ssdb_meta:get(v.id)
+    if not hasMeta then
+         return "miss meta:" .. tostring(id), 404
+    end
+    if hasMeta.epmax and hasMeta.epmax.index then
+        if epmax.index <= hasMeta.epmax.index then
+            return "exist epmax:" .. cjson_safe.encode(hasMeta.epmax), 200
+        end
+    end
+    
+    hasMeta.epmax_time = epmax.time
+    hasMeta.epmax = epmax
+    epmax.time = nil
+    ssdb_meta:set(id, hasMeta)
+    local esDoc = ssdb_meta:makeESDoc(hasMeta)
+    local docs = {}
+    table.insert(docs, esDoc)
+    return self:index_docs(docs)
+end
+
 function _M:to_synonym(body, analyzer)
     local resp, status = self:analyze(body, nil, analyzer)
     if resp and resp.tokens then
