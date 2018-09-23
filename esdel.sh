@@ -34,7 +34,7 @@ curl -X POST 'http://127.0.0.1:9200/link/_delete_by_query?pretty' -d '
       },
       "must":{
         "terms":{
-          "type":["douban-movie-detail"]
+          "type":["odflv-video-cache"]
         }
       }
     }

@@ -123,6 +123,7 @@ _M.meta = function(id, source)
       end
       ensure_doc(v)
    end
+   
    local resp, status = meta_dao:save_metas(docs)
    log(ERR,"handle_meta,id:" .. id .. ",docs:" ..  cjson_safe.encode(docs) )
    return resp, status

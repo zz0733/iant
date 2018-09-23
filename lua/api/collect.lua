@@ -3,6 +3,8 @@ local util_request = require "util.request"
 local util_table = require "util.table"
 local handlers = require "handler.handlers"
 
+local ssdb_result = require "ssdb.result"
+
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -31,7 +33,7 @@ if not body_json then
 	return
 end
 if 'insert' == method  then
-	-- local resp, status = collect_dao:insert_docs(body_json )
+	
 	function can_insert( task , data, status )
 		if not task or not data or status ~= 1 then
 			return false
@@ -53,19 +55,11 @@ if 'insert' == method  then
 	    local data = v.data
 	    local status = v.status
 	    if can_insert(task, data, status) then
-	    	local source = {}
-	    	source.type = task.type
-	    	source.task = task
-		    source.data = data
-		    local cur_handlers = data.handlers
-			for _, cmd in ipairs(cur_handlers) do
-		         local resp, estatus = handlers.execute(cmd, task.id, source)
-		         if not resp then
-		         	 message.code = 500
-		         	 message.error = estatus
-		             log(CRIT,"handlers[" .. cmd .."],id:" .. tostring(task.id) .. ",status:" .. tostring(estatus) )
-		         end
-			end
+		     local resp, err = ssdb_result:set(v.task.id, v )
+	         if err then
+	         	 message.code = 500
+	         	 message.error = cjson_safe.encode(resp)
+	         end
 	    end
 	end
     ngx.say(cjson_safe.encode(message))

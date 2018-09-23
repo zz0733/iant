@@ -105,6 +105,7 @@ function _M:multi_get(keys)
    end
    local client = self:open();
    local ret, err = client:multi_get(unpack(keys))
+   self:close(client)
    if ret then
       local dest = {}
       for k,v in pairs(ret) do

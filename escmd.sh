@@ -588,11 +588,11 @@ curl -X POST 'http://127.0.0.1:9200/link/table/_search?pretty' -d '
 }
 '
 
-curl -X POST 'http://127.0.0.1:9200/content/table/_search?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/link_v4/table/_search?pretty' -d '
 {
   "query": {
       "match":{
-        "_id" :"0170040775"
+        "_id" :"f0117326651"
       }
   }
 }
@@ -758,6 +758,7 @@ curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
 curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
 {
   "size": 5,
+  "sort":{ "epmax_time" : { "order":"desc"}},
   "query": {
     "bool": {
       "must": [
@@ -770,7 +771,7 @@ curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
         },
         {
           "match": {
-            "media": 1
+            "media": 0
           }
         }
       ]
