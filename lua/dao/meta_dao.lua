@@ -75,14 +75,14 @@ function _M:save_metas( docs)
 end
 
 function _M:update_epmax( id, epmax)
-    if not id or not epmax then
+    if not id or  util_table.isNull(epmax) or util_table.isNull(epmax.index) then
         return nil, 400
     end
     local hasMeta = ssdb_meta:get(id)
     if not hasMeta then
          return "miss meta:" .. tostring(id), 404
     end
-    if hasMeta.epmax and hasMeta.epmax.index then
+    if not util_table.isNull(hasMeta.epmax) and not util_table.isNull(hasMeta.epmax.index) then
         if epmax.index <= hasMeta.epmax.index then
             return "exist epmax:" .. cjson_safe.encode(hasMeta.epmax), 200
         end

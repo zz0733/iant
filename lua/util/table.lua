@@ -71,4 +71,8 @@ function _M.contains( table, value )
   return false
 end
 
+function _M.isNull( val )
+   return (not val) or (val == ngx.null)
+end
+
 return _M
