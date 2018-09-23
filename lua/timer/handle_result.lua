@@ -5,7 +5,9 @@ local cjson_safe = require("cjson.safe")
 local collect_dao = require "dao.collect_dao"
 local ssdb_result = require "ssdb.result"
 
-local delay = 10  -- in seconds
+local max_delay = 30
+local min_delay = 1
+local delay = min_delay  -- in seconds
 local new_timer = ngx.timer.at
 
 local log = ngx.log
@@ -16,6 +18,7 @@ local commands = handlers.commands
 local str_handlers = cjson_safe.encode(commands)
 local from = 0
 local size = 1
+
 
 local check
 
@@ -46,13 +49,22 @@ local check
                         end
                     end
                 end
+                if #keyArr < 1 then
+                    delay = delay + 1
+                    delay = math.min(delay, max_delay)
+                else
+                    delay = delay - 1
+                    delay = math.max(delay, min_delay)
+                end
                 log(ERR,"ssdb_result_keys,limit:" .. size ..",data:" .. #keyArr ..",cost:" .. cost ..",gc:" .. gcMem)
              else
                 log(ERR,"ssdb_result_keys,limit:" .. size ..",cost:" .. cost .. ",cause:", err)
              end
          else 
+            delay = max_delay
             log(ERR,"ssdb_result_keys,wait_for_idle,gc:" .. gcMem)
          end
+         log(ERR, "handle_result_timer start,delay:" .. delay)
          local ok, err = new_timer(delay, check)
          if not ok then
              log(ERR, "failed to create timer: ", err)
@@ -62,10 +74,10 @@ local check
  end
 
  if 0 == ngx.worker.id() then
-     log(ERR, "handle_collect_timer start")
+     log(ERR, "handle_result_timer start,delay:" .. delay)
      local ok, err = new_timer(delay, check)
      if not ok then
-         log(ERR, "handle_collect_timer fail to run: ", err)
+         log(ERR, "handle_result_timer fail to run: ", err)
          return
      end
  end
