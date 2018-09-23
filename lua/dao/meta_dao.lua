@@ -26,52 +26,84 @@ function _M:save_metas( docs)
     if not docs then
       return nil, 400
     end
+    local indexDocs = {}
     for mi,v in ipairs(docs) do
-    	if v.regions then
-    	  local regions = v.regions
-    	  for k,v in ipairs(regions) do
-    	  	 if v then
-    	  	 	regions[k] = self:to_synonym(v, "ik_smart_synmgroup")
-    	  	 end
-    	  end
-    	end
-    	if v.countrys then
-    	  local countrys = v.countrys
-    	  for kk,vv in ipairs(countrys) do
-    	  	 if vv then
-    	  	 	countrys[kk] = self:to_synonym(vv, "ik_smart_synonym")
-    	  	 end
-    	  end
-    	end
-        if (not v.cstatus) then
-           -- 内容重复抓取更新
-           local hasMeta = ssdb_meta:get(v.id)
-           if hasMeta then
-                v.cstatus = hasMeta.cstatus or 0
-                if v.digests and hasMeta.digests then
-                    local hasDigests = hasMeta.digests
-                    for kk,vimg in ipairs(hasDigests) do
-                        -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
-                        if string.match(vimg,"^/img/") or string.find(vimg, util_context.CDN_URI, 1, true) then
-                            v.digests = hasDigests
-                            v.cstatus = bit.bor(v.cstatus, 1)
-                            break
+        if not _M:moveOldMeta(v) then
+            if v.regions then
+              local regions = v.regions
+              for k,v in ipairs(regions) do
+                 if v then
+                    regions[k] = self:to_synonym(v, "ik_smart_synmgroup")
+                 end
+              end
+            end
+            if v.countrys then
+              local countrys = v.countrys
+              for kk,vv in ipairs(countrys) do
+                 if vv then
+                    countrys[kk] = self:to_synonym(vv, "ik_smart_synonym")
+                 end
+              end
+            end
+            if (not v.cstatus) then
+               -- 内容重复抓取更新
+               local hasMeta = ssdb_meta:get(v.id)
+               if hasMeta then
+                    v.cstatus = hasMeta.cstatus or 0
+                    if v.digests and hasMeta.digests then
+                        local hasDigests = hasMeta.digests
+                        for kk,vimg in ipairs(hasDigests) do
+                            -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
+                            if string.match(vimg,"^/img/") or string.find(vimg, util_context.CDN_URI, 1, true) then
+                                v.digests = hasDigests
+                                v.cstatus = bit.bor(v.cstatus, 1)
+                                break
+                            end
                         end
                     end
+                    -- 保留匹配标记
+                    v.epmax = v.epmax or hasMeta.epmax
                 end
-                -- 保留匹配标记
-                v.epmax = v.epmax or hasMeta.epmax
+            end
+            if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
+               v.pstatus = 1
+            end
+            util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
+            ssdb_meta:set(v.id, v)
+            local esDoc = ssdb_meta:makeESDoc(v)
+            -- docs[mi] = esDoc
+            table.insert(indexDocs, esDoc)
+        end
+    end
+	return self:index_docs(indexDocs)
+end
+
+function _M:moveOldMeta( v )
+    if not v.id or not v.oid then
+        return false
+    end
+    local hasMeta = ssdb_meta:get(v.oid)
+    if hasMeta then
+        hasMeta.id = v.id
+        local _, err = ssdb_meta:set(v.id, hasMeta)
+        if err then
+            log(ERR,"moveFail,meta:" .. cjson_safe.encode(v))
+        else
+            ssdb_meta:remove(v.oid)
+            local hasVMeta = ssdb_vmeta:get(v.oid)
+            if hasVMeta then
+                local _, verr = ssdb_vmeta:set(v.id, hasVMeta)
+                if verr then
+                    log(ERR,"moveFail,vmeta:" .. cjson_safe.encode(v))
+                else
+                    ssdb_vmeta:remove(v.oid)
+                end
             end
         end
-        if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
-           v.pstatus = 1
-        end
-        util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
-        ssdb_meta:set(v.id, v)
-        local esDoc = ssdb_meta:makeESDoc(v)
-        docs[mi] = esDoc
+        return true
+    else
+        return false
     end
-	return self:index_docs(docs)
 end
 
 function _M:update_epmax( id, epmax)

@@ -135,6 +135,11 @@ function _M:multi_get(keys)
    end
 end
 
-
+function _M:remove(content_id)
+   local client =  self:open();
+   local ret, err = client:del(self:toSSDBKey(content_id))
+   self:close(client)
+   return ret, err 
+end
 
 return _M
