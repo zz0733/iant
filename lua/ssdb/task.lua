@@ -62,6 +62,9 @@ function _M:qpush(level, ...)
    local tasks = {...}
    for ti,task_val in ipairs(tasks) do
       if util_table.is_table(task_val) then
+        if task_val.params and util_table.is_table(task_val.params) then
+           task_val.params = cjson_safe.encode(task_val.params)
+        end
         task_val =  cjson_safe.encode(task_val)
         tasks[ti] = task_val
       end
@@ -75,6 +78,9 @@ end
 function _M:qretry(level, task_val)
    level = level or 1
    if util_table.is_table(task_val) then
+     if task_val.params and util_table.is_table(task_val.params) then
+        task_val.params = cjson_safe.encode(task_val.params)
+     end
      task_val =  cjson_safe.encode(task_val)
    end
    local ssdbKey = self:toSSDBKey(level)
