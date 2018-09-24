@@ -2,6 +2,7 @@ local content_dao = require("dao.content_dao")
 local link_dao = require("dao.link_dao")
 local channel_dao = require "dao.channel_dao"
 local meta_dao = require "dao.meta_dao"
+local task_dao = require "dao.task_dao"
 
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
@@ -70,6 +71,107 @@ _M.execute = function (cmd, ... )
 end
 
 
+_M.retry = function(id, source)
+   local status = source.status
+   local task = source.task
+   local taskErr = source.error
+   if status ~= 0 then
+      return nil, "OK"
+   end
+   if task and task.params then
+        local params_obj = cjson_safe.decode(task.params)
+        if params_obj and params_obj.retry then
+          local retry_obj = params_obj.retry
+          if not util_table.is_table(retry_obj) then
+            retry_obj = {}
+          end
+          local index = retry_obj.index or 0
+          local total = retry_obj.total or 3
+          if total > 5 then
+            total = 5
+          end
+          if index < total then
+            index = index + 1
+            params_obj.retry = { index = index, total = total }
+            task.params = cjson_safe.encode(params_obj)
+            retry_count = retry_count + 1
+            local task_val = cjson_safe.encode(task)
+            local data_val = cjson_safe.encode(taskErr)
+            log(ERR,"retry["..task.id .."](".. index.."),task:" .. task_val..",error:" .. data_val)
+            local len, err = shared_dict:lpush(task_queue_key, task_val)
+            if err then
+                log(CRIT,"shared_dict:lpush:" .. task_val .. ",cause:", err)
+                return err, 500
+            else
+               return "OK", 200
+            end
+          else
+            local data_val = cjson_safe.encode(v)
+            log(ERR,"fail.retry["..task.id .."](".. index.."),return:" .. data_val)
+          end
+        end
+    end
+    return "OK", 200
+    
+end
+
+_M.logger = function(id, source)
+   local status = source.status
+   local task = source.task
+   local data = source.data
+   local taskErr = source.error
+   log(ERR,"handle_logger:" .. tostring(task.type) .. ",id:" .. tostring(task.id) .. ",task:" .. cjson_safe.encode(task))
+   if taskErr then
+       log(ERR,"handle_logger:" .. tostring(task.type) .. ",id:" .. tostring(task.id) .. ",taskErr:" .. cjson_safe.encode(taskErr))
+   else 
+       log(ERR,"handle_logger:" .. tostring(task.type) .. ",id:" .. tostring(task.id) .. ",result:" .. cjson_safe.encode(data))
+   end
+   return "OK", 200
+end
+
+_M.nexts = function(id, source)
+    local task = source.task
+    local data = source.data
+    local status = source.status
+    if status ~= 1 then
+       return "OK", 200
+    end
+    local nextTasks = data.nextTasks
+    if util_table.isNull(nextTasks) then
+       return "OK", 200
+    end
+    local oParams = {}
+    if task.params then
+         oParams = cjson_safe.decode(task.params)
+    end
+      -- log(ERR,"task:" .. cjson_safe.encode(task))
+    local fields = {"type","url","batch_id","job_id","level"}
+    local param_fields = {"_acceptor","_localize"}
+    local task_array = {}
+    for _,v in ipairs(nextTasks) do
+        -- log(ERR,"next:" .. v)
+        local new_task = {}
+        new_task.status = 0
+        new_task.creator = "nexts"
+        new_task.parent_id = v.parent_id or task.id
+        for _,key in ipairs(fields) do
+          new_task[key] = v[key]
+          v[key] = nil
+          if not new_task[key] then
+            new_task[key] = task[key]
+          end
+        end
+        for _,pkey in ipairs(param_fields) do
+          if not v[pkey] then
+            v[pkey] = oParams[pkey]
+          end
+        end
+        new_task.params = v
+        task_array[#task_array + 1] = new_task
+    end
+    local resp, status = task_dao:insert_tasks(task_array )
+    return resp, status
+end
 _M.content = function(id, source)
    if not source then
    	 return nil, "source is nil"
@@ -229,13 +331,15 @@ _M.vmeta = function(id, source)
 end
 
 
-local commands = {}
-commands[#commands + 1] = "link"
-commands[#commands + 1] = "content"
-commands[#commands + 1] = "channel"
-commands[#commands + 1] = "meta"
-commands[#commands + 1] = "digest"
-commands[#commands + 1] = "vmeta"
-_M.commands = commands
+-- local commands = {}
+-- table.insert(commands, "link")
+-- table.insert(commands, "content")
+-- table.insert(commands, "channel")
+-- table.insert(commands, "meta")
+-- table.insert(commands, "digest")
+-- table.insert(commands, "vmeta")
+-- table.insert(commands, "retry")
+-- table.insert(commands, "nexts")
+-- _M.commands = commands
 
 return _M

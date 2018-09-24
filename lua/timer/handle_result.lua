@@ -43,9 +43,8 @@ local check
                         local cur_handlers = data.handlers
                         for _, cmd in ipairs(cur_handlers) do
                              local resp, estatus = handlers.execute(cmd, task.id, ret)
-                             if not resp then
-                                 log(ERR,"handling_" .. cmd ..",id:" .. tostring(task.id) .. ",status:" .. tostring(estatus) )
-                             end
+                             log(ERR,"handle_" .. cmd ..",id:" .. tostring(task.id) .. ",type:".. tostring(task.type) ..",status:" 
+                                .. cjson_safe.encode(estatus) ..",resp:"..cjson_safe.encode(resp))
                         end
                     end
                 end
