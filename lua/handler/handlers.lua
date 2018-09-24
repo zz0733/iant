@@ -227,9 +227,9 @@ _M.meta = function(id, source)
       ensure_doc(v)
       table.insert(saveIds, v.id)
    end
-   
-   local resp, status = meta_dao:save_metas(docs)
    log(ERR,"handle_meta,id:" .. id .. ",count:" ..  #saveIds .. ",saveIds:" .. cjson_safe.encode(saveIds) )
+   log(ERR,"handle_meta,id:" .. id .. ",docs:" .. cjson_safe.encode(docs) )
+   local resp, status = meta_dao:save_metas(docs)
    return resp, status
 end
 
