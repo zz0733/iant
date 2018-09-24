@@ -5,6 +5,8 @@ local util_context = require "util.context"
 local task_dao = require "dao.task_dao"
 local meta_dao = require "dao.meta_dao"
 
+local ssdb_task = require "ssdb.task"
+
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -50,10 +52,8 @@ if resp and resp.hits and resp.hits.hits then
          local params = {}
          params.metaId = mv._id
          newTask.params = params
-         local taskArr = {}
-         table.insert(taskArr, newTask)
-         local tresp, tstatus = task_dao:insert_tasks( taskArr )
-         log(ERR,"searchUnVideo.taskArr:" .. cjson_safe.encode(taskArr) )
+         local tresp, tstatus = ssdb_task:qpush( newTask.level, newTask )
+         log(ERR,"searchUnVideo.task:" .. cjson_safe.encode(newTask) )
          count = count + 1
        end
    end

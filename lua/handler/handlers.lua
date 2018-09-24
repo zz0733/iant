@@ -148,7 +148,7 @@ _M.nexts = function(id, source)
       -- log(ERR,"task:" .. cjson_safe.encode(task))
     local fields = {"type","url","batch_id","job_id","level"}
     local param_fields = {"_acceptor","_localize"}
-    local task_array = {}
+    local ret, err
     for _,v in ipairs(nextTasks) do
         -- log(ERR,"next:" .. v)
         local new_task = {}
@@ -168,11 +168,17 @@ _M.nexts = function(id, source)
           end
         end
         new_task.params = v
-        task_array[#task_array + 1] = new_task
+        ret, err = ssdb_task:qpush(new_task.level, new_task )
     end
-    local resp, status = task_dao:insert_tasks(task_array )
+    local status = 200
+    local resp = ret
+    if err then
+       status = 500
+       resp = err
+    end
     return resp, status
 end
+
 _M.content = function(id, source)
    if not source then
    	 return nil, "source is nil"

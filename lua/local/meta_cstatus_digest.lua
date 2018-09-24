@@ -43,10 +43,8 @@ if resp and resp.hits and resp.hits.hits then
          params.metaId = mv._id
          params.index = di
          digestTask.params = params
-         local taskArr = {}
-         table.insert(taskArr, digestTask)
-         local tresp, tstatus = task_dao:insert_tasks( taskArr )
-         log(ERR,"searchUnDigest.taskArr:" .. cjson_safe.encode(taskArr) )
+         local tresp, tstatus = ssdb_task:qpush( newTask.level, digestTask )
+         log(ERR,"searchUnDigest.task:" .. cjson_safe.encode(digestTask) )
          count = count + 1
          break
        end
