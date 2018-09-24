@@ -73,12 +73,41 @@ function _M:update_scripts(params )
    return self:update_docs( params, configs )
 end
 
+local importVersions = function ( taskType )
+    local versionDoc =  ssdb_version:get(taskType)
+    local import_verions = {}
+    if versionDoc then
+       if  versionDoc.imports then
+           for _,itype in ipairs(versionDoc.imports) do
+              local iVersionDoc =  ssdb_version:get(itype)
+              if iVersionDoc then
+                 import_verions[itype] = iVersionDoc.version
+              end
+           end
+       end
+       import_verions[taskType] = versionDoc.version
+    end
+    -- log(ERR,"import_verions["..taskType .. "]:" .. cjson_safe.encode(import_verions))
+    return import_verions
+end
+
 function _M:search_by_type( taskType )
 	local ret, err = ssdb_script:get(taskType)
-	local versionDoc = ssdb_version:get(taskType)
-	if versionDoc then
-		ret.version = versionDoc.version
-	end
+	local versionDoc =  ssdb_version:get(taskType)
+    if versionDoc then
+       ret.version = versionDoc.version
+       if  versionDoc.imports then
+       	   local import_verions = {}
+           for _,itype in ipairs(versionDoc.imports) do
+              local iVersionDoc =  ssdb_version:get(itype)
+              if iVersionDoc then
+                 import_verions[itype] = iVersionDoc.version
+              end
+           end
+           import_verions[taskType] = versionDoc.version
+           ret.scripts = import_verions
+       end
+    end
 	return ret, err
 	-- local resp, status = _M:search{
 	-- 	query =  { 
