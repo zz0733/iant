@@ -2,6 +2,7 @@ local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
 local ssdb_task = require "ssdb.task"
+local ssdb_version = require "ssdb.version"
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -24,6 +25,21 @@ if err then
 	message.error = err
     message.code = 500
 else
+	local typeDict = {}
+	for _,task in ipairs(assignArr) do
+		typeDict[task.type] = 1
+	end
+	for type,_ in pairs(typeDict) do
+		local versionDoc =  ssdb_version:get(taskType)
+	    if versionDoc then
+	       typeDict[type] = { [type] = versionDoc.version}
+	    else
+	       typeDict[type] = { [type] = 1}
+	    end
+	end
+	for _,task in ipairs(assignArr) do
+		task.scripts = typeDict[task.type]
+	end
 	local count = #assignArr
 	log(ERR,"assign:" .. tostring(client) .. ",count:" .. count)
 	message.data = assignArr
