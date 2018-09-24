@@ -211,12 +211,13 @@ _M.meta = function(id, source)
    -- local str_date = decode_base64(source.data)
    -- local data = cjson_safe.decode(str_date)
    local data = source.data
-   log(ERR,"handle[meta],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
+   -- log(ERR,"handle[meta],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
    if not data then
      return nil, "es[source.data] is not json"
    elseif not data.data then
      return nil, "content[data] is nil"
    end
+   local saveIds = {}
    local docs = data.data
    local type = source.type
    for _,v in ipairs(docs) do
@@ -224,10 +225,11 @@ _M.meta = function(id, source)
         v.id = tostring(type) .. tostring(id)
       end
       ensure_doc(v)
+      table.insert(saveIds, v.id)
    end
    
    local resp, status = meta_dao:save_metas(docs)
-   log(ERR,"handle_meta,id:" .. id .. ",docs:" ..  cjson_safe.encode(docs) )
+   log(ERR,"handle_meta,id:" .. id .. ",count:" ..  #saveIds .. ",saveIds:" .. cjson_safe.encode(saveIds) )
    return resp, status
 end
 
@@ -240,17 +242,15 @@ _M.link = function(id, source)
    end
    -- local str_date = decode_base64(source.data)
    -- local data = cjson_safe.decode(str_date)
-   local data = source.data
-   log(ERR,"handle[link],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
-   if not data then
-       return nil, "es[source.data] is not json"
-   elseif not data.data then
-       return nil, "content[data] is nil"
-   elseif not data.data.docs  then
-    return nil, "content[data].docs is nil"
+   -- log(ERR,"handle[link],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
+   if not source.data then
+       return nil, "source.data is not json"
+   elseif not source.data.docs  then
+       return nil, "source.data.docs is nil"
    end
-   local docs = data.data.docs
-   local type = source.type
+   local saveIds = {}
+   local docs = source.data.docs
+   local type = source.task.type
    local newDocs = {}
    for _,v in ipairs(docs) do
         if not v.id then
@@ -260,8 +260,9 @@ _M.link = function(id, source)
         local newDoc = makeLinkDoc(v)
         ensure_doc(newDoc)
         table.insert(newDocs,newDoc)
+        table.insert(saveIds, v.id)
    end
-   log(ERR,"handle_link,id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   log(ERR,"handle_link:" .. tostring(type) ..",id:" .. id .. ",count:" .. #saveIds .. ",saveIds:" ..  cjson_safe.encode(saveIds))
    return link_dao:bulk_docs(newDocs)
 end
 
@@ -297,17 +298,12 @@ _M.digest = function(id, source)
        return nil, "source is nil"
    elseif not source.data then
        return nil, "source.data is nil"
+   elseif not source.data.data then
+       return nil, "source.data.data is nil"
    end
-   -- local str_date = decode_base64(source.data)
-   -- local data = cjson_safe.decode(str_date)
-   local data = source.data
-   if not data then
-       return nil, "es[source.data] is not json"
-   elseif not data.data then
-       return nil, "content[data] is nil"
-   end
-   local oDoc = data.data
-   log(ERR,"handle_digest,id:" .. id )
+   local task = source.task
+   local oDoc = source.data.data
+   log(ERR,"handle_digest:" .. tostring(task.type) .. ",id:" .. id  .. ",metaId:" .. tostring(oDoc.id))
    return meta_dao:corpDigest(oDoc)
 end
 
@@ -325,8 +321,9 @@ _M.vmeta = function(id, source)
    elseif not data.data then
        return nil, "content[data] is nil"
    end
+   local task = source.task
    local oDoc = data.data
-   log(ERR,"handle_vmeta,id:" .. id )
+   log(ERR,"handle_vmeta:" .. tostring(task.type) .. ",id:" .. id  .. ",metaId:" .. tostring(oDoc.id))
    return meta_dao:fillVideoMeta(oDoc)
 end
 
