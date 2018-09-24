@@ -5,6 +5,9 @@ local util_string = require "util.string"
 local util_context = require "util.context"
 local ssdb_client = require "ssdb.client"
 
+local uuid = require 'resty.jit-uuid'
+uuid.seed()        ---> automatic seeding with os.time(), LuaSocket, or ngx.time()
+
 local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
@@ -57,6 +60,10 @@ function _M:toBean( sVal )
 end
 
 
+function _M:taskUUID( )
+   return ngx.re.gsub(uuid(), "-", "")
+end
+
 function _M:qpush(level, ...)
    level = level or 1
    local tasks = {...}
@@ -65,6 +72,7 @@ function _M:qpush(level, ...)
         if task_val.params and util_table.is_table(task_val.params) then
            task_val.params = cjson_safe.encode(task_val.params)
         end
+        task_val.id =  task_val.id or self:taskUUID()
         task_val =  cjson_safe.encode(task_val)
         tasks[ti] = task_val
       end
