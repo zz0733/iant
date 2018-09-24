@@ -218,7 +218,7 @@ _M.meta = function(id, source)
      return nil, "content[data] is nil"
    end
    local saveIds = {}
-   local docs = data.data
+   local docs = data.data.docs or data.data
    local type = source.type
    for _,v in ipairs(docs) do
       if not v.id then
