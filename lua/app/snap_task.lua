@@ -30,7 +30,7 @@ else
 		typeDict[task.type] = 1
 	end
 	for type,_ in pairs(typeDict) do
-		local versionDoc =  ssdb_version:get(taskType)
+		local versionDoc =  ssdb_version:get(type)
 	    if versionDoc then
 	       typeDict[type] = { [type] = versionDoc.version}
 	    else
