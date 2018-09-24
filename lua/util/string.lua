@@ -49,3 +49,7 @@ string.random = function(length)
     end
     return str;
 end
+
+string.isString = function(src)
+    return type(src) == "string";
+end

@@ -3,6 +3,7 @@ local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
 local task_dao = require "dao.task_dao"
+local ssdb_task = require "ssdb.task"
 
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
@@ -27,16 +28,23 @@ local body_json = cjson_safe.decode(data)
 
 
 if 'insert' == method  then
-	local resp, status = task_dao:insert_tasks( body_json )
+  local ret, err
+  for ti, task in ipairs(body_json) do
+     local level = task.level or 0
+     if task.params and util_table.is_table(task.params) then
+        task.params = cjson_safe.encode(task.params)
+     end
+     ret, err = ssdb_task:qpush( level,  task)
+  end
 	local message = {}
-    message.data = resp
-    message.code = 200
-    if status ~= 200 then
-        message.code = 500
-        message.error = status
-    end
-    local body = cjson_safe.encode(message)
-    ngx.say(body)
+  message.data = resp
+  message.code = 200
+  if err then
+      message.code = 500
+      message.error = err
+  end
+  local body = cjson_safe.encode(message)
+  ngx.say(body)
 elseif 'retry' == method  then
   local total_count = 0
   local retry_count = 0

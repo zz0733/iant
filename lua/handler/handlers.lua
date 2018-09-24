@@ -3,6 +3,7 @@ local link_dao = require("dao.link_dao")
 local channel_dao = require "dao.channel_dao"
 local meta_dao = require "dao.meta_dao"
 local task_dao = require "dao.task_dao"
+local ssdb_task = require "ssdb.task"
 
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
@@ -98,9 +99,9 @@ _M.retry = function(id, source)
             local task_val = cjson_safe.encode(task)
             local data_val = cjson_safe.encode(taskErr)
             log(ERR,"retry["..task.id .."](".. index.."),task:" .. task_val..",error:" .. data_val)
-            local len, err = shared_dict:lpush(task_queue_key, task_val)
+            local ret, err = ssdb_task:qretry(task.level, task_val)
             if err then
-                log(CRIT,"shared_dict:lpush:" .. task_val .. ",cause:", err)
+                log(CRIT,"ssdb_task:qretry:" .. task_val .. ",cause:", err)
                 return err, 500
             else
                return "OK", 200
@@ -228,7 +229,7 @@ _M.meta = function(id, source)
       table.insert(saveIds, v.id)
    end
    log(ERR,"handle_meta,id:" .. id .. ",count:" ..  #saveIds .. ",saveIds:" .. cjson_safe.encode(saveIds) )
-   log(ERR,"handle_meta,id:" .. id .. ",docs:" .. cjson_safe.encode(docs) )
+   -- log(ERR,"handle_meta,id:" .. id .. ",docs:" .. cjson_safe.encode(docs) )
    local resp, status = meta_dao:save_metas(docs)
    return resp, status
 end
