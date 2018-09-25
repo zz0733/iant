@@ -6,6 +6,7 @@ local task_dao = require "dao.task_dao"
 local meta_dao = require "dao.meta_dao"
 
 local ssdb_task = require "ssdb.task"
+local ssdb_vmeta= require "ssdb.vmeta"
 
 
 local log = ngx.log
@@ -40,10 +41,11 @@ local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
    for mi,mv in ipairs(hits) do
+       -- log(ERR,"meta_dao:get:" .. mv._id .. ",meta:" .. cjson_safe.encode(mv))
        local vmetaRet, err = meta_dao:get(mv._id)
        if err then
           log(ERR,"getMetaErr:" .. mv._id .. ",cause:" .. cjson_safe.encode(err))
-       else
+       elseif vmetaRet then
            local destType = source_type_dict[vmetaRet.source]
            if not destType or destType == "" then
               log(ERR,"ignoreUnkownType,id:" .. mv._id .. ",meta:" .. cjson_safe.encode(mv))
@@ -59,6 +61,12 @@ if resp and resp.hits and resp.hits.hits then
              log(ERR,"searchUnVideo.task:" .. cjson_safe.encode(newTask) )
              count = count + 1
            end
+       else
+          log(ERR,"deleteMeta:" .. mv._id)
+          local idArr = {}
+          table.insert(idArr, mv._id)
+          meta_dao:delete_by_ids(idArr)
+          -- ssdb_vmeta:remove(mv._id)
        end
    end
    
