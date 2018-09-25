@@ -218,12 +218,15 @@ function _M:fillVideoMeta(oDoc)
     if not hasMeta or not oDoc.vmeta then
        return nil, 'miss vmeta:' .. cjson_safe.encode(oDoc)
     end
-    local ret, err = ssdb_vmeta:set(oDoc.id, oDoc.vmeta)
-    if err then
-        return err, 500
+    local curCstatus = oDoc.vmeta.cstatus or 2
+    if curCstatus == 2 then
+        local ret, err = ssdb_vmeta:set(oDoc.id, oDoc.vmeta)
+        if err then
+            return err, 500
+        end
     end
-    local cstatus = hasMeta.cstatus or 0
-    hasMeta.cstatus = bit.bor(cstatus, 2)
+    local hasCstatus = hasMeta.cstatus or 0
+    hasMeta.cstatus = bit.bor(hasCstatus, curCstatus)
     hasMeta.vmeta = nil
 
     local es_body = {}
