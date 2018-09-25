@@ -40,21 +40,25 @@ local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
    for mi,mv in ipairs(hits) do
-       local _source = mv._source
-       local destType = source_type_dict[_source.source]
-       if not destType or destType == "" then
-          log(ERR,"ignoreUnkownType,id:" .. mv._id .. ",meta:" .. cjson_safe.encode(mv))
+       local _source, err = meta_dao:get(mv._id)
+       if err then
+          log(ERR,"getMetaErr:" .. mv._id .. ",cause:" .. cjson_safe.encode(err))
        else
-         local newTask = {}
-         newTask.type = destType
-         newTask.url = _source.url
-         newTask.level = 1
-         local params = {}
-         params.metaId = mv._id
-         newTask.params = params
-         local tresp, tstatus = ssdb_task:qpush( newTask.level, newTask )
-         log(ERR,"searchUnVideo.task:" .. cjson_safe.encode(newTask) )
-         count = count + 1
+           local destType = source_type_dict[_source.source]
+           if not destType or destType == "" then
+              log(ERR,"ignoreUnkownType,id:" .. mv._id .. ",meta:" .. cjson_safe.encode(mv))
+           else
+             local newTask = {}
+             newTask.type = destType
+             newTask.url = _source.url
+             newTask.level = 1
+             local params = {}
+             params.metaId = mv._id
+             newTask.params = params
+             local tresp, tstatus = ssdb_task:qpush( newTask.level, newTask )
+             log(ERR,"searchUnVideo.task:" .. cjson_safe.encode(newTask) )
+             count = count + 1
+           end
        end
    end
    

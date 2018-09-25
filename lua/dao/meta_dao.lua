@@ -268,26 +268,29 @@ function _M:searchUnVideo(fromDate, media, sources, size)
     if not util_table.is_empty_table(sources) then
        table.insert(must_array,{terms = { source = sources }})
     end
-
-    local must_nots = {}
-    -- 获取视频资源所有取值，新增cstatus需改动,cstatus=2
     local cstatus_video_arr = {}
-    table.insert(cstatus_video_arr,2)
-    table.insert(cstatus_video_arr,3)
-    table.insert(cstatus_video_arr,6)
-    table.insert(cstatus_video_arr,7)
-    table.insert(must_nots,{terms = { cstatus = cstatus_video_arr }})
+    table.insert(cstatus_video_arr,0)
+    table.insert(cstatus_video_arr,1)
+    table.insert(must_array,{terms = { cstatus = cstatus_video_arr }})
+
+    -- local must_nots = {}
+    -- -- 获取视频资源所有取值，新增cstatus需改动,cstatus=2
+    -- local cstatus_video_arr = {}
+    -- table.insert(cstatus_video_arr,2)
+    -- table.insert(cstatus_video_arr,3)
+    -- table.insert(cstatus_video_arr,6)
+    -- table.insert(cstatus_video_arr,7)
+    -- table.insert(must_nots,{terms = { cstatus = cstatus_video_arr }})
 
     local body = {
         size = size,
         query = {
             bool = {
-                must = must_array,
-                must_not = must_nots
+                must = must_array
             }
         }
     }
-    local resp, status = _M:search(body, true)
+    local resp, status = _M:search(body)
     return resp, status
 end
 return _M
