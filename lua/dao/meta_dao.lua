@@ -67,6 +67,8 @@ function _M:save_metas( docs)
             end
             if v.cstatus == 3 and (not v.pstatus or v.pstatus ~= 2) then
                v.pstatus = 1
+            else
+               v.pstatus = 0
             end
             util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
             ssdb_meta:set(v.id, v)
@@ -226,6 +228,11 @@ function _M:fillVideoMeta(oDoc)
         end
     end
     local hasCstatus = hasMeta.cstatus or 0
+    if bit.band(bit.rshift(hasCstatus,2),1) == 1 then
+        hasCstatus = bit.bxor(hasCstatus, 4)
+    elseif bit.band(bit.rshift(hasCstatus,1),1) == 1 then
+        hasCstatus = bit.bxor(hasCstatus, 2)
+    end 
     hasMeta.cstatus = bit.bor(hasCstatus, curCstatus)
     hasMeta.vmeta = nil
 

@@ -38,6 +38,15 @@ function tb:test_match()
     local metaURL = 'http://www.iqiyi.com/v_19rqzp6oy0.html'
     local metaId = '13627749211415260000'
     local oldId = '1155549679'
+
+    local hasCstatus = 6
+    if bit.band(bit.rshift(hasCstatus,2),1) == 1 then
+        hasCstatus = bit.bxor(hasCstatus, 4)
+    elseif bit.band(bit.rshift(hasCstatus,1),1) == 1 then
+        hasCstatus = bit.bxor(hasCstatus, 2)
+    end 
+    self:log( "hasCstatus:" .. bit.rshift(hasCstatus,2))
+    self:log( "hasCstatus:" .. hasCstatus)
 end
 
 tb:run()
