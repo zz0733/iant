@@ -37,6 +37,8 @@ _M.WX_REPLY_TEMPLATE = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><FromU
 
 
 _M.SNAP_ENV = os.getenv("SNAP_ENV")
+
+_M.SSDB_RESULT_COUNT = 0
 function _M.version(new_ver)
     if new_ver then
         shared_dict:set(key_version,new_ver) 
