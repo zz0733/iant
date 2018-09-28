@@ -47,6 +47,11 @@ function tb:test_match()
     end 
     self:log( "hasCstatus:" .. bit.rshift(hasCstatus,2))
     self:log( "hasCstatus:" .. hasCstatus)
+
+    local metaBody = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. metaURL .."\n"
+    local matchURL = string.match(metaBody,"(http.+)[\n]")
+    self:log( "matchURL:" .. tostring(matchURL))
+    -- self:log( "matchURL:" .. cjson_safe.encode(oMatch[1]))
 end
 
 tb:run()

@@ -29,7 +29,7 @@ local toMetaId = function ( uri )
 end
 local uri = ngx.var.uri
 local metaId = toMetaId(uri)
-log(ERR,"uri:" ..uri..",metaId:".. cjson_safe.encode(metaId))
+-- log(ERR,"uri:" ..uri..",metaId:".. cjson_safe.encode(metaId))
 if not metaId then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
@@ -40,9 +40,12 @@ local vmeta, err = ssdb_vmeta:get(metaId)
 if not vmeta then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
-if not vmeta.body and vmeta.url then
-	vmeta.body = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. vmeta.url
+if vmeta.url then
+	return ngx.redirect(vmeta.url, ngx.HTTP_MOVED_TEMPORARILY)
 end
+-- if not vmeta.body and vmeta.url then
+-- 	vmeta.body = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. vmeta.url
+-- end
 if string.match(vmeta.body, "/odflv/api.php") or string.match(vmeta.body, "/404.mp4") then
 	local hasMeta = ssdb_meta:get(metaId)
     hasMeta.id = metaId
@@ -51,6 +54,10 @@ if string.match(vmeta.body, "/odflv/api.php") or string.match(vmeta.body, "/404.
     local modifyArr = {}
 	table.insert(modifyArr, hasMeta)
 	meta_dao:save_metas( modifyArr )
+elseif string.match(vmeta.body, "EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=") then
+	local vmetaURL = string.match(vmeta.body,"(http.+)[\n]")
+	return ngx.redirect(vmetaURL, ngx.HTTP_MOVED_TEMPORARILY) 
+else
+	-- log(ERR,"vmeta:" .. cjson_safe.encode(vmeta))
+	ngx.say(vmeta.body)
 end
--- log(ERR,"vmeta:" .. cjson_safe.encode(vmeta))
-ngx.say(vmeta.body)
