@@ -55,7 +55,7 @@ if string.match(vmeta.body, "/odflv/api.php") or string.match(vmeta.body, "/404.
 	table.insert(modifyArr, hasMeta)
 	meta_dao:save_metas( modifyArr )
 elseif string.match(vmeta.body, "#EXT%-X%-STREAM%-INF:PROGRAM%-ID=1,BANDWIDTH=") then
-	local vmetaURL = string.match(vmeta.body,"(http.+)[\n]")
+	local vmetaURL = string.match(vmeta.body,"http[^\n%s]+")
 	if vmetaURL then
 		return ngx.redirect(vmetaURL, ngx.HTTP_MOVED_TEMPORARILY) 
 	end

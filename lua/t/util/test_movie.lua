@@ -48,8 +48,8 @@ function tb:test_match()
     self:log( "hasCstatus:" .. bit.rshift(hasCstatus,2))
     self:log( "hasCstatus:" .. hasCstatus)
 
-    local metaBody = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. metaURL .."\n"
-    local matchURL = string.match(metaBody,"(http.+)[\n]")
+    local metaBody = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\nhttps://fuli.zuida-youku-le.com/20180626/28905_62f204a7/index.m3u8"
+    local matchURL = string.match(metaBody,"http[^\n%s]+")
     self:log( "matchURL:" .. tostring(matchURL))
     self:log( "metaBodyMath:" .. tostring(string.match(metaBody, "#EXT%-X%-STREAM%-INF:PROGRAM%-ID=1,BANDWIDTH=")))
     local oldpat = "EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH="
