@@ -37,7 +37,7 @@ local check
                     local ret, rerr = ssdb_result:get(vv)
                     ssdb_result:remove(vv)
                     -- log(ERR,"handlers,id:" .. tostring(vv) .. ",ret:" .. cjson_safe.encode(ret) )
-                    if not util_table.isNull(ret) then
+                    if not util_table.isNull(ret) and not util_table.isNull(ret.data)then
                         local task = ret.task
                         local data = ret.data
                         local cur_handlers = data.handlers
