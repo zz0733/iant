@@ -51,6 +51,10 @@ function tb:test_match()
     local metaBody = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. metaURL .."\n"
     local matchURL = string.match(metaBody,"(http.+)[\n]")
     self:log( "matchURL:" .. tostring(matchURL))
+    self:log( "metaBodyMath:" .. tostring(string.match(metaBody, "#EXT%-X%-STREAM%-INF:PROGRAM%-ID=1,BANDWIDTH=")))
+    local oldpat = "EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH="
+    local newpat = string.gsub(oldpat,"([^\\])%-","%1%%%-")
+    self:log( "metaBodyMath:" .. tostring(string.match(metaBody, newpat)))
     -- self:log( "matchURL:" .. cjson_safe.encode(oMatch[1]))
 end
 

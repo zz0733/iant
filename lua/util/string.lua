@@ -53,3 +53,8 @@ end
 string.isString = function(src)
     return type(src) == "string";
 end
+
+string.escape = function(src)
+    return string.gsub(src,"([^\\])%-","%1%%%-")
+end
+
