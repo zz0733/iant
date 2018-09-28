@@ -17,7 +17,7 @@ local CRIT = ngx.CRIT
 local commands = handlers.commands
 local str_handlers = cjson_safe.encode(commands)
 local from = 0
-local size = 5
+local size = 2
 
 
 local check
