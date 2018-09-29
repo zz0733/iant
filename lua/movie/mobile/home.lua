@@ -35,7 +35,7 @@ function selectCodes( hits, max )
 		return lnum < rnum
 	end
 	local select_ids = {}
-	local max_select = max or 30
+	local max_select = max or 10
 	for _,hv in ipairs(hits) do
 		local elements = hv._source.elements
 		if elements then
@@ -100,7 +100,7 @@ function makeOrderContents( ... )
     table.insert(must_arr, { match = { pstatus = 1}})
     local body = {
 	  from = 0,
-	  size = 20,
+	  size = 10,
 	  sort = {
 	    ctime = {
 	      order = "desc"

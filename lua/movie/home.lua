@@ -35,7 +35,7 @@ function selectCodes( hits, max )
 		return lnum < rnum
 	end
 	local select_ids = {}
-	local max_select = max or 30
+	local max_select = max or 20
 	for _,hv in ipairs(hits) do
 		local elements = hv._source.elements
 		if elements then
@@ -184,7 +184,7 @@ while true do
 end
 data.contents = order_contents
 
-local movie_codes  = getContentByChannel("movie","正在热播",30)
+local movie_codes  = getContentByChannel("movie","正在热播",15)
 local from = 0
 local size = #movie_codes
 -- local fields = {"article","digests","lcount","issueds","evaluates","genres"}

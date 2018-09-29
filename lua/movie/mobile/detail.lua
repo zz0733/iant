@@ -105,7 +105,7 @@ end
 local crumbs = {}
 local issueds = source.issueds[1]
 
-log(ERR,"link_hits，mobile:" .. cjson_safe.encode(source.issueds) ..",lcount:" .. lcount)
+-- log(ERR,"link_hits，mobile:" .. cjson_safe.encode(source.issueds) ..",lcount:" .. lcount)
 
 local media_names = { 
    tv = "电视剧",

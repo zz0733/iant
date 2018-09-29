@@ -43,8 +43,10 @@ local check
                         local cur_handlers = data.handlers
                         for _, cmd in ipairs(cur_handlers) do
                              local resp, estatus = handlers.execute(cmd, task.id, ret)
-                             log(ERR,"handle_" .. cmd ..",id:" .. tostring(task.id) .. ",type:".. tostring(task.type) ..",status:" 
-                                .. cjson_safe.encode(estatus) ..",resp:"..cjson_safe.encode(resp))
+                             if estatus ~= 200 then
+                                 log(ERR,"handle_" .. cmd ..",id:" .. tostring(task.id) .. ",type:".. tostring(task.type) 
+                                    ..",status:" .. cjson_safe.encode(estatus) ..",resp:"..cjson_safe.encode(resp))
+                             end
                         end
                     end
                 end
