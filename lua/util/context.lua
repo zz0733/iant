@@ -11,8 +11,8 @@ _M.weibo_app_key = "942886765"
 _M.weibo_uid = "1766676277"
 
 
-_M.search_page_size = 30
-_M.search_max_page = 5
+_M.search_page_size = 20
+_M.search_max_page = 2
 _M.link_page_size = 10
 _M.link_max_page = 20
 

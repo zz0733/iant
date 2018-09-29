@@ -20,7 +20,8 @@ if not qWord then
 end
 local cur_page = tonumber(args.page) or 1
 if cur_page > context.search_max_page then
-   cur_page = context.search_max_page
+   -- cur_page = context.search_max_page
+   return ngx.exit(ngx.HTTP_NOT_FOUND)
 elseif cur_page < 1 then
    cur_page = 1
 end
