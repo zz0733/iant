@@ -101,6 +101,11 @@
 		                            str_img = '/img/' .. str_img
 		                            str_img = ngx.re.sub(str_img, "http:", "https:")
 		                          end
+		                          if media == 1 then
+			                           str_img = ngx.re.sub(str_img, "/img/", "/img/515x220/")
+			                       else
+			                           str_img = str_img
+			                       end
 						     
 		                        if media == 1 then
 		                         %}
