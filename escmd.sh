@@ -440,9 +440,9 @@ curl -XGET 'http://localhost:9200/link/_search?pretty' -d '
 }
 '
 
-curl -XGET "http://localhost:9200/content/_search?pretty" -d'
+curl -XGET "http://localhost:9200/channel/_search?pretty" -d'
 {  
-    "size" : 1,  
+    "size" : 2,  
     "query": {
        "match_all":{
        }
@@ -772,6 +772,24 @@ curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
         {
           "match": {
             "media": 0
+          }
+        }
+      ]
+    }
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
+{
+  "size": 5,
+  "sort":{"epindex":{"order":"desc"}},
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "albumId": 
           }
         }
       ]

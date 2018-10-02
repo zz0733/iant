@@ -29,9 +29,9 @@
         <li class="active"><strong>{{title}}</strong></li>
       </ol>
 
-      <div class="container-fluid">
+      <div class="container-fluid video-detail">
 					<div class="row top-margin">
-						  <div class="col-xs-12 col-sm-4 col-md-3 movie-left">
+						  <div class="col-md-5 movie-left">
 						       {%
 						          local digests = digests
 								  local str_img
@@ -47,11 +47,31 @@
 		                            str_img = '/img/' .. str_img
 		                            str_img = ngx.re.sub(str_img, "http:", "https:")
 		                          end
-						       %}
-						       <img src="{{str_img}}" 
-						       class="img-thumbnail movie-img" alt="{{title}}"/>
+						     
+		                        if media == 1 then
+		                         %}
+		                            <div  class="video-inner" >
+				                        <div class="title-box">
+				                            <div class="progressBar" style="width: 0%;"></div>
+				                        </div>
+				                        <div class="video-box">
+				                           <div class="video-cover">
+				                              <span class='button video-init'>
+				                                <button class="button video-play"></button>
+				                              </span>
+				                           </div>
+				                           <video controls data-url="/vmeta/{*id*}.m3u8" poster="{*str_img*}" ></video>
+				                       </div>
+				                    </div>
+		                         {%
+		                        else 
+		                         %} 
+		                          	<img src="{{str_img}}" class="img-thumbnail movie-img" alt="{{title}}"/>
+		                         {%
+		                        end
+		                    %}
 					      </div>
-					      <div class="col-xs-12 col-sm-8 col-md-9 movie-right">
+					      <div class="col-md-7 movie-right">
 							      <ul class="list-group">
 								    <li class="list-group-item">
 										    <h1 class="movie-title-margin">
@@ -111,6 +131,10 @@
 
        <input type="hidden" id="did" name="did" value="{{id}}">
        <input type="hidden" id="title" name="title" value="{{title}}">
+        {% if albumId then %}
+		    <input type="hidden" id="albumId" name="albumId" value="{{albumId}}">
+		    <input type="hidden" id="epindex" name="epindex" value="{{epindex}}">
+		{% end %}
        <div class="container top-margin">
 		   <div class="story">
 
@@ -197,8 +221,8 @@
 </div>
 
 <script src="{*static_host*}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
-<script src="{*static_host*}/assets/js/custom/detail.js?v={{version}}"></script>
-
+<script src="{*static_host*}/assets/js/movie/detail.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/movie/stream.js?v={{version}}"></script>
 
 
 {(decorator/footer.html)}

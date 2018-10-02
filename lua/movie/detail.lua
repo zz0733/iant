@@ -39,6 +39,7 @@ end
 -- local has_content = ssdb_content:get(content_id)
 local has_content = ssdb_meta:get(content_id)
 if not has_content then
+	log(ERR,"uri:" .. tostring(uri) .. ",content_id:" .. tostring(content_id) .. ",miss:" .. cjson_safe.encode(has_content))
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
@@ -108,12 +109,16 @@ end
 -- log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
 
 local crumbs = {}
-local issueds = source.issueds[1]
-
 local media_names = { 
    tv = "电视剧",
    movie = "电影"
 }
+if not has_content.sort then
+   has_content.sort = 0
+   if string.len(content_id) > 16 then
+   	  has_content.sort =1
+   end
+end
 local sortName = util_const.index2Name("SORT_DICT",has_content.sort)
 has_content.sortName = sortName
 local year = has_content.year
@@ -134,5 +139,5 @@ has_content.config  = {
 	weibo_uid = context.weibo_uid,
 	weibo_app_key = context.weibo_app_key
 }
--- log(ERR,"has_content:" .. cjson_safe.encode(has_content))
+log(ERR,"has_content:" .. cjson_safe.encode(has_content))
 template.render("detail.html", has_content)

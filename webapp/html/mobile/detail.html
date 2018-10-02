@@ -20,33 +20,38 @@
 <div class="main data-box">
 	<div class="container-fluid">
 		<div class="detail-box">
-			 <h1 class="detail-title">{*_source.article.title*}</h1>
+			 <h1 class="detail-title">{{title}}</h1>
 			 <div class="issued-share">
 			 	 <div class="issued">
 			 	  <div class="author">
-			 	  	{% local directors = _source.directors or {}; %}
-		            {* table.concat(directors,' ') *}
+			 	  	{% 
+			 	  		local directors = directors or {}; 
+			 	  		local str_director = "未知导演"
+			 	  		if #directors > 0 then
+						   str_director = table.concat(directors,' ')
+			 	  		end
+			 	  	%}
+		            {{str_director}}
 			 	  </div>
 		           <div class="time">
 		           	 {%
-		           	      local time
+		           	      local timeNewly
 		           	      local time_gap
-						  local issueds = _source.issueds or {};
+						  local issueds = issueds or {};
 						  local cur_time = ngx.time();
-				          for i,v in ipairs(issueds) do
-							 local issued = v.time;  
+				          for i,issued in ipairs(issueds) do
 							 if string.len(tostring(issued)) > 10 then 
 							    issued = math.modf( issued / 1000)  
 							 end
 							 local cur_gap = math.abs(cur_time - issued)
-							 if not time or cur_gap < time_gap then
-							    time = issued
+							 if not timeNewly or cur_gap < time_gap then
+							    timeNewly = issued
 							    time_gap = cur_gap
 							 end
 						  end
-						  local str_time = os.date("%Y-%m-%d",time)
-						  if time then
-						     str_time = os.date("%Y-%m-%d",time)
+						  local str_time = "-"
+						  if timeNewly then
+						    str_time = os.date("%Y-%m-%d",timeNewly)
 						  end
 		           	 %}
 		           	 {{str_time}}
@@ -54,25 +59,20 @@
 			 	 </div>
 			 	 <div class="share-group">
 	                {%
-	                  local media_names = { 
-						   tv = "电视剧",
-						   movie = "电影"
-					  }
-	                  local directors = _source.directors or {}; 
-	                  local media = _source.article.media
+	                  local directors =  directors or {}; 
 	                  local content = ""
+	                  local sortName = sortName or ""
 					  if directors and directors[1] then
 					     content = directors[1] .. "导演的"
-						 content = content .. media_names[media]
+						 content = content .. sortName
 					  end
-				      content = content .. "《" .. _source.article.title .."》"
-	                  local evaluates = _source.evaluates;
-	                  if evaluates and evaluates[1] then
-	                       local rate = evaluates[1].rate
+				      content = content .. "《" .. title .."》"
+	                  if douban and douban.rate then
+	                       local rate = douban.rate
 	                       content = content .. ",豆瓣评分" .. rate;
 	                  end
-	                  if _source.article.cost then
-		                   content = content .. ",约" .. _source.article.cost .."分钟";
+	                  if  cost then
+		                   content = content .. ",约" .. cost .."分钟";
 	                  end
 					  content = content .. "，免费资源为你所用."
 					  local encode_title = string.encodeURI(content)
@@ -84,65 +84,71 @@
                     <a href="http://www.jiathis.com/send/?webid=renren&amp;url={*header.canonical*}&amp;title={{encode_title}}&amp;pic={{str_img}}&amp;uid={*config.jiathis_uid*}"><img src="{*static_host*}/assets/img/share_renren.png"></a>
 	            </div>
 			 </div>
-			 <div class="article">
-				   <input type="hidden" id="did" name="did" value="{{context._id}}">
-			       <input type="hidden" id="title" name="title" value="{{context._source.article.title}}">
-			       <div class="digest">
-			       	{%
-				          local digests = _source.digests
-		                  if digests then
-		                     for _,v in ipairs(digests) do
-		                        if v.sort == "img" then
-		                          local str_img = ngx.re.sub(v.content, "[%.]webp", ".jpg")
-		                          if str_img and not string.match(str_img,"^http") then
-		                            str_img = "/img/" .. str_img
-		                            str_img = ngx.re.sub(str_img, "http:", "https:")
-		                          end
-		                          local str_title = v.title
-							      %}  <img src="{*str_img*}" class="digest-img" alt="{{str_title}}" >  {%
-							     else 
-						          local str_title = v.title or v.content;
-							      %} <p>{{str_title}}</p>  {%
-							     end 
-		                     end
-		                  end
-			       %}
-			       </div>
+			 <div class="article video-detail">
+			       <input type="hidden" id="did" name="did" value="{{id}}">
+			       <input type="hidden" id="title" name="title" value="{{title}}">
+			        {% if albumId then %}
+					    <input type="hidden" id="albumId" name="albumId" value="{{albumId}}">
+					    <input type="hidden" id="epindex" name="epindex" value="{{epindex}}">
+					{% end %}
+					
+					{%
+						local str_img
+				        if digests then
+				           for _,v in ipairs(digests) do
+				              str_img = v
+			                  str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+			                  str_img = ngx.re.sub(str_img, "http:", "https:")
+			                  break
+				           end
+				        end
+				        if str_img and not string.match(str_img,"^http") then
+		                  str_img = '/img/' .. str_img
+		                  str_img = ngx.re.sub(str_img, "http:", "https:")
+		                end
+                    %}
+                    {%
+                        if media == 1 then
+                         %}
+                            <div  class="video-inner" >
+		                        <div class="title-box">
+		                            <div class="progressBar" style="width: 0%;"></div>
+		                        </div>
+		                        <div class="video-box">
+		                           <div class="video-cover">
+		                              <span class='button video-init'>
+		                                <button class="button video-play"></button>
+		                              </span>
+		                           </div>
+
+		                           <video controls data-url="/vmeta/{*id*}.m3u8" poster="{*str_img*}" ></video>
+		                       </div>
+		                    </div>
+                         {%
+                        else 
+                         %} 
+                          	<div class="digest">
+                          	   <img src="{*str_img*}" class="digest-img" alt="{{title}}" > 
+                          	</div> 
+                         {%
+                        end
+                    %}
 			       <div class="detail">
-				        {%
-				          local contents = _source.contents
-		                  if contents then
-		                     for _,v in ipairs(contents) do
-		                        if v.sort == "img" then
-		                          local str_img = ngx.re.sub(v.content, "[%.]webp", ".jpg")
-		                          if str_img and not string.match(str_img,"^http") then
-		                            str_img = '/img/' .. str_img
-		                            str_img = ngx.re.sub(str_img, "http:", "https:")
-		                          end
-		                          local str_title = v.text or ""
-							      %}  <img src="{{str_img}}" class="content-img" alt="{{str_title}}" > {%
-							     else 
-						          local str_content = v.text or v.content;
-							      %} <p>{{str_content}}</p>  {%
-							     end 
-		                     end
-		                  end
-		                %}
+				        <p>{{html}}</p>
 			       </div>
 			 </div>
 			 <div class="tag-box">
 			    {% 
-			        local genres = _source.genres or {} 
-					for _,v in ipairs(genres) do
+			        local genres = genres or {} 
+					for _,genre in ipairs(genres) do
 						%}
-						<a href="/m/movie/genre/{*string.encodeURI(v)*}.html" 
-						class="tag-name">{{v}}</a>
+						<a href="/m/movie/genre/{*string.encodeURI(genre)*}.html" 
+						class="tag-name">{{genre}}</a>
 						{%
 					end
 			    %}
 			 </div>
 			 <div id ="linkmore" class="link-more">
-			      <input type="hidden" id="curPage" name="curPage" value="0">
 			 </div>
 		</div>
 	</div>
@@ -150,5 +156,6 @@
 
 <script src="{*static_host*}/assets/js/custom/urlcodesc.js?v={{version}}"></script>
 <script src="{*static_host*}/assets/js/mobile/detail.js?v={{version}}"></script>
+<script src="{*static_host*}/assets/js/movie/stream.js?v={{version}}"></script>
 
 {(mobile/decorator/footer.html)}

@@ -1,15 +1,19 @@
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
 local util_table = require "util.table"
-local dochtml = require "util.dochtml"
-local context = require "util.context"
+local util_dochtml = require "util.dochtml"
+local util_context = require "util.context"
+local util_string = require "util.string"
+local util_const = require "util.const"
 
 local template = require "resty.template"
 
 local content_dao = require "dao.content_dao"
 local link_dao = require "dao.link_dao"
 local channel_dao = require "dao.channel_dao"
-local util_string = require "util.string"
+
+
+local ssdb_meta = require "ssdb.meta"
 
 local log = ngx.log
 local ERR = ngx.ERR
@@ -33,45 +37,17 @@ if not content_id then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
-local ids = {}
-ids[1] = content_id
-local resp, status = content_dao:query_by_ids(ids)
-if not resp or resp.hits.total < 1 then
-	return ngx.exit(ngx.HTTP_NOT_FOUND)
-end
-
-local content_doc = resp.hits.hits[1]
-local source = content_doc._source
-local lcount = source.lcount or 0
-local  from = 0
-local  size = 10
-local  fields = {"title","space","ctime","issueds","targets"}
-local resp
--- if lcount > 0 then
--- 	resp  = link_dao:query_by_target(content_doc._id, from, size, fields)
--- else
--- 	resp  = link_dao:query_by_titles(source.names, from, size, fields)
--- end
-resp  = link_dao:query_by_target_title(content_doc._id,source.title, from, size, fields)
-local link_hits = {}
-if resp and resp.hits then
-	link_hits = resp.hits
-	for _,v in ipairs(link_hits.hits) do
-		local targets = v._source.targets;
-		if targets then
-			local id = content_doc._id
-			local new_targets = {}
-			for _,tv in ipairs(targets) do
-				if tv.id and tv.id == id then
-					table.insert(new_targets, tv);
-					break;
-				end
-			end
-			v._source.targets = new_targets
-		end
+-- local has_content = ssdb_content:get(content_id)
+local has_content = ssdb_meta:get(content_id)
+if not has_content then
+	log(ERR,"uri:" .. tostring(uri) .. ",content_id:" .. tostring(content_id) .. ",miss:" .. cjson_safe.encode(has_content))
+	if has_content == false then
+		 -- 500 error
+		return ngx.exit(ngx.HTTP_INTERNAL_SERVER_ERROR)
+	else
+		return ngx.exit(ngx.HTTP_NOT_FOUND)
 	end
 end
--- log(ERR,"query_by_target_title:" .. cjson_safe.encode(link_hits) ..",lcount:" .. lcount)
 
 local ids = {}
 table.insert(ids,"hotest")
@@ -101,33 +77,33 @@ if resp and resp.hits.hits[1] then
 end
 
 -- log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
-
 local crumbs = {}
-local issueds = source.issueds[1]
-
--- log(ERR,"link_hits，mobile:" .. cjson_safe.encode(source.issueds) ..",lcount:" .. lcount)
-
-local media_names = { 
-   tv = "电视剧",
-   movie = "电影"
-}
-local media = source.article.media
-local year = source.article.year
-crumbs[#crumbs + 1] = {name = media_names[media], link1 = "/m/media/" .. media}
-if issueds then
-	crumbs[#crumbs + 1] = {name = issueds.region, link1 = "/m/region/" .. issueds.region }
+if not has_content.sort then
+   has_content.sort = 0
+   if string.len(content_id) > 16 then
+   	  has_content.sort =1
+   end
 end
-crumbs[#crumbs + 1] = {name = year, link1 = "/year/" .. tostring(year)}
-content_doc.header = dochtml.detail_header(content_doc)
-content_doc.header.canonical = "http://www.lezomao.com/m/movie/detail/"..tostring(id) .. ".html"
-context.withGlobal(content_doc)
-content_doc.crumbs   = crumbs
-content_doc.link_hits  = link_hits
-content_doc.recmd_map  = recmd_map
-content_doc.config  = {
-	jiathis_uid = context.jiathis_uid,
-	weibo_uid = context.weibo_uid,
-	weibo_app_key = context.weibo_app_key
+local sortName = util_const.index2Name("SORT_DICT", has_content.sort)
+has_content.sortName = sortName
+local year = has_content.year
+local regions = has_content.regions
+table.insert(crumbs , {name = sortName, link1 = "/media/" .. sortName  ..".html"})
+if regions and regions[1] then
+	local region = regions[1]
+	table.insert(crumbs , {name = region, link = "/movie/region/" .. region  ..".html"})
+end
+table.insert(crumbs , {name = year, link1 = "/movie/year/" .. tostring(year)  ..".html"})
+
+has_content.header = util_dochtml.detail_header(has_content)
+has_content.header.canonical = "http://www.lezomao.com/m/movie/detail/"..tostring(content_id) .. ".html"
+util_context.withGlobal(has_content)
+has_content.crumbs   = crumbs
+has_content.recmd_map  = recmd_map
+has_content.config  = {
+	jiathis_uid = util_context.jiathis_uid,
+	weibo_uid = util_context.weibo_uid,
+	weibo_app_key = util_context.weibo_app_key
 }
 
-template.render("mobile/detail.html", content_doc)
+template.render("mobile/detail.html", has_content)
