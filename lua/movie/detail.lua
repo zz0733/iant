@@ -139,5 +139,5 @@ has_content.config  = {
 	weibo_uid = context.weibo_uid,
 	weibo_app_key = context.weibo_app_key
 }
-log(ERR,"has_content:" .. cjson_safe.encode(has_content))
+-- log(ERR,"has_content:" .. cjson_safe.encode(has_content))
 template.render("detail.html", has_content)
