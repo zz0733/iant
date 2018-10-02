@@ -30,48 +30,8 @@
       </ol>
 
       <div class="container-fluid video-detail">
-					<div class="row top-margin">
-						  <div class="col-md-5 movie-left">
-						       {%
-						          local digests = digests
-								  local str_img
-				                  if digests then
-				                     for _,v in ipairs(digests) do
-				                        str_img = v
-			                            str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-			                            str_img = ngx.re.sub(str_img, "http:", "https:")
-			                            break
-				                     end
-				                  end
-				                  if str_img and not string.match(str_img,"^http") then
-		                            str_img = '/img/' .. str_img
-		                            str_img = ngx.re.sub(str_img, "http:", "https:")
-		                          end
-						     
-		                        if media == 1 then
-		                         %}
-		                            <div  class="video-inner" >
-				                        <div class="title-box">
-				                            <div class="progressBar" style="width: 0%;"></div>
-				                        </div>
-				                        <div class="video-box">
-				                           <div class="video-cover">
-				                              <span class='button video-init'>
-				                                <button class="button video-play"></button>
-				                              </span>
-				                           </div>
-				                           <video controls data-url="/vmeta/{*id*}.m3u8" poster="{*str_img*}" ></video>
-				                       </div>
-				                    </div>
-		                         {%
-		                        else 
-		                         %} 
-		                          	<img src="{{str_img}}" class="img-thumbnail movie-img" alt="{{title}}"/>
-		                         {%
-		                        end
-		                    %}
-					      </div>
-					      <div class="col-md-7 movie-right">
+					<div class="top-margin">
+						  <div class="movie-right">
 							      <ul class="list-group">
 								    <li class="list-group-item">
 										    <h1 class="movie-title-margin">
@@ -124,7 +84,47 @@
 								    </li>
 								  </ul>
 					       </div>
-				      </div>
+				      
+						  <div class="movie-left">
+						       {%
+						          local digests = digests
+								  local str_img
+				                  if digests then
+				                     for _,v in ipairs(digests) do
+				                        str_img = v
+			                            str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+			                            str_img = ngx.re.sub(str_img, "http:", "https:")
+			                            break
+				                     end
+				                  end
+				                  if str_img and not string.match(str_img,"^http") then
+		                            str_img = '/img/' .. str_img
+		                            str_img = ngx.re.sub(str_img, "http:", "https:")
+		                          end
+						     
+		                        if media == 1 then
+		                         %}
+		                            <div  class="video-inner" >
+				                        <div class="title-box">
+				                            <div class="progressBar" style="width: 0%;"></div>
+				                        </div>
+				                        <div class="video-box">
+				                           <video data-url="/vmeta/{*id*}.m3u8" poster="{*str_img*}" ></video>	
+				                           <svg class="video-play-btn" viewBox="0 0 200 120" alt="Play video">
+											    <circle cx="100" cy="30" r="60" fill="none" stroke-width="12" stroke="#fff"></circle>
+											    <polygon points="80, 0 80, 60 130, 30" fill="#fff"></polygon>
+										   </svg>
+				                       </div>
+				                    </div>
+		                         {%
+		                        else 
+		                         %} 
+		                          	<img src="{{str_img}}" class="img-thumbnail movie-img" alt="{{title}}"/>
+		                         {%
+		                        end
+		                    %}
+					      </div>
+					    </div> 
 				</div>
 			</div>
 		</div>

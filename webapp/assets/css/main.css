@@ -4,6 +4,7 @@ body {
 }
 
 
+
 /* Header */
 
 #head {
@@ -83,11 +84,13 @@ body {
 }
 
 
+
 /* Autohide navbar */
 
 .slideUp {
     top: -100px;
 }
+
 
 
 /*move fast and ease-out*/
@@ -98,6 +101,7 @@ body {
     -o-transition: all 0.4s ease-out;
     transition: all 0.4s ease-out;
 }
+
 
 
 /* Highlights (in jumbotron in most cases) */
@@ -125,6 +129,7 @@ body {
 }
 
 .h-body {}
+
 
 
 /* Typography */
@@ -176,6 +181,7 @@ ul.list-spaces li {
 }
 
 
+
 /* Helpers */
 
 .container-full {
@@ -219,9 +225,11 @@ img.pull-left {
 }
 
 
+
 /* Main content block */
 
 .maincontent {}
+
 
 
 /* Sidebars */
@@ -243,6 +251,7 @@ img.pull-left {
 .sidebar .h3 {
     margin-top: 20px;
 }
+
 
 
 /* Footer */
@@ -330,6 +339,7 @@ img.pull-left {
 }
 
 
+
 /* custom */
 
 #intro {
@@ -364,6 +374,7 @@ img.pull-left {
 .no-padding {
     padding: 0;
 }
+
 
 
 /**----navbar--start----**/
@@ -463,6 +474,7 @@ a:hover {
 }
 
 
+
 /**----navbar--end----**/
 
 .top-margin {
@@ -475,11 +487,19 @@ a:hover {
 
 .movie-left {
     padding-left: 0px;
+    max-width: 516px;
+}
+
+.movie-left .video-inner {
+    padding: 0px;
 }
 
 .movie-right {
     padding-left: 0px;
     height: 310px;
+    max-width: 60%;
+    min-width: 50%;
+    float: right;
 }
 
 .movie-title-margin {
@@ -524,9 +544,10 @@ a:hover {
 }
 
 
+
 /* .weekly-box img {
-	width: 86px;
-	height: 122px;
+    width: 86px;
+    height: 122px;
 } */
 
 .row.content {
@@ -608,6 +629,7 @@ a:hover {
 }
 
 
+
 /* 隐藏统计文字 */
 
 .stat a[title] {
@@ -631,6 +653,7 @@ a:hover {
     margin-bottom: 0px;
     font-size: 18px;
 }
+
 
 
 /* movie-list */
@@ -661,6 +684,7 @@ a:hover {
 strong.rate {
     color: #e09015;
 }
+
 
 
 /* star---start */
@@ -750,6 +774,7 @@ strong.rate {
 }
 
 
+
 /* tags---start */
 
 .tags {
@@ -824,6 +849,7 @@ strong.rate {
 .pagination .page-number {
     color: #39414a
 }
+
 
 
 /* back to top start---*/
@@ -1129,6 +1155,7 @@ a.link-title {
 }
 
 
+
 /*jumper*/
 
 .checking-box {
@@ -1155,6 +1182,7 @@ a.link-title {
 .jumpTo {
     text-decoration: underline;
 }
+
 
 
 /*search*/
@@ -1280,6 +1308,7 @@ a.lbtn-tag:hover {
 }
 
 
+
 /**MovieEditList**/
 
 .attr-wp {
@@ -1293,6 +1322,7 @@ a.lbtn-tag:hover {
 .col-wp.edit-col-wp {
     padding-bottom: 10px;
 }
+
 
 
 /**MovieEditDetail**/
@@ -1354,6 +1384,7 @@ body.home>div.main {
 }
 
 
+
 /*pager.html*/
 
 .pager>.active>a,
@@ -1368,6 +1399,7 @@ body.home>div.main {
     background-color: #337ab7;
     border-color: #337ab7;
 }
+
 
 
 /*home.html*/
@@ -1478,6 +1510,7 @@ body.home>div.main {
 .wx-mp-img {
     margin: 0 auto;
 }
+
 
 
 /*torrent.html*/
@@ -1958,7 +1991,6 @@ h1.post-title {
 
 .video-inner {
     position: relative;
-    padding: 10px 0;
     border-bottom: 1px solid #e8e8e8;
     height: 286px;
 }
@@ -1979,7 +2011,33 @@ h1.post-title {
 .video-inner .video-box-cms video {
     width: 515px;
     height: 220px;
+    vertical-align: middle;
 }
+
+/*隐藏默认视频控件*/
+.video-box video.controls-hidden::-webkit-media-controls {
+    display: none;
+}
+
+.video-play-btn {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 10px calc(50% - 50px);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    opacity: 0.95;
+    cursor: pointer;
+    /*background-image: linear-gradient(transparent, #000);*/
+    transition: opacity 150ms;
+}
+
+.video-play-btn.is-hidden {
+    display: none;
+}
+
 
 .video-stat-box span {
     font-size: 15px;
@@ -2038,10 +2096,15 @@ h1.post-title {
     outline: none;
 }
 
+
+
+
+
 img.video-img {
     width: 515px;
     height: 220px;
 }
+
 
 
 /*cms/link.html*/
