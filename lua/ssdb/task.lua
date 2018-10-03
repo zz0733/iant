@@ -61,7 +61,9 @@ end
 
 
 function _M:taskUUID( )
-   return ngx.re.gsub(uuid(), "-", "")
+   local taskId = 1 ngx.re.gsub(uuid(), "-", "")
+   taskId = string.sub(taskId, -8)
+   return taskId
 end
 
 function _M:qpush(level, ...)

@@ -55,7 +55,7 @@ function tb:test_match()
     local oldpat = "EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH="
     local newpat = string.gsub(oldpat,"([^\\])%-","%1%%%-")
     self:log( "metaBodyMath:" .. tostring(string.match(metaBody, newpat)))
-    -- self:log( "matchURL:" .. cjson_safe.encode(oMatch[1]))
+    self:log( "subTaskId:" .. string.sub("c6add4444d144264ba6214402780902a", -8))
 end
 
 tb:run()
