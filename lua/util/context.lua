@@ -38,15 +38,14 @@ _M.WX_REPLY_TEMPLATE = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><FromU
 
 _M.SNAP_ENV = os.getenv("SNAP_ENV")
 
-_M.SSDB_RESULT_COUNT = 0
+
+_M.GLOBAL_VERSION = ngx.time()
 function _M.version(new_ver)
     if new_ver then
-        shared_dict:set(key_version,new_ver) 
+        _M.GLOBAL_VERSION =  new_ver
         return new_ver
     end
-    local ver =  shared_dict:get(key_version)
-   
-   return ver or _M.version(ngx.time())
+    return  _M.GLOBAL_VERSION
 end
 
 function _M.withGlobal(ctx)
