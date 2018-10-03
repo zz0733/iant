@@ -841,11 +841,10 @@ h1.post-title {
 
 .video-inner .video-box {
     background-color: #999;
-    max-height: 180px;
+    max-height: 160px;
 }
 .video-inner .video-box video {
     width: 300px;
-    max-height: 180px;
     vertical-align: middle;
 }
 

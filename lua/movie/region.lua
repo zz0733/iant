@@ -9,6 +9,9 @@ local template = require "resty.template"
 local content_dao = require "dao.content_dao"
 local link_dao = require "dao.link_dao"
 
+
+local meta_dao = require "dao.meta_dao"
+
 local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
@@ -32,7 +35,7 @@ local select_title = function (hits )
 	end
 	local index = math.random(1, #doc_arr)
 	local doc = doc_arr[index]
-	return doc._source.article.title;
+	return doc.title;
 end
 
 local uri = ngx.var.uri
@@ -51,13 +54,46 @@ end
 local  size = context.search_page_size
 local  from = (cur_page - 1) * size
 -- log(ERR,"region:" .. tostring(qWord))
-local hits = {}
-local  fields = {"article","digests","lcount","issueds","evaluates","genres"}
-local resp, status = content_dao:query_by_region(from, size, qWord, fields);
+local retHits = { hits = {} }
+
+local sort_arr = {}
+-- table.insert(sort_arr, { _score = { order = "desc" }})
+table.insert(sort_arr, { epmax_time = { order = "desc" }})
+
+local must_arr = {}
+-- table.insert(must_arr, { match = { pstatus = 1}})
+table.insert(must_arr, { terms = { regions = {qWord}}})
+local body = {
+  from = from,
+  size = size,
+  sort = sort_arr,
+  query = {
+    bool = {
+	    must = must_arr
+    }
+  }
+}
+-- log(ERR,"body:" .. cjson_safe.encode(body))
+local resp, status = meta_dao:search(body);
 if resp and resp.hits then
-	hits = resp.hits
+	retHits.total = resp.hits.total
+	local hits = retHits.hits
+	for _,v in ipairs(resp.hits.hits) do
+		local meta = meta_dao:get(v._id)
+		if meta then
+			local regionMeta = {}
+			regionMeta.id = meta.id
+			regionMeta.title = meta.title
+			regionMeta.digests = meta.digests
+			regionMeta.genres = meta.genres
+			regionMeta.rate = meta.douban_rate
+			regionMeta.cost = meta.cost
+			regionMeta.media = meta.media
+			table.insert(hits, regionMeta)
+		end
+	end
 end
--- log(ERR,"hits:" .. cjson_safe.encode(hits))
+-- log(ERR,"hits:" .. cjson_safe.encode(retHits))
 
 local header = {}
 header.canonical = "http://www.lezomao.com" .. ngx.var.uri
@@ -71,11 +107,12 @@ header.title = qWord .. "-搜索结果,为你所用，才是资讯 - 狸猫资�
 local content_doc = {}
 content_doc.header = header
 context.withGlobal(content_doc)
-content_doc.hits  = hits
-content_doc.qWord  = select_title(hits)
+content_doc.hits  = retHits
+content_doc.qWord  = select_title(retHits)
 content_doc.region  = qWord
 content_doc.base_uri  = ngx.var.uri
 content_doc.cur_page  = cur_page
 content_doc.page_size  = context.search_page_size
 content_doc.max_page  = context.search_max_page
+content_doc.total_count = retHits.total or 0
 template.render("region.html", content_doc)

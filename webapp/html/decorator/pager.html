@@ -3,7 +3,7 @@
     <ul class="pager">
       {%
         local cur_page = context.cur_page or 1;
-        local total = hits.total;
+        local total = context.total_count;
         local page_total = total / page_size;
         page_total = math.ceil(page_total)
         if page_total > max_page then
