@@ -72,6 +72,7 @@ function _M:toMetaBean( sVal )
          -- dv.content = '/img/a9130b4f2d5e7acd.jpg'
          if util_table.is_table(imgURL) then
             log(ERR,"table imgURL:" .. cjson_safe.encode(imgURL) .. ",sVal:" .. sVal)
+            jsonVal = nil
          else
            if string.match(imgURL,"^/img/") then
               digests[index] = util_context.CDN_URI .. imgURL
