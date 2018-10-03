@@ -74,7 +74,7 @@ local body = {
     }
   }
 }
-log(ERR,"body:" .. cjson_safe.encode(body))
+-- log(ERR,"body:" .. cjson_safe.encode(body))
 local resp, status = meta_dao:search(body);
 if resp and resp.hits then
 	retHits.total = resp.hits.total
