@@ -71,7 +71,6 @@ if resp and resp.hits then
 	end
 end
 -- log(ERR,"hits:" .. cjson_safe.encode(retHits))
-log(ERR,"hits:" .. cjson_safe.encode(resp))
 local header = {}
 header.canonical = "http://www.lezomao.com" .. ngx.var.uri
 if ngx.var.QUERY_STRING and cur_page > 1 then

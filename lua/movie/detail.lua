@@ -109,10 +109,7 @@ end
 -- log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
 
 local crumbs = {}
-local media_names = { 
-   tv = "电视剧",
-   movie = "电影"
-}
+
 if not has_content.sort then
    has_content.sort = 0
    if string.len(content_id) > 16 then

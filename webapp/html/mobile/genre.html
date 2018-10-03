@@ -24,47 +24,66 @@
                <ul class="feed-ul">
                  <div class="crumb">
                    <ol class="breadcrumb">
-                    <li class="active"><strong>{*context.qWord*}</strong></li>
+                    <li class="active"><strong>类型：{*context.genre*}</strong></li>
                   </ol>
                  </div>
                {%
                 for i,v in ipairs(hits.hits) do
-                  local source = v._source;
-                  local article = source.article;
+                  local source = v;
                   local genres = source.genres;
                   local digests = source.digests;
-                  local evaluates = source.evaluates;
-                  local rate
-                  if evaluates and evaluates[1] then
-                       rate = evaluates[1].rate
-                  end
+                  local rate = source.rate
+                
                   local str_cost
-                  if article.cost then
-                     local lcost = article.cost / 60
-                     str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+                  if source.cost then
+                     local minute = math.modf(source.cost / 60)
+                     local hour = minute / 60
+                     str_cost =  math.modf(hour) .. ":" .. math.fmod(minute, 60 ) .. ":00"
                   end
                   local str_img
                   if digests then
                      for _,v in ipairs(digests) do
-                        if v.sort == 'img' then
-                           str_img = v.content
-                           str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                           str_img = ngx.re.sub(str_img, "http:", "https:")
-                           break
+                        str_img = v
+                        str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                        str_img = ngx.re.sub(str_img, "http:", "https:")
+                        if v.media == 1 then
+                           str_img = ngx.re.sub(str_img, "/img/", "/img/515x220/")
                         end
                      end
                   end
-                  local media_names = { 
-                     tv = "电视剧",
-                     movie = "电影"
-                  }
-                  local meida_name = media_names[article.media]
+                  if v.media == 1 then
+                  %} 
+                   <li class="item-box">
+                        <div  class="video-inner" >
+                          <div class="title-box">
+                                <div class="title-num">
+                                    <div class="video-title">
+                                       <a href="/movie/detail/{{v.id}}.html" target="_blank" class="atitle" >
+                                         {{v.title}}
+                                      </a>
+                                    </div>
+                                </div>
+                              <div class="progressBar" style="width: 0%;"></div>
+                          </div>
+                         
+                          <div class="video-box">
+                             <video  data-url="/vmeta/{{v.id}}.m3u8" poster="{*str_img*}" ></video>
+                             <svg class="video-play-btn" viewBox="0 0 200 40" alt="Play video">
+                                <!-- 不同尺寸视频，调整viewBox即可 -->
+                                <circle cx="100" cy="30" r="60" fill="none" stroke-width="12" stroke="#fff"></circle>
+                                <polygon points="80, 0 80, 60 130, 30" fill="#fff"></polygon>
+                             </svg>
+                          </div>
+                      </div>
+                    </li>
+                  {%
+                  else
                   %}
                   <li class="item-box">
                    <div class="item-inner">
-                      <a  href="/m/movie/detail/{{v._id}}.html"> 
+                      <a  href="/m/movie/detail/{{v.id}}.html"> 
                         <div class="lbox">
-                            <img class="img-wrap" alt="{{article.title}}" src="{*str_img*}" /> 
+                            <img class="img-wrap" alt="{{v.title}}" src="{*str_img*}" /> 
                             {%if str_cost then%}
                             <i class="ftype video"> <span>{{str_cost}}</span> </i>
                             {%end%}
@@ -72,14 +91,14 @@
                         <div class="rbox ">
                               <div class="rbox-inner"> 
                                   <div class="title-box"> 
-                                      {{article.title}}
+                                      {{v.title}}
                                   </div>
                               </div>
                         </div>
                       </a> 
                       <span class="item-tag-box">
-                        {%if meida_name then %}
-                        <span class="tag-txt tag-size">{{meida_name}}</span>
+                        {%if v.sortName then %}
+                        <span class="tag-txt tag-size">{{v.sortName}}</span>
                         {%end%}
                         {%if rate then %}
                         <span class="tag-txt tag-size">评分<strong class="tag-score">{{rate}}</strong></span>
@@ -88,6 +107,7 @@
                    </div>
                   </li>
                   {%
+                  end
                 end
                %}
                 </ul>
@@ -97,5 +117,7 @@
     </div>
   </div>
 </div>
+
+<script src="{*static_host*}/assets/js/movie/stream.js?v={{version}}"></script>
 
 {(mobile/decorator/footer.html)}
