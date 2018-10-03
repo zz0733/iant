@@ -239,7 +239,7 @@ function _M:fillVideoMeta(oDoc)
 
     local es_body = {}
     table.insert(es_body, hasMeta)
-    local resp, status = self:save_metas( es_body )`
+    local resp, status = self:save_metas( es_body )
     -- log(ERR,"fillVideoMeta.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
     return resp, status
 end
