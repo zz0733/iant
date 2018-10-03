@@ -232,6 +232,22 @@ _M.meta = function(id, source)
         v.id = tostring(type) .. tostring(id)
       end
       ensure_doc(v)
+      if v.regions then
+        local regions = v.regions
+        for k,v in ipairs(regions) do
+           if v then
+              regions[k] = meta_dao:to_synonym(v, "ik_smart_synmgroup")
+           end
+        end
+      end
+      if v.countrys then
+        local countrys = v.countrys
+        for kk,vv in ipairs(countrys) do
+           if vv then
+              countrys[kk] = meta_dao:to_synonym(vv, "ik_smart_synonym")
+           end
+        end
+      end
       table.insert(saveIds, v.id)
    end
    log(ERR,"handle_meta,id:" .. id .. ",count:" ..  #saveIds .. ",saveIds:" .. cjson_safe.encode(saveIds) )

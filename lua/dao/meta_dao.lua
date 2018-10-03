@@ -29,22 +29,6 @@ function _M:save_metas( docs)
     local indexDocs = {}
     for mi,v in ipairs(docs) do
         if not _M:moveOldMeta(v) then
-            if v.regions then
-              local regions = v.regions
-              for k,v in ipairs(regions) do
-                 if v then
-                    regions[k] = self:to_synonym(v, "ik_smart_synmgroup")
-                 end
-              end
-            end
-            if v.countrys then
-              local countrys = v.countrys
-              for kk,vv in ipairs(countrys) do
-                 if vv then
-                    countrys[kk] = self:to_synonym(vv, "ik_smart_synonym")
-                 end
-              end
-            end
             if (not v.cstatus) then
                -- 内容重复抓取更新
                local hasMeta = ssdb_meta:get(v.id)
