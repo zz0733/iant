@@ -49,32 +49,32 @@ if not has_content then
 	end
 end
 
-local ids = {}
-table.insert(ids,"hotest")
-local resp,status = channel_dao:query_by_ids(ids)
--- log(ERR,"query_by_ids:" .. cjson_safe.encode(resp) )
-local recmd_map = {}
-if resp and resp.hits.hits[1] then
-	local channel_doc = resp.hits.hits[1]
-	local max_count = 10
-	local count = 0
-	local elements = channel_doc._source.elements
-	if elements and #elements > 0 then
-		local add_count = max_count - count
-		local max_index = math.min(100,#elements)
-		add_count = math.min(add_count,#elements)
-		while add_count > 0 do
-			local index = math.random(1, max_index)
-			local ele = elements[index]
-			if not recmd_map[ele.code] then
-				recmd_map[ele.code] = ele
-				count = count + 1
-				add_count = add_count - 1
-			end
-		end
+-- local ids = {}
+-- table.insert(ids,"hotest")
+-- local resp,status = channel_dao:query_by_ids(ids)
+-- -- log(ERR,"query_by_ids:" .. cjson_safe.encode(resp) )
+-- local recmd_map = {}
+-- if resp and resp.hits.hits[1] then
+-- 	local channel_doc = resp.hits.hits[1]
+-- 	local max_count = 10
+-- 	local count = 0
+-- 	local elements = channel_doc._source.elements
+-- 	if elements and #elements > 0 then
+-- 		local add_count = max_count - count
+-- 		local max_index = math.min(100,#elements)
+-- 		add_count = math.min(add_count,#elements)
+-- 		while add_count > 0 do
+-- 			local index = math.random(1, max_index)
+-- 			local ele = elements[index]
+-- 			if not recmd_map[ele.code] then
+-- 				recmd_map[ele.code] = ele
+-- 				count = count + 1
+-- 				add_count = add_count - 1
+-- 			end
+-- 		end
 
-	end
-end
+-- 	end
+-- end
 
 -- log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
 local crumbs = {}
@@ -99,7 +99,7 @@ has_content.header = util_dochtml.detail_header(has_content)
 has_content.header.canonical = "http://www.lezomao.com/m/movie/detail/"..tostring(content_id) .. ".html"
 util_context.withGlobal(has_content)
 has_content.crumbs   = crumbs
-has_content.recmd_map  = recmd_map
+-- has_content.recmd_map  = recmd_map
 has_content.config  = {
 	jiathis_uid = util_context.jiathis_uid,
 	weibo_uid = util_context.weibo_uid,
