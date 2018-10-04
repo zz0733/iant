@@ -43,7 +43,7 @@ if resp and resp.hits and resp.hits.hits then
          params.metaId = mv._id
          params.index = di
          digestTask.params = params
-         local tresp, tstatus = ssdb_task:qpush( newTask.level, digestTask )
+         local tresp, tstatus = ssdb_task:qpush( digestTask.level, digestTask )
          log(ERR,"searchUnDigest.task:" .. cjson_safe.encode(digestTask) )
          count = count + 1
          break
