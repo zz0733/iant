@@ -4,7 +4,7 @@ local util_table = require "util.table"
 local util_context = require "util.context"
 local task_dao = require "dao.task_dao"
 local meta_dao = require "dao.meta_dao"
-
+local ssdb_task = require "ssdb.task"
 
 local log = ngx.log
 local ERR = ngx.ERR
