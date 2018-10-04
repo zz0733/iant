@@ -72,7 +72,7 @@ function _M.contains( table, value )
 end
 
 function _M.isNull( val )
-   return (not val) or (val == ngx.null)
+   return (val == nil) or (val == ngx.null)
 end
 
 return _M
