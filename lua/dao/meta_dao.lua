@@ -162,7 +162,20 @@ function _M:corpDigest(oDoc)
     if not hasMeta then
        return nil, 'miss meta:' .. cjson_safe.encode(oDoc)
     end
+    local curCstatus = 1
     if not oDoc.image or type(oDoc.image)~="string" then
+       if oDoc.statusCode == 404 then
+            curCstatus = 8
+            local hasCstatus = hasMeta.cstatus or 0
+            if bit.band(bit.rshift(hasCstatus,3),1) == 1 then
+                hasCstatus = bit.bxor(hasCstatus, 8)
+            end 
+            hasMeta.cstatus = bit.bor(hasCstatus, curCstatus)
+            local es_body = {}
+            table.insert(es_body, hasMeta)
+            local resp, status = self:save_metas( es_body )
+            return resp,status
+       end
        return nil, 'miss oDoc.image or bad value:' .. cjson_safe.encode(oDoc)
     end
     local imgBody  = decode_base64(oDoc.image)
