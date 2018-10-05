@@ -129,8 +129,12 @@ function _M:qpop(size)
           end
         else
           for _,tv in ipairs(ret) do
-             local task = self:toBean(tv)
-             table.insert(assignArr, task)
+            local task = self:toBean(tv)
+            if util_table.isNull(task)  then
+              log(ERR,"illegal task:" .. cjson_safe.encode(tv))
+            else
+              table.insert(assignArr, task)
+            end
           end
         end
       end
