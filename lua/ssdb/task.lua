@@ -99,10 +99,10 @@ function _M:qretry(level, task_val)
    local ret, err
    if count > CAN_MIXED_COUNT then
      local index = math.modf(count / 2) + math.random(RANDOM_MIXED_INDEX)
-     local indexVal, err = client:qget(ssdbKey, index)
+     local indexVal, err2 = client:qget(ssdbKey, index)
+     ret, err = client:qset(ssdbKey, index, task_val)
      if indexVal then
-       client:qset(ssdbKey, index, task_val)
-       ret, err = client:qpush_front(ssdbKey, indexVal)
+       ret, err = client:qpush_front(ssdbKey, task_val)
      end
    else
      ret, err = client:qpush_back(ssdbKey, task_val)
@@ -122,7 +122,11 @@ function _M:qpop(size)
       if not util_table.isNull(ret) then
         if  type(ret) == "string" then
           local task = self:toBean(ret)
-          table.insert(assignArr, task)
+          if util_table.isNull(task)  then
+            log(ERR,"illegal task:" .. tostring(ret))
+          else
+            table.insert(assignArr, task)
+          end
         else
           for _,tv in ipairs(ret) do
              local task = self:toBean(tv)
