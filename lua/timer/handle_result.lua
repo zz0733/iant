@@ -30,7 +30,7 @@ local check
              local start = ngx.now()
              local resultArr = ssdb_result:qpop(size)
              for _,ret in ipairs(resultArr) do
-                 log(ERR,"handle_result,ret:" .. cjson_safe.encode(ret) )
+                 -- log(ERR,"handle_result,ret:" .. cjson_safe.encode(ret) )
                  if not util_table.isNull(ret) and not util_table.isNull(ret.data)then
                      local task = ret.task
                      local data = ret.data
