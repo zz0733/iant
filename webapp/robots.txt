@@ -9,5 +9,11 @@ User-agent: AhrefsBot
 Disallow: /
 User-agent: netEstate NE Crawler
 Disallow: /
+User-agent: dotbot
+Disallow: /
+User-agent: AlphaSeoBot
+Disallow: /
+User-agent: JikeSpider
+Disallow: /
 
 Sitemap: http://www.lezomao.com/sitemap.xml

@@ -789,7 +789,7 @@ curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
       "must": [
         {
           "match": {
-            "albumId": 
+            "albumId": "429812107"
           }
         }
       ]

@@ -62,17 +62,6 @@ function _M:insert_scripts(params )
   -- return self:index_docs( params, configs )
 end
 
-function _M:update_scripts(params )
-	if not params then
-      return nil, 400
-	end
-	-- refresh,use in buildQuery,must be string
-    local configs = {
-	  refresh = "true"
-    }
-   return self:update_docs( params, configs )
-end
-
 local importVersions = function ( taskType )
     local versionDoc =  ssdb_version:get(taskType)
     local import_verions = {}
