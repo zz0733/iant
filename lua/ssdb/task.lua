@@ -126,7 +126,7 @@ function _M:qpop(size)
                 log(ERR,"tv,type:" .. type(tv))
                 local tvObj = self:toBean(tv)
                 log(ERR,"tv,tvObj:" .. type(tvObj))
-                if util_table.isArray(tvObj) then
+                if util_table.is_array(tvObj) then
                   for _,task in ipairs(tvObj) do
                     if  type(task) == "string" then
                       task = self:toBean(task)
