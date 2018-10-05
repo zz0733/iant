@@ -58,10 +58,8 @@ end
 -- if not vmeta.body and vmeta.url then
 -- 	vmeta.body = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. vmeta.url
 -- end
-ngx.say(vmeta.body)
--- end of response,and do something backend
-ngx.eof()
 
+-- end of response,and do something backend
 if string.match(vmeta.body, "/odflv/api.php") or string.match(vmeta.body, "/404.mp4") then
 	local hasMeta = ssdb_meta:get(metaId)
     hasMeta.id = metaId
@@ -77,3 +75,4 @@ elseif string.match(vmeta.body, "#EXT%-X%-STREAM%-INF:PROGRAM%-ID=1,BANDWIDTH=")
 	end
 end
 -- log(ERR,"vmeta:" .. cjson_safe.encode(vmeta))
+ngx.say(vmeta.body)
