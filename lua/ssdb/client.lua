@@ -22,7 +22,7 @@ function _M.newClient()
 end
 
 function _M.open( )
-   return ssdb_client:newClient()
+   return _M:newClient()
 end
 
 function _M.close( client )
