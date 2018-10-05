@@ -23,11 +23,11 @@ function _M.newClient()
     return ssdbClient
 end
 
-function _M.open( )
+function _M:open( )
    return _M:newClient()
 end
 
-function _M.close( client )
+function _M:close( client )
    if util_table.isNull(client) then
       return
    end
