@@ -27,6 +27,9 @@ if err then
 else
 	local typeDict = {}
 	for _,task in ipairs(assignArr) do
+		if not task  or not task.type then
+			log(ERR,"assignArr:" .. cjson_safe.encode(assignArr))
+		end
 		typeDict[task.type] = 1
 	end
 	for type,_ in pairs(typeDict) do
