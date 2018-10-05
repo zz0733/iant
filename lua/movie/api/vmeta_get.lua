@@ -52,6 +52,18 @@ if vmeta.url then
 	     newTask.params = params
 	     local tresp, tstatus = ssdb_task:qretry( newTask.level, newTask )
 	     log(ERR,"vmetaTask:" .. cjson_safe.encode(newTask) .. ",resp:" .. cjson_safe.encode(tresp) .. ",status:" .. cjson_safe.encode(tstatus) )
+	elseif string.match(vmeta.url, "031a17b699fdebe7a68637c0d0ba1790.mp4") and metaId ~= '546985812' then
+		-- fix zhaiyou-video-cache bug's data
+		local hasMeta = ssdb_meta:get(metaId)
+	    local newTask = {}
+	     newTask.type = "odflv-video-cache"
+	     newTask.url = hasMeta.url
+	     newTask.level = 2
+	     local params = {}
+	     params.metaId = metaId
+	     newTask.params = params
+	     local tresp, tstatus = ssdb_task:qretry( newTask.level, newTask )
+	     log(ERR,"vmetaTask:" .. cjson_safe.encode(newTask) .. ",resp:" .. cjson_safe.encode(tresp) .. ",status:" .. cjson_safe.encode(tstatus) )
 	end
 	return ngx.redirect(vmeta.url, ngx.HTTP_MOVED_TEMPORARILY)
 end

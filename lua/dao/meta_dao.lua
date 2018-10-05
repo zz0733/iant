@@ -218,6 +218,8 @@ function _M:fillVideoMeta(oDoc)
     if not hasMeta or not oDoc.vmeta then
        return nil, 'miss vmeta:' .. cjson_safe.encode(oDoc)
     end
+    -- use play to choose video's player in web
+    hasMeta.player = oDoc.vmeta.play
     local curCstatus = oDoc.vmeta.cstatus or 2
     if curCstatus == 2 then
         local ret, err = ssdb_vmeta:set(oDoc.id, oDoc.vmeta)
@@ -225,6 +227,7 @@ function _M:fillVideoMeta(oDoc)
             return err, 500
         end
     end
+
     local hasCstatus = hasMeta.cstatus or 0
     if bit.band(bit.rshift(hasCstatus,2),1) == 1 then
         hasCstatus = bit.bxor(hasCstatus, 4)
