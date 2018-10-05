@@ -47,7 +47,8 @@ for _,v in ipairs(body_json) do
     local data = v.data
     local status = v.status
     if can_insert(task, data, status) then
-	     local resp, err = ssdb_result:set(v.task.id, v )
+    	 local level = task.level or 0
+	     local resp, err = ssdb_result:qpush(level, v )
          if err then
          	 message.code = 500
          	 message.error = cjson_safe.encode(resp)

@@ -28,38 +28,32 @@ local check
          local gcMem = gcinfo()
          if gcMem < 4000 then
              local start = ngx.now()
-             local keyArr, err = ssdb_result:keys(size)
+             local resultArr = ssdb_result:qpop(size)
+             for _,ret in ipairs(resultArr) do
+                 log(ERR,"handle_result,ret:" .. cjson_safe.encode(ret) )
+                 if not util_table.isNull(ret) and not util_table.isNull(ret.data)then
+                     local task = ret.task
+                     local data = ret.data
+                     local cur_handlers = data.handlers
+                     for _, cmd in ipairs(cur_handlers) do
+                          local resp, estatus = handlers.execute(cmd, task.id, ret)
+                          if estatus ~= 200 then
+                              log(ERR,"handle_" .. cmd ..",id:" .. tostring(task.id) .. ",type:".. tostring(task.type) 
+                                 ..",status:" .. cjson_safe.encode(estatus) ..",resp:"..cjson_safe.encode(resp))
+                          end
+                     end
+                 end
+             end
+             if #resultArr < 1 then
+                 delay = delay + 1
+                 delay = math.min(delay, max_delay)
+             else
+                 delay = min_delay
+             end
              ngx.update_time()
              local cost = (ngx.now() - start)
              cost = tonumber(string.format("%.3f", cost))
-             if not err and keyArr then
-                for _,vv in ipairs(keyArr) do
-                    local ret, rerr = ssdb_result:get(vv)
-                    ssdb_result:remove(vv)
-                    -- log(ERR,"handlers,id:" .. tostring(vv) .. ",ret:" .. cjson_safe.encode(ret) )
-                    if not util_table.isNull(ret) and not util_table.isNull(ret.data)then
-                        local task = ret.task
-                        local data = ret.data
-                        local cur_handlers = data.handlers
-                        for _, cmd in ipairs(cur_handlers) do
-                             local resp, estatus = handlers.execute(cmd, task.id, ret)
-                             if estatus ~= 200 then
-                                 log(ERR,"handle_" .. cmd ..",id:" .. tostring(task.id) .. ",type:".. tostring(task.type) 
-                                    ..",status:" .. cjson_safe.encode(estatus) ..",resp:"..cjson_safe.encode(resp))
-                             end
-                        end
-                    end
-                end
-                if #keyArr < 1 then
-                    delay = delay + 1
-                    delay = math.min(delay, max_delay)
-                else
-                    delay = min_delay
-                end
-                log(ERR,"ssdb_result_keys,limit:" .. size ..",data:" .. #keyArr ..",cost:" .. cost ..",gc:" .. gcMem)
-             else
-                log(ERR,"ssdb_result_keys,limit:" .. size ..",cost:" .. cost .. ",cause:", err)
-             end
+             log(ERR,"ssdb_result_keys,limit:" .. size ..",data:" .. #resultArr ..",cost:" .. cost ..",gc:" .. gcMem)
          else 
             delay = max_delay
             log(ERR,"ssdb_result_keys,wait_for_idle,gc:" .. gcMem)
