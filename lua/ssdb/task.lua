@@ -122,13 +122,14 @@ function _M:qpop(size)
       if not util_table.isNull(ret) then
         if  type(ret) == "string" then
           local task = self:toBean(ret)
-          log(ERR,"ret.task:" .. cjson_safe.encode(ret) .. ",task:" .. tostring(task))
           table.insert(assignArr, task)
         else
-          for _,tv in ipairs(ret) do
-            local task = self:toBean(tv)
-            log(ERR,"tv.task:" .. cjson_safe.encode(tv) .. ",task:" .. tostring(task))
-            table.insert(assignArr, task)
+          for _,tvArr in ipairs(ret) do
+            for _,tv in ipairs(tvArr) do
+                local task = self:toBean(tv)
+                log(ERR,"tv.task:" .. cjson_safe.encode(tv) .. ",task:" .. tostring(task))
+                table.insert(assignArr, task)
+            end
           end
         end
       end
