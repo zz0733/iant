@@ -4,6 +4,7 @@ local util_movie = require "util.movie"
 local util_context = require "util.context"
 local ssdb_vmeta = require "ssdb.vmeta"
 local ssdb_meta = require "ssdb.meta"
+local ssdb_task = require "ssdb.task"
 local meta_dao = require "dao.meta_dao"
 
 local bit = require("bit") 
@@ -41,11 +42,26 @@ if not vmeta then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 if vmeta.url then
+	if string.match(vmeta.url, "blog.zhaiyou.tv") then
+		 local newTask = {}
+	     newTask.type = "zhaiyou-video-cache"
+	     newTask.url = vmeta.url
+	     newTask.level = 2
+	     local params = {}
+	     params.metaId = metaId
+	     newTask.params = params
+	     local tresp, tstatus = ssdb_task:qretry( newTask.level, newTask )
+	     log(ERR,"vmetaTask:" .. cjson_safe.encode(newTask) .. ",resp:" .. cjson_safe.encode(tresp) .. ",status:" .. cjson_safe.encode(tstatus) )
+	end
 	return ngx.redirect(vmeta.url, ngx.HTTP_MOVED_TEMPORARILY)
 end
 -- if not vmeta.body and vmeta.url then
 -- 	vmeta.body = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=800000,RESOLUTION=1080x608\n" .. vmeta.url
 -- end
+ngx.say(vmeta.body)
+-- end of response,and do something backend
+ngx.eof()
+
 if string.match(vmeta.body, "/odflv/api.php") or string.match(vmeta.body, "/404.mp4") then
 	local hasMeta = ssdb_meta:get(metaId)
     hasMeta.id = metaId
@@ -61,4 +77,3 @@ elseif string.match(vmeta.body, "#EXT%-X%-STREAM%-INF:PROGRAM%-ID=1,BANDWIDTH=")
 	end
 end
 -- log(ERR,"vmeta:" .. cjson_safe.encode(vmeta))
-ngx.say(vmeta.body)
