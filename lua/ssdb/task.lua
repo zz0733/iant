@@ -120,12 +120,8 @@ function _M:qpop(size)
       local ssdbKey = self:toSSDBKey(level)
       local ret, err = client:qpop_front(ssdbKey, count)
       if not util_table.isNull(ret) then
-        -- log(ERR,"qpop_front.sret:" .. cjson_safe.encode(ret) .. ",ret:" .. tostring(ret))
           for _,tv in ipairs(ret) do
-                log(ERR,"tv,task:" .. tostring(tv))
-                log(ERR,"tv,type:" .. type(tv))
                 local tvObj = self:toBean(tv)
-                log(ERR,"tv,tvObj:" .. type(tvObj))
                 if not tvObj.id then
                   for _,task in ipairs(tvObj) do
                     if  type(task) == "string" then
