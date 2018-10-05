@@ -29,12 +29,16 @@ local to_content_id = function ( uri )
 	end
 end
 
+ngx.status = ngx.OK
+
 local uri = ngx.var.uri
 local content_id = to_content_id(uri)
 -- log(ERR,"uri:" .. tostring(uri) .. ",content_id:" .. tostring(content_id))
 -- if not content_id then
 if util_table.isNull(content_id) then
 	log(ERR,"uriErr:" .. tostring(uri) .. ",missId")
+	ngx.status = ngx.HTTP_NOT_FOUND
+    ngx.say("uriErr:" .. tostring(uri) .. ",missId")
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
@@ -42,6 +46,8 @@ end
 local has_content = ssdb_meta:get(content_id)
 if util_table.isNull(has_content) then
 	log(ERR,"uriErr:" .. tostring(uri) .. ",content_id:" .. tostring(content_id) .. ",miss:" .. cjson_safe.encode(has_content))
+	ngx.status = ngx.HTTP_NOT_FOUND
+    ngx.say("uriErr:" .. tostring(uri) .. ",content_id:" .. tostring(content_id))
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
 
