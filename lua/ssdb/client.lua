@@ -14,11 +14,25 @@ function _M.newClient()
     local ssdbClient = ssdb:new()
     ssdbClient:set_timeout(1000) -- 1 sec
     local ok, err = ssdbClient:connect(context.SSDB_HOST, context.SSDB_PORT)
-    if not ok then
+    if err then
         ngx.say("failed to connect[" .. context.SSDB_HOST .. ":" .. context.SSDB_PORT .. "],cause:", err)
         return nil, err
     end
     return ssdbClient
+end
+
+function _M.open( )
+   return ssdb_client:newClient()
+end
+
+function _M.close( client )
+   if not client then
+      return
+   end
+   local ok, err = client:set_keepalive(0, 20)
+   if err then
+      log(ERR,"failed to set keepalive:", err)
+   end
 end
 
 return _M

@@ -27,22 +27,8 @@ table.insert(levelArr, 2)
 table.insert(levelArr, 1)
 table.insert(levelArr, 0)
 
-function _M:open( )
-   local client,err = ssdb_client:newClient();
-   if err then
-      return nil, err
-   end
-   return client
-end
-function _M:close( client )
-   if not client then
-      return
-   end
-   local ok, err = client:set_keepalive(0, 20)
-   if err then
-      log(ERR,"failed to set keepalive:", err)
-   end
-end
+local CAN_MIXED_COUNT = 10
+local RANDOM_MIXED_INDEX = math.modf(CAN_MIXED_COUNT / 2) - 1
 
 function _M:toSSDBKey( key )
   return KEY_PREFIX .. tostring(key)
@@ -69,6 +55,8 @@ end
 function _M:qpush(level, ...)
    level = level or 1
    local tasks = {...}
+   local mixArr = {}
+   local qpushArr = {}
    for ti,task_val in ipairs(tasks) do
       if util_table.is_table(task_val) then
         if task_val.params and util_table.is_table(task_val.params) then
@@ -78,10 +66,22 @@ function _M:qpush(level, ...)
         task_val =  cjson_safe.encode(task_val)
         tasks[ti] = task_val
       end
+      -- mixed task type
+      if math.random(5) == 5 then
+        table.insert(mixArr, tasks[ti])
+      else
+        table.insert(qpushArr, tasks[ti])
+      end
    end
-   local client =  self:open();
-   local ret, err = client:qpush_back(self:toSSDBKey(level), unpack(tasks))
-   self:close(client)
+   local ret = "empty", err
+   if #qpushArr > 0 then
+      local client =  ssdb_client:open();
+      ret, err = client:qpush_back(self:toSSDBKey(level), unpack(qpushArr))
+      ssdb_client:close(client)
+   end
+   for _,mtask in ipairs(mixArr) do
+     self:qretry(level, mixArr)
+   end
    return ret, err
 end
 
@@ -94,24 +94,26 @@ function _M:qretry(level, task_val)
      task_val =  cjson_safe.encode(task_val)
    end
    local ssdbKey = self:toSSDBKey(level)
-   local client =  self:open();
+   local client =  ssdb_client:open();
    local count = client:qsize(ssdbKey)
    local ret, err
-   if count > 10 then
-     local index = math.modf(count / 2) + 1
+   if count > CAN_MIXED_COUNT then
+     local index = math.modf(count / 2) + math.random(RANDOM_MIXED_INDEX)
      local indexVal, err = client:qget(ssdbKey, index)
      if indexVal then
        client:qset(ssdbKey, index, task_val)
        ret, err = client:qpush_front(ssdbKey, indexVal)
      end
+   else
+     ret, err = client:qpush_back(ssdbKey, task_val)
    end
-   self:close(client)
+   ssdb_client:close(client)
    return ret, err
 end
 
 function _M:qpop(size)
    size = size or 1
-   local client =  self:open();
+   local client =  ssdb_client:open();
    local assignArr = {}
    local count = size
    for _, level in ipairs(levelArr) do
@@ -133,7 +135,7 @@ function _M:qpop(size)
         break
       end
    end
-   self:close(client)
+   ssdb_client:close(client)
    -- log(ERR,"assignArr:" .. cjson_safe.encode(assignArr))
    return assignArr
 end
