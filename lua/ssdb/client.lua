@@ -1,3 +1,5 @@
+local util_table = require "util.table"
+
 local ok, new_tab = pcall(require, "table.new")
 if not ok or type(new_tab) ~= "function" then
     new_tab = function (narr, nrec) return {} end
@@ -26,7 +28,7 @@ function _M.open( )
 end
 
 function _M.close( client )
-   if not client then
+   if util_table.isNull(client) then
       return
    end
    local ok, err = client:set_keepalive(0, 20)
