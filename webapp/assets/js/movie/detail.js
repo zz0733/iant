@@ -128,6 +128,11 @@ $(document).ready(function() {
                             }
                             // 暂不可用了
                             continue
+                        } else {
+                            if (v_source.media == 1) {
+                                btn_txt = "在线观看"
+                                link_tempate = '<a href="/movie/detail/{{v._id}}.html" target="_blank" role="button" class="btn target-btn" >{{btn_txt}}</a>'
+                            }
                         }
                         if (update_time) {
                             var updateDate = new Date(update_time * 1000)
