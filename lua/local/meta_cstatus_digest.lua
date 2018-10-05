@@ -38,7 +38,7 @@ if resp and resp.hits and resp.hits.hits then
          local digestTask = {}
          digestTask.type = 'common-image'
          digestTask.url = dv
-         digestTask.level = 2
+         digestTask.level = 1
          local params = {}
          params.metaId = mv._id
          params.index = di
