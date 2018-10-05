@@ -64,7 +64,6 @@ function _M:qpush(level, ...)
         end
         task_val.id =  task_val.id or self:taskUUID()
         task_val =  cjson_safe.encode(task_val)
-        log(ERR,"task_val:" .. tostring(task_val))
         tasks[ti] = task_val
       end
       -- mixed task type
@@ -121,17 +120,24 @@ function _M:qpop(size)
       local ssdbKey = self:toSSDBKey(level)
       local ret, err = client:qpop_front(ssdbKey, count)
       if not util_table.isNull(ret) then
-        log(ERR,"qpop_front.sret:" .. cjson_safe.encode(ret) .. ",ret:" .. tostring(ret))
-        if  type(ret) == "string" then
-          local task = self:toBean(ret)
-          table.insert(assignArr, task)
-        else
+        -- log(ERR,"qpop_front.sret:" .. cjson_safe.encode(ret) .. ",ret:" .. tostring(ret))
           for _,tv in ipairs(ret) do
-                local task = self:toBean(tv)
-                log(ERR,"tv.task:" .. cjson_safe.encode(tv) .. ",task:" .. tostring(task))
-                table.insert(assignArr, task)
+                log(ERR,"tv,task:" .. tostring(tv))
+                log(ERR,"tv,type:" .. type(tv))
+                local tvObj = self:toBean(tv)
+                log(ERR,"tv,tvObj:" .. type(tvObj))
+                if util_table.isArray(tvObj) then
+                  for _,task in ipairs(tvObj) do
+                    if  type(task) == "string" then
+                      task = self:toBean(task)
+                    end
+                    table.insert(assignArr, tvObj)
+                  end
+                else
+                  table.insert(assignArr, tvObj)
+                end
+                
           end
-        end
       end
       count = size - #assignArr
       if count < 1 then
