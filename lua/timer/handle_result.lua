@@ -18,6 +18,7 @@ local commands = handlers.commands
 local str_handlers = cjson_safe.encode(commands)
 local from = 0
 local size = 2
+local MAX_GC_MEM = 6000
 
 
 local check
@@ -26,7 +27,7 @@ local check
      if not premature then
          -- do the health check or other routine work
          local gcMem = gcinfo()
-         if gcMem < 4000 then
+         if gcMem < MAX_GC_MEM then
              local start = ngx.now()
              local resultArr = ssdb_result:qpop(size)
              for _,ret in ipairs(resultArr) do
