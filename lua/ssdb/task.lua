@@ -64,6 +64,7 @@ function _M:qpush(level, ...)
         end
         task_val.id =  task_val.id or self:taskUUID()
         task_val =  cjson_safe.encode(task_val)
+        log(ERR,"task_val:" .. tostring(task_val))
         tasks[ti] = task_val
       end
       -- mixed task type
@@ -120,16 +121,15 @@ function _M:qpop(size)
       local ssdbKey = self:toSSDBKey(level)
       local ret, err = client:qpop_front(ssdbKey, count)
       if not util_table.isNull(ret) then
+        log(ERR,"qpop_front.sret:" .. cjson_safe.encode(ret) .. ",ret:" .. tostring(ret))
         if  type(ret) == "string" then
           local task = self:toBean(ret)
           table.insert(assignArr, task)
         else
-          for _,tvArr in ipairs(ret) do
-            for _,tv in ipairs(tvArr) do
+          for _,tv in ipairs(ret) do
                 local task = self:toBean(tv)
                 log(ERR,"tv.task:" .. cjson_safe.encode(tv) .. ",task:" .. tostring(task))
                 table.insert(assignArr, task)
-            end
           end
         end
       end
