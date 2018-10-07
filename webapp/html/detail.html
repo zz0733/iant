@@ -1,5 +1,6 @@
 {(decorator/header.html)}
 
+<link rel="stylesheet" href="{*static_host*}/assets/css/mediaelementplayer.min.css?v={{version}}">
 <link rel="canonical" href="{*context.header.canonical*}"/>
 <meta name="description" content="{*context.header.description*}"/>
 <meta name="keywords" content="{*context.header.keywords*}" />
@@ -114,11 +115,11 @@
 				                            <div class="progressBar" style="width: 0%;"></div>
 				                        </div>
 				                        <div class="video-box">
-				                           <video data-url="/vmeta/{*id*}.m3u8" poster="{*str_img*}" ></video>	
-				                           <svg class="video-play-btn" viewBox="0 0 200 120" alt="Play video">
+				                           <video data-url="/vmeta/{*id*}.info" poster="{*str_img*}" ></video>	
+				                           <!-- <svg class="video-play-btn" viewBox="0 0 200 120" alt="Play video">
 											    <circle cx="100" cy="30" r="60" fill="none" stroke-width="12" stroke="#fff"></circle>
 											    <polygon points="80, 0 80, 60 130, 30" fill="#fff"></polygon>
-										   </svg>
+										   </svg> -->
 				                       </div>
 				                    </div>
 		                         {%

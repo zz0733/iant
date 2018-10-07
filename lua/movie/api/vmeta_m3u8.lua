@@ -34,13 +34,11 @@ local metaId = toMetaId(uri)
 if not metaId then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
-if "1252287066" == metaId then
-	return ngx.redirect("https://video.fjhps.com/20180531/HbXbMD0i/index.m3u8", ngx.HTTP_MOVED_TEMPORARILY)
-end
 local vmeta, err = ssdb_vmeta:get(metaId)
 if not vmeta then
 	return ngx.exit(ngx.HTTP_NOT_FOUND)
 end
+
 if vmeta.url then
 	if string.match(vmeta.url, "blog.zhaiyou.tv") then
 		 local newTask = {}

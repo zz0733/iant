@@ -843,6 +843,11 @@ h1.post-title {
     background-color: #999;
     max-height: 160px;
 }
+
+.video-box .mejs__fill-container {
+    max-height: 150px;
+}
+
 .video-inner .video-box video {
     width: 300px;
     vertical-align: middle;

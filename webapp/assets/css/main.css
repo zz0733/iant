@@ -2007,6 +2007,10 @@ h1.post-title {
     max-height: 224px;
 }
 
+.video-box .mejs__fill-container {
+    max-height: 224px;
+}
+
 .video-inner .video-box video,
 .video-inner .video-box-cms video {
     width: 515px;
