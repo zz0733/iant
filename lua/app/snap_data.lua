@@ -55,8 +55,12 @@ for _,v in ipairs(body_json) do
          end
     else
     	log(CRIT,"taskErr:" .. tostring(v.task.id).. ",task:" .. cjson_safe.encode(task) )
-    	data and log(CRIT,"taskErr:" .. tostring(v.task.id).. ",data:" .. cjson_safe.encode(data) )
-    	v.error and log(CRIT,"taskErr:" .. tostring(v.task.id).. ",error:" .. cjson_safe.encode(v.error) )
+    	if data then
+    		log(CRIT,"taskErr:" .. tostring(v.task.id).. ",data:" .. cjson_safe.encode(data) )
+    	end
+    	if v.error then
+    		log(CRIT,"taskErr:" .. tostring(v.task.id).. ",error:" .. cjson_safe.encode(v.error) )
+    	end
     end
 end
 ngx.say(cjson_safe.encode(message))
