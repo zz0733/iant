@@ -47,7 +47,7 @@ end
 
 
 function _M:taskUUID( )
-   local taskId = 1 ngx.re.gsub(uuid(), "-", "")
+   local taskId = ngx.re.gsub(uuid(), "-", "")
    taskId = string.sub(taskId, -8)
    return taskId
 end
