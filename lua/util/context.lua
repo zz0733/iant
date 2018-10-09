@@ -24,6 +24,7 @@ _M.AUTH_WX_MSG_AESKEY_LAST = os.getenv("AUTH_WX_MSG_AESKEY_LAST")
 _M.IMG_DIR = os.getenv("DATA_DIR") .. "/imgs"
 _M.TORRENT_DIR = os.getenv("DATA_DIR") .. "/torrent"
 _M.CDN_URI = os.getenv("CDN_URI")
+_M.BASE_URI = os.getenv("BASE_URI")
 
 _M.SSDB_HOST = os.getenv("SSDB_HOST") or '127.0.0.1'
 _M.SSDB_PORT = os.getenv("SSDB_PORT") or 8888

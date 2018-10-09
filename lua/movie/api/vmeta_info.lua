@@ -62,7 +62,8 @@ if vmeta.body or vmeta.play == "m3u8" then
 elseif vmeta.url then
 	if string.match(vmeta.url, ".m3u8$")  then
 		-- oData.player = 'm3u8'
-   		oData.url =  util_context.CDN_URI .. "/vmeta/" .. metaId ..".m3u8"
+		-- CDN ignore 302 to 200, miss baseURI
+   		oData.url =  util_context.BASE_URI .. "/vmeta/" .. metaId ..".m3u8"
    	else
        	-- oData.player = 'link'
    		oData.url =  vmeta.url
