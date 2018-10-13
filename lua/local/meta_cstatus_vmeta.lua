@@ -35,7 +35,38 @@ local source_type_dict = {
   [2] = "",
   [3] = ""
 }
-local resp, status = meta_dao:searchUnVideo(from_date, media, source_arr, size)
+local must_array = {}
+table.insert(must_array,{range = { utime = { gte = fromDate } }})
+table.insert(must_array,{match = { media = media }})
+if args.albumId then
+  table.insert(must_array,{match = { albumId = args.albumId }})
+end
+if not util_table.is_empty_table(sources) then
+   table.insert(must_array,{terms = { source = sources }})
+end
+local cstatus_video_arr = {}
+table.insert(cstatus_video_arr,0)
+table.insert(cstatus_video_arr,1)
+table.insert(must_array,{terms = { cstatus = cstatus_video_arr }})
+
+-- local must_nots = {}
+-- -- 获取视频资源所有取值，新增cstatus需改动,cstatus=2
+-- local cstatus_video_arr = {}
+-- table.insert(cstatus_video_arr,2)
+-- table.insert(cstatus_video_arr,3)
+-- table.insert(cstatus_video_arr,6)
+-- table.insert(cstatus_video_arr,7)
+-- table.insert(must_nots,{terms = { cstatus = cstatus_video_arr }})
+
+local body = {
+    size = size,
+    query = {
+        bool = {
+            must = must_array
+        }
+    }
+}
+local resp, status = meta_dao:search(body)
 -- log(ERR,"searchUnVideo:" .. cjson_safe.encode(resp) .. ",status:" .. status)
 local count = 0
 if resp and resp.hits and resp.hits.hits then

@@ -265,7 +265,7 @@ function _M:searchUnDigest(fromDate, size)
             }
         }
     }
-    local resp, status = _M:search(body, true)
+    local resp, status = _M:search(body)
     return resp, status
 end
 
