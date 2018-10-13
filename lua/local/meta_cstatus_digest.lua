@@ -18,7 +18,29 @@ local args = ngx.req.get_uri_args()
 local from_date = tonumber(args.from) or (ngx.time() - 2*60*60)
 local size = tonumber(args.size) or (100)
 
-local resp, status = meta_dao:searchUnDigest(from_date, size)
+local must_array = {}
+table.insert(must_array,{range = { utime = { gte = fromDate } }})
+if args.albumId then
+  table.insert(must_array,{match = { albumId = args.albumId }})
+end
+local must_nots = {}
+-- 完成题图的所有取值，新增cstatus需改动,cstatus=1
+local cstatus_digests = {}
+table.insert(cstatus_digests,1)
+table.insert(cstatus_digests,3)
+table.insert(cstatus_digests,7)
+table.insert(must_nots,{terms = { cstatus = cstatus_digests }})
+
+local body = {
+    size = size,
+    query = {
+        bool = {
+            must = must_array,
+            must_not = must_nots
+        }
+    }
+}
+local resp, status = meta_dao:search(body)
 -- log(ERR,"searchUnDigest:" .. cjson_safe.encode(resp) .. ",status:" .. status)
 local count = 0
 if resp and resp.hits and resp.hits.hits then

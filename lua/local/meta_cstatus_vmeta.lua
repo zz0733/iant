@@ -41,8 +41,8 @@ table.insert(must_array,{match = { media = media }})
 if args.albumId then
   table.insert(must_array,{match = { albumId = args.albumId }})
 end
-if not util_table.is_empty_table(sources) then
-   table.insert(must_array,{terms = { source = sources }})
+if not util_table.is_empty_table(source_arr) then
+   table.insert(must_array,{terms = { source = source_arr }})
 end
 local cstatus_video_arr = {}
 table.insert(cstatus_video_arr,0)
