@@ -45,6 +45,7 @@ local resp, status = meta_dao:search(body)
 local count = 0
 if resp and resp.hits and resp.hits.hits then
    local hits = resp.hits.hits
+   log(ERR,"searchUnDigest:" .. tostring(#hits) .. ",status:" .. tostring(status))
    for mi,mv in ipairs(hits) do
        -- log(ERR,"meta_dao:get:" .. mv._id .. ",meta:" .. cjson_safe.encode(mv))
        local vmetaRet, err = meta_dao:get(mv._id)
