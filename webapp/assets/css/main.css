@@ -2004,7 +2004,7 @@ h1.post-title {
 
 .video-inner .video-box {
     background-color: #999;
-    max-height: 224px;
+    height: 224px;
 }
 
 .video-box .mejs__fill-container {
