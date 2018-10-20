@@ -182,7 +182,20 @@ function _M:corpDigest(oDoc)
     local md5Val = util_magick.toMD5(imgBody)
     local img = util_magick.toImage(imgBody)
     if not img then
-       return "illegal image:" .. oDoc.id, 400
+       if oDoc.statusCode == 200 then
+            curCstatus = 8
+            local hasCstatus = hasMeta.cstatus or 0
+            if bit.band(bit.rshift(hasCstatus,3),1) == 1 then
+                hasCstatus = bit.bxor(hasCstatus, 8)
+            end 
+            hasMeta.cstatus = bit.bor(hasCstatus, curCstatus)
+            local es_body = {}
+            table.insert(es_body, hasMeta)
+            local resp, status = self:save_metas( es_body )
+            return resp,status
+       else
+            return "illegal image:" .. oDoc.id, 400
+       end
     end
     local imgName = md5Val ..".".. oDoc.suffix
     local sizeArr = oDoc.sizes or {}
@@ -265,7 +278,7 @@ function _M:searchUnDigest(fromDate, size)
             }
         }
     }
-    local resp, status = _M:search(body, true)
+    local resp, status = _M:search(body)
     return resp, status
 end
 
