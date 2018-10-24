@@ -29,7 +29,10 @@ local cstatus_digests = {}
 table.insert(cstatus_digests,1)
 table.insert(cstatus_digests,3)
 table.insert(cstatus_digests,7)
-table.insert(must_nots,{terms = { cstatus = cstatus_digests }})
+-- table.insert(must_nots,{terms = { cstatus = cstatus_digests }})
+
+
+table.insert(must_nots,{exists = { field = "cstatus" }})
 
 local body = {
     size = size,
