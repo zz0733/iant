@@ -54,6 +54,7 @@ function _M:save_metas( docs)
                v.epmax_time = v.epmax_time or ngx.time()
             else
                v.pstatus = 0
+               v.cstatus = v.cstatus or 0
             end
             util_arrays.emptyArray(v, unpack(ARRAY_FIELDS))
             ssdb_meta:set(v.id, v)

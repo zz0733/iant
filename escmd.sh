@@ -764,14 +764,14 @@ curl -X POST 'http://127.0.0.1:9200/meta/_search?pretty' -d '
       "must": [
         {
           "terms": {
-            "pstatus": [
+            "cstatus": [
               1
             ]
           }
         },
         {
           "match": {
-            "media": 0
+            "media": 1
           }
         }
       ]
