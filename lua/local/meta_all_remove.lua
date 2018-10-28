@@ -45,7 +45,10 @@ while true do
         table.insert(idArr, mv._id)
         resp, status = meta_dao:delete_by_ids(idArr)
         ssdb_meta:remove(mv._id)
-        count = count + 1
+        if status == 200 then
+           count = count + 1
+           resp = nil
+        end
         log(ERR,"removeMeta:" .. mv._id .. ",count:" .. count .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. tostring(status))
      end
      if #hits < size then
