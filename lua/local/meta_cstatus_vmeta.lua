@@ -31,7 +31,8 @@ table.insert(source_arr, 1)
 -- table.insert(source_arr, 2)
 -- table.insert(source_arr, 3)
 local source_type_dict = {
-  [1] = "odflv-video-cache",
+  -- [1] = "odflv-video-cache",
+  [1] = "baiyug-video-cache",
   [2] = "",
   [3] = ""
 }
