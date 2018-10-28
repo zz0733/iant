@@ -254,23 +254,6 @@ function ESClient:delete_by_ids( ids )
 
 end
 
-function ESClient:delete( id )
-  local params = {
-    index = self.index,
-    type = self.type,
-    body = {
-      query = {
-         match = {
-           _id = id
-         }
-      }
-    }
-  }
-  local resp, status = self:delete_by_query(params)
-  -- local body = cjson_safe.encode(resp)
-  return resp, status
-end
-
 function ESClient:search_then_delete( body )
   	local resp, status = self:search(body)
   	if not resp then

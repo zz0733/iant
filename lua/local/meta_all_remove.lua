@@ -41,7 +41,9 @@ while true do
   if resp and resp.hits and resp.hits.hits then
      local hits = resp.hits.hits
      for _, mv in ipairs(hits) do
-        resp, status = meta_dao:delete(mv._id)
+        local idArr = {}
+        table.insert(idArr, mv._id)
+        resp, status = meta_dao:delete_by_ids(idArr)
         ssdb_meta:remove(mv._id)
         count = count + 1
         log(ERR,"removeMeta:" .. mv._id .. ",count:" .. count .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. tostring(status))
