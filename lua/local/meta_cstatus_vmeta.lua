@@ -28,12 +28,12 @@ local media = 1
 -- "优酷视频": 3
 local source_arr = {}
 table.insert(source_arr, 1)
--- table.insert(source_arr, 2)
+table.insert(source_arr, 2)
 -- table.insert(source_arr, 3)
 local source_type_dict = {
   -- [1] = "odflv-video-cache",
   [1] = "common-video-cache",
-  [2] = "",
+  [2] = "common-video-cache",
   [3] = ""
 }
 local must_array = {}
