@@ -236,6 +236,7 @@ function _M:fillVideoMeta(oDoc)
     hasMeta.player = oDoc.vmeta.play
     local curCstatus = oDoc.vmeta.cstatus or 2
     if curCstatus == 2 then
+        hasMeta.epmax_time = ngx.time()
         local ret, err = ssdb_vmeta:set(oDoc.id, oDoc.vmeta)
         if err then
             return err, 500
@@ -249,6 +250,7 @@ function _M:fillVideoMeta(oDoc)
         hasCstatus = bit.bxor(hasCstatus, 2)
     end 
     hasMeta.cstatus = bit.bor(hasCstatus, curCstatus)
+    
     hasMeta.vmeta = nil
 
     local es_body = {}
