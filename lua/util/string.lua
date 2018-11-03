@@ -62,3 +62,9 @@ string.escape = function(src)
     return string.gsub(src,"([^\\])%-","%1%%%-")
 end
 
+string.suffixIfAbsent = function(source, suffix)
+    if suffix and not string.contains(source,  tostring(suffix) ) then
+        source = source .. suffix
+    end
+    return source
+end

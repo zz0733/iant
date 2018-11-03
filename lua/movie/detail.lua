@@ -82,16 +82,8 @@ end
     -- oDoc.url = ""
     -- oDoc.html = ""
     -- oDoc.fill = {}
-function titleWithEpIndex(title, epindex )
-   if epindex and epindex > 0 then
-    if not string.contains(title,  "" .. epindex ) then 
-      title = title .. " " .. epindex .."集"
-    end
-   end
-   return title
-end
 
-has_content.title = titleWithEpIndex(has_content.title, has_content.epindex)
+has_content.title = string.suffixIfAbsent(has_content.title, has_content.epindex)
 
 local content_doc = { ["_id"] = content_id }
 content_doc._source = has_content

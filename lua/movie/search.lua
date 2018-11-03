@@ -60,7 +60,7 @@ if resp and resp.hits then
 		if meta then
 			local destMeta = {}
 			destMeta.id = meta.id
-			destMeta.title = meta.title
+			destMeta.title = string.suffixIfAbsent(meta.title, meta.epindex)
 			destMeta.digests = meta.digests
 			destMeta.genres = meta.genres
 			destMeta.rate = meta.douban_rate

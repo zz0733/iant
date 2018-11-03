@@ -78,14 +78,7 @@ function byAlbum( params, fields )
    local data = { }
    if aresp and aresp.hits  then
       data.hits = {}
-      function titleWithEpIndex(title, epindex )
-         if epindex and epindex > 0 then
-          if not string.contains(title,  "" .. epindex ) then 
-            title = title .. " " .. epindex .."集"
-          end
-         end
-         return title
-      end
+ 
       for _, metaDoc in ipairs(aresp.hits.hits) do
          local ret = meta_dao:get(metaDoc._id)
          if ret then
@@ -93,7 +86,7 @@ function byAlbum( params, fields )
            metaObj._id = metaDoc._id
            metaObj._source = {}
            local _source = metaObj._source
-           _source.title = titleWithEpIndex(ret.title, ret.epindex)
+           _source.title = string.suffixIfAbsent(ret.title, ret.epindex)
            _source.space = ret.space
            _source.ctime = ret.ctime
            _source.media = ret.media

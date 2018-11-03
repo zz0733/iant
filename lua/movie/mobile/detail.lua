@@ -76,16 +76,7 @@ end
 -- 	end
 -- end
 
-function titleWithEpIndex(title, epindex )
-   if epindex and epindex > 0 then
-    if not string.contains(title,  "" .. epindex ) then 
-      title = title .. " " .. epindex .."集"
-    end
-   end
-   return title
-end
-
-has_content.title = titleWithEpIndex(has_content.title, has_content.epindex)
+has_content.title = string.suffixIfAbsent(has_content.title, has_content.epindex)
 
 -- log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
 local crumbs = {}
