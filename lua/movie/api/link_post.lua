@@ -58,7 +58,7 @@ function byAlbum( params, fields )
     local must_arr = {}
     table.insert(must_arr, { match = { pstatus = 1 }})
     table.insert(must_arr, { match = { albumId = params.albumId }})
-    table.insert(must_arr, { range = { epindex = { gt = params.epindex } }} )
+    table.insert(must_arr, { range = { epindex = { gt = params.epindex, lte = params.epindex + size } }} )
 
     local sort_arr = {}
     table.insert(sort_arr, { epindex = { order = "desc" }})
