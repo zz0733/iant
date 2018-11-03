@@ -79,12 +79,12 @@ function byAlbum( params, fields )
    if aresp and aresp.hits  then
       data.hits = {}
       function titleWithEpIndex(title, epindex )
-        if epindex and epindex > 0 then
-         if not (string.contains(title,  "" .. epindex )) 
-           title = title .. " " .. epindex .."集"
+         if epindex and epindex > 0 then
+          if not string.contains(title,  "" .. epindex ) then 
+            title = title .. " " .. epindex .."集"
+          end
          end
-        end
-        return title
+         return title
       end
       for _, metaDoc in ipairs(aresp.hits.hits) do
          local ret = meta_dao:get(metaDoc._id)

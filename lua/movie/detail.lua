@@ -84,7 +84,7 @@ end
     -- oDoc.fill = {}
 function titleWithEpIndex(title, epindex )
    if epindex and epindex > 0 then
-    if not (string.contains(title,  "" .. epindex )) 
+    if not string.contains(title,  "" .. epindex ) then 
       title = title .. " " .. epindex .."集"
     end
    end
