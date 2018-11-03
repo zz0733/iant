@@ -7,6 +7,7 @@ local util_magick = require "util.magick"
 local ESClient = require "es.ESClient"
 local ssdb_meta = require "ssdb.meta"
 local ssdb_vmeta = require "ssdb.vmeta"
+local ssdb_task = require "ssdb.task"
 
 local bit = require("bit") 
 
@@ -223,6 +224,17 @@ function _M:corpDigest(oDoc)
     local es_body = {}
     table.insert(es_body, hasMeta)
     local resp, status = self:save_metas( es_body )
+
+    if hasMeta.cstatus == 1  and hasMeta.url then
+         local newTask = {}
+         newTask.type = "common-video-cache"
+         newTask.url = hasMeta.url
+         newTask.level = 2
+         local params = {}
+         params.metaId = oDoc.id
+         newTask.params = params
+         ssdb_task:qpush( newTask.level, newTask )
+    end
     -- log(ERR,"corpDigest.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
     return resp,status
 end
@@ -256,6 +268,21 @@ function _M:fillVideoMeta(oDoc)
     local es_body = {}
     table.insert(es_body, hasMeta)
     local resp, status = self:save_metas( es_body )
+
+    if hasMeta.cstatus == 2  and hasMeta.digests then
+       for di,imgURL in ipairs(vmetaRet.digests) do
+         local digestTask = {}
+         digestTask.type = 'common-image'
+         digestTask.url = imgURL
+         digestTask.level = 2
+         local params = {}
+         params.metaId = oDoc.id
+         params.index = di
+         digestTask.params = params
+         ssdb_task:qpush( digestTask.level, digestTask )
+       end
+    end
+
     -- log(ERR,"fillVideoMeta.req:" ..  cjson_safe.encode(es_body)  .. ",resp:" .. cjson_safe.encode(resp) .. ",status:" .. status )
     return resp, status
 end
