@@ -2,6 +2,7 @@ local util_movie = require "util.movie"
 local iresty_test    = require "resty.iresty_test"
 local tb = iresty_test.new({unit_name="util_movie"})
 local cjson_safe = require("cjson.safe")
+local util_string = require("util.string")
 
 
 function tb:init()
@@ -56,6 +57,7 @@ function tb:test_match()
     local newpat = string.gsub(oldpat,"([^\\])%-","%1%%%-")
     self:log( "metaBodyMath:" .. tostring(string.match(metaBody, newpat)))
     self:log( "subTaskId:" .. string.sub("c6add4444d144264ba6214402780902a", -8))
+    self:log( "contains:" .. tostring(string.contains("contains", "axi")))
 end
 
 tb:run()

@@ -12,6 +12,10 @@ string.endsWith = function(String,End)
    return End=='' or string.sub(String,-string.len(End))==End
 end
 
+string.contains = function (String, source )
+    return string.find(String, source) ~= nil
+end
+
 string.encodeURI = function(s)
     s = string.gsub(s, "([^%w%.%- ])", function(c) return string.format("%%%02X", string.byte(c)) end)
     return string.gsub(s, " ", "+")

@@ -76,6 +76,17 @@ end
 -- 	end
 -- end
 
+function titleWithEpIndex(title, epindex )
+   if epindex and epindex > 0 then
+    if not (string.contains(title,  "" .. epindex )) 
+      title = title .. " " .. epindex .."集"
+    end
+   end
+   return title
+end
+
+has_content.title = titleWithEpIndex(has_content.title, has_content.epindex)
+
 -- log(ERR,"recmd_map:" .. cjson_safe.encode(recmd_map) )
 local crumbs = {}
 if not has_content.sort then
@@ -86,14 +97,14 @@ if not has_content.sort then
 end
 local sortName = util_const.index2Name("SORT_DICT", has_content.sort)
 has_content.sortName = sortName
-local year = has_content.year
+local year = has_content.year or 0
 local regions = has_content.regions
 table.insert(crumbs , {name = sortName, link1 = "/media/" .. sortName  ..".html"})
 if regions and regions[1] then
 	local region = regions[1]
 	table.insert(crumbs , {name = region, link = "/movie/region/" .. region  ..".html"})
 end
-table.insert(crumbs , {name = year, link1 = "/movie/year/" .. tostring(year)  ..".html"})
+table.insert(crumbs , {name = tostring(year), link1 = "/movie/year/" .. tostring(year)  ..".html"})
 
 has_content.header = util_dochtml.detail_header(has_content)
 has_content.header.canonical = "http://www.lezomao.com/m/movie/detail/"..tostring(content_id) .. ".html"
