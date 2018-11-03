@@ -270,7 +270,7 @@ function _M:fillVideoMeta(oDoc)
     local resp, status = self:save_metas( es_body )
 
     if hasMeta.cstatus == 2  and hasMeta.digests then
-       for di,imgURL in ipairs(vmetaRet.digests) do
+       for di,imgURL in ipairs(hasMeta.digests) do
          local digestTask = {}
          digestTask.type = 'common-image'
          digestTask.url = imgURL
