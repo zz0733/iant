@@ -74,7 +74,8 @@ function byAlbum( params, fields )
         }
     }
    local aresp, astatus = meta_dao:search(abody)
-   -- log(ERR,"aresp@@@@@@@:" .. cjson_safe.encode(aresp) .. ",size:" .. cjson_safe.encode(size))
+   log(ERR,"abody@@@@@@@:" .. cjson_safe.encode(abody) .. ",size:" .. cjson_safe.encode(size))
+   log(ERR,"aresp@@@@@@@:" .. cjson_safe.encode(aresp) .. ",size:" .. cjson_safe.encode(size))
    local data = { }
    if aresp and aresp.hits  then
       data.hits = {}
