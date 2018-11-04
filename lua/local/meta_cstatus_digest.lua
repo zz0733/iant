@@ -54,7 +54,7 @@ if resp and resp.hits and resp.hits.hits then
        local vmetaRet, err = meta_dao:get(mv._id)
        if err then
           log(ERR,"getMetaErr:" .. mv._id .. ",cause:" .. cjson_safe.encode(err))
-       elseif vmetaRet  then
+       elseif vmetaRet  and vmetaRet.url and not string.contains(vmetaRet.url,"/cover/undefined/") then
             if vmetaRet.digests then
                 for di,imgURL in ipairs(vmetaRet.digests) do
                  if string.match(imgURL,"^/img/") or string.find(imgURL, util_context.CDN_URI, 1, true) then

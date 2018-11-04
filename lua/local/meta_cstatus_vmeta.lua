@@ -77,11 +77,12 @@ if resp and resp.hits and resp.hits.hits then
        local vmetaRet, err = meta_dao:get(mv._id)
        if err then
           log(ERR,"getMetaErr:" .. mv._id .. ",cause:" .. cjson_safe.encode(err))
-       elseif vmetaRet then
+       elseif vmetaRet and vmetaRet.url and not string.contains(vmetaRet.url,"/cover/undefined/") then
            local destType = source_type_dict[vmetaRet.source]
            if not destType or destType == "" then
               log(ERR,"ignoreUnkownType,id:" .. mv._id .. ",meta:" .. cjson_safe.encode(mv))
            else
+
              local newTask = {}
              newTask.type = destType
              newTask.url = vmetaRet.url
