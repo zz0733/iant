@@ -180,31 +180,32 @@ _M.nexts = function(id, source)
 end
 
 _M.content = function(id, source)
-   if not source then
-   	 return nil, "source is nil"
+if not source then
+       return nil, "source is nil"
    elseif not source.data then
-   	 return nil, "source.data is nil"
+       return nil, "source.data is nil"
    end
    -- local str_date = decode_base64(source.data)
    -- local data = cjson_safe.decode(str_date)
-   local data = source.data
-   log(ERR,"handle[content],id:" .. id .. ",content:" ..  cjson_safe.encode(data.data))
-   if not data then
-   	 return nil, "es[source.data] is not json"
-   elseif not data.data then
-   	 return nil, "content[data] is nil"
-   elseif not data.data.docs  then
-	 return nil, "content[data].docs is nil"
+   log(ERR,"handle_content,id:" .. id .. ",source:" ..  cjson_safe.encode(source))
+   if not source.data then
+       return nil, "source.data is not json"
+   elseif not source.data.data  then
+       return nil, "source.data is not json"
+   elseif not source.data.data.docs  then
+       return nil, "source.data.data.docs is nil"
    end
-   local docs = data.data.docs
-   local type = source.type
+   local saveIds = {}
+   local docs = source.data.data.docs
+   local type = source.task.type
    for _,v in ipairs(docs) do
    	  if not v.id then
    	  	v.id = tostring(type) .. tostring(id)
    	  end
       ensure_doc(v)
+      table.insert(saveIds, v.id)
    end
-   log(ERR,"handle_content,id:" .. id .. ",docs:" ..  cjson_safe.encode(docs))
+   log(ERR,"handle_content,id:" .. id .. ",count:" ..  #saveIds .. ",saveIds:" .. cjson_safe.encode(saveIds) )
    return content_dao:save_docs(docs)
 end
 
@@ -299,7 +300,7 @@ _M.channel = function(id, source)
    end
    -- local str_date = decode_base64(source.data)
    -- local data = cjson_safe.decode(str_date)
-   log(ERR,"handle_channel,id:" .. id .. ",source:" ..  cjson_safe.encode(source))
+   -- log(ERR,"handle_channel,id:" .. id .. ",source:" ..  cjson_safe.encode(source))
    if not source.data then
        return nil, "source.data is not json"
    elseif not source.data.data  then
