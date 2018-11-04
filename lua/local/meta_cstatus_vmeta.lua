@@ -19,6 +19,7 @@ message.code = 200
 local req_method = ngx.req.get_method()
 local args = ngx.req.get_uri_args()
 local from_date = tonumber(args.from) or (ngx.time() - 2*60*60)
+local task_level = tonumber(args.level) or 1
 local size = tonumber(args.size) or (100)
 -- 在线视频
 local media = 1
@@ -86,7 +87,7 @@ if resp and resp.hits and resp.hits.hits then
              local newTask = {}
              newTask.type = destType
              newTask.url = vmetaRet.url
-             newTask.level = 1
+             newTask.level = task_level
              local params = {}
              params.metaId = mv._id
              newTask.params = params
