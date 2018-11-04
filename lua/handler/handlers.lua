@@ -265,7 +265,7 @@ _M.link = function(id, source)
    end
    -- local str_date = decode_base64(source.data)
    -- local data = cjson_safe.decode(str_date)
-   log(ERR,"handle_link,id:" .. id .. ",source:" ..  cjson_safe.encode(source)
+   log(ERR,"handle_link,id:" .. id .. ",source:" ..  cjson_safe.encode(source))
    if not source.data then
        return nil, "source.data is not json"
    elseif not source.data.data  then
