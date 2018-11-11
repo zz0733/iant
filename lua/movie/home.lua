@@ -42,8 +42,8 @@ function selectCodes( hits, max )
 			table.sort(elements, comp)
 			-- log(ERR,"sort.elements:" .. cjson_safe.encode(elements) )
 			for _,v in ipairs(elements) do
-				if v.code then
-					table.insert(select_ids, v.code)
+				if v.id then
+					table.insert(select_ids, v.id)
 					if #select_ids >= max_select then
 						break
 					end
@@ -187,8 +187,25 @@ data.contents = order_contents
 local movie_codes  = getContentByChannel("movie","正在热播",15)
 local from = 0
 local size = #movie_codes
--- local fields = {"article","digests","lcount","issueds","evaluates","genres"}
-local resp =  content_dao:query_by_codes(from,size,movie_codes,fields);
+local must_arr = {}
+table.insert(must_arr, { match = { media = 1}})
+table.insert(must_arr, { match = { pstatus = 1}})
+table.insert(must_arr, { terms = { _id = movie_codes }})
+local body = {
+  from = 0,
+  size = 20,
+  sort = {
+    epmax_time = {
+      order = "desc"
+    }
+  },
+  query = {
+    bool = {
+	    must = must_arr
+    }
+  }
+}
+local resp = meta_dao:search(body, true)
 local playing_movie = {}
 if resp then
 	playing_movie = resp.hits

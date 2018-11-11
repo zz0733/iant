@@ -63,6 +63,7 @@ if vmeta.url then
 	     local tresp, tstatus = ssdb_task:qretry( newTask.level, newTask )
 	     log(ERR,"vmetaTask:" .. cjson_safe.encode(newTask) .. ",resp:" .. cjson_safe.encode(tresp) .. ",status:" .. cjson_safe.encode(tstatus) )
 	end
+	vmeta.url = ngx.re.gsub(vmeta.url, "http://", "https://")
 	return ngx.redirect(vmeta.url, ngx.HTTP_MOVED_TEMPORARILY)
 end
 -- if not vmeta.body and vmeta.url then
