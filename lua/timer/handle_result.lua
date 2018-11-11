@@ -36,6 +36,7 @@ local check
                      local task = ret.task
                      local data = ret.data
                      local cur_handlers = data.handlers
+                     task.id = task.id or  ("0" .. task.type)
                      for _, cmd in ipairs(cur_handlers) do
                           local resp, estatus = handlers.execute(cmd, task.id, ret)
                           if estatus ~= 200 then

@@ -43,6 +43,7 @@ for _,v in ipairs(body_json) do
 	local task = v.task
     local data = v.data
     local status = v.status
+    task.id = task.id or  ("0" .. task.type)
     if can_insert(task, data, status) then
     	 local level = task.level or 0
 	     local resp, err = ssdb_result:qpush(level, v )
