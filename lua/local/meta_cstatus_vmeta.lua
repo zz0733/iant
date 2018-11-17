@@ -46,10 +46,12 @@ end
 if not util_table.is_empty_table(source_arr) then
    table.insert(must_array,{terms = { source = source_arr }})
 end
-local cstatus_video_arr = {}
-table.insert(cstatus_video_arr,0)
-table.insert(cstatus_video_arr,1)
-table.insert(must_array,{terms = { cstatus = cstatus_video_arr }})
+if not (args.albumId and args.force) then
+ local cstatus_video_arr = {}
+ table.insert(cstatus_video_arr,0)
+ table.insert(cstatus_video_arr,1)
+ table.insert(must_array,{terms = { cstatus = cstatus_video_arr }})
+end
 
 -- local must_nots = {}
 -- -- 获取视频资源所有取值，新增cstatus需改动,cstatus=2
