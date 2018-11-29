@@ -34,13 +34,13 @@ function selectCodes( hits, max )
 		local rnum = right.index or right.ticket_rate_tf or 0
 		return lnum < rnum
 	end
+	log(ERR,"selectCodes:" .. cjson_safe.encode(hits) )
 	local select_ids = {}
 	local max_select = max or 20
 	for _,hv in ipairs(hits) do
 		local elements = hv._source.elements
 		if elements then
 			table.sort(elements, comp)
-			-- log(ERR,"sort.elements:" .. cjson_safe.encode(elements) )
 			for _,v in ipairs(elements) do
 				if v.id then
 					table.insert(select_ids, v.id)
@@ -166,7 +166,8 @@ function makeOrderContents( ... )
     -- log(ERR,'order_contents:' .. cjson_safe.encode(order_contents))
 	return order_contents
 end
-local  order_contents = makeOrderContents()
+-- local  order_contents = makeOrderContents()
+local  order_contents = {}
 -- local  order_contents = {}
 local  contents = data.contents
 local iorder = 1
@@ -185,6 +186,7 @@ end
 data.contents = order_contents
 
 local movie_codes  = getContentByChannel("movie","正在热播",15)
+log(ERR,'movie_codes:' .. cjson_safe.encode(movie_codes))
 local from = 0
 local size = #movie_codes
 local must_arr = {}
