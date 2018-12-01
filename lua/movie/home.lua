@@ -185,7 +185,7 @@ while true do
 end
 data.contents = order_contents
 
-local movie_codes  = getContentByChannel("movie","正在热播",15)
+local movie_codes  = getContentByChannel("movie","热门",15)
 log(ERR,'movie_codes:' .. cjson_safe.encode(movie_codes))
 local from = 0
 local size = #movie_codes
