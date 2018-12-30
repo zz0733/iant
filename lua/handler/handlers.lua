@@ -372,7 +372,7 @@ _M.sked  = function(id, source)
     end
     local task = source.task
     local oDocs = data.skeds
-    log(ERR,"handle_sked:" .. tostring(task.type) .. ",id:" .. id  .. ",oDocs:" .. tostring(#oDocs))
+    log(ERR,"handle_sked:" .. tostring(task.type) .. ",id:" .. id  .. ",count:" .. tostring(#oDocs))
     return sked_dao:index_docs(oDocs)
 end
 
