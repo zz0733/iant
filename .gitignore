@@ -4,3 +4,7 @@ scgi_temp/
 uwsgi_temp/
 logs/
 conf/deny_ips.conf
+
+.idea/
+*.iml
+nginx.pid
