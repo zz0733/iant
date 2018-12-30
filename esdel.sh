@@ -43,10 +43,33 @@ curl -X POST 'http://127.0.0.1:9200/link/_delete_by_query?pretty' -d '
 }
  '
 
-curl -X POST 'http://127.0.0.1:9200/task/table/_delete_by_query?pretty' -d '
+curl -X POST 'http://127.0.0.1:9200/channel/table/_delete_by_query?pretty' -d '
 {
   "query": { 
     "match_all" : {}
+  }
+}
+'
+
+curl -X POST 'http://127.0.0.1:9200/meta/table/_delete_by_query?pretty' -d '
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "terms": {
+            "cstatus": [
+              7
+            ]
+          }
+        },
+        {
+          "match": {
+            "media": 1
+          }
+        }
+      ]
+    }
   }
 }
 '

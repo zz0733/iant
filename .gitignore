@@ -4,3 +4,11 @@ scgi_temp/
 uwsgi_temp/
 logs/
 conf/deny_ips.conf
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+nginx.pid
