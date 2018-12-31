@@ -206,7 +206,6 @@ local body = {
   }
 }
 local resp = meta_dao:search(body, true)
-log(ERR,'movie_codesresp:' .. cjson_safe.encode(resp))
 local playing_movie = {}
 if resp then
 	playing_movie = resp.hits
