@@ -187,7 +187,6 @@ data.contents = order_contents
 local movie_codes  = getContentByChannel("movie","热门",15)
 log(ERR,'movie_codes:' .. cjson_safe.encode(movie_codes))
 local from = 0
-local size = #movie_codes
 local must_arr = {}
 table.insert(must_arr, { match = { media = 1}})
 --table.insert(must_arr, { match = { pstatus = 1}})
@@ -207,6 +206,7 @@ local body = {
   }
 }
 local resp = meta_dao:search(body, true)
+log(ERR,'movie_codesresp:' .. cjson_safe.encode(resp))
 local playing_movie = {}
 if resp then
 	playing_movie = resp.hits
