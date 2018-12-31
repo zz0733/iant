@@ -140,20 +140,19 @@
                       local playing_movie = context.playing_movie.hits;
                       for _,v in ipairs(playing_movie) do
                           local source = v._source;
-                          local article = source.article;
                           local genres = source.genres;
                           local digests = source.digests;
-                          local evaluates = source.evaluates;
+                          local evaluate = source.douban;
                           local rate = 0
                           local comment = 0
-                          if evaluates and evaluates[1] then
-                               rate = evaluates[1].rate
-                               comment = evaluates[1].comment
+                          if evaluate then
+                               rate = evaluate.rate
+                               comment = evaluate.comment
                           end
                           local str_cost
-                          if article.cost then
-                             local lcost = article.cost / 60
-                             str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+                          if source.cost then
+                             local lcost = source.cost / 60
+                             str_cost =  math.modf(lcost) .. ":" .. math.fmod(source.cost, 60 ) .. ":00"
                           end
                           local str_img
                           if digests then
