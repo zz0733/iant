@@ -188,7 +188,7 @@ local movie_codes  = getContentByChannel("movie","热门",15)
 log(ERR,'movie_codes:' .. cjson_safe.encode(movie_codes))
 local from = 0
 local must_arr = {}
-table.insert(must_arr, { match = { media = 1}})
+table.insert(must_arr, { match = { media = 0}})
 --table.insert(must_arr, { match = { pstatus = 1}})
 table.insert(must_arr, { terms = { _id = movie_codes }})
 local body = {
