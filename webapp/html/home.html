@@ -151,7 +151,8 @@
                           end
                           local str_cost
                           if source.cost then
-                             str_cost =  math.modf(source.cost, 60*60) .. ":" .. math.fmod(source.cost, 60 ) .. ":00"
+                             local lcost = source.cost / 60 / 60
+                             str_cost =  math.modf(lcost) .. ":" .. math.fmod(lcost, 60 ) .. ":00"
                           end
                           local str_img
                           if digests then
