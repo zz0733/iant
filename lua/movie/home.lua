@@ -190,7 +190,7 @@ local from = 0
 local size = #movie_codes
 local must_arr = {}
 table.insert(must_arr, { match = { media = 1}})
-table.insert(must_arr, { match = { pstatus = 1}})
+--table.insert(must_arr, { match = { pstatus = 1}})
 table.insert(must_arr, { terms = { _id = movie_codes }})
 local body = {
   from = 0,
