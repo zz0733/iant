@@ -4,6 +4,7 @@ local channel_dao = require "dao.channel_dao"
 local meta_dao = require "dao.meta_dao"
 local task_dao = require "dao.task_dao"
 local ssdb_task = require "ssdb.task"
+local sked_dao = require "dao.sked_dao"
 
 local cjson_safe = require "cjson.safe"
 local util_request = require "util.request"
@@ -353,6 +354,26 @@ _M.vmeta = function(id, source)
    local oDoc = data.data
    log(ERR,"handle_vmeta:" .. tostring(task.type) .. ",id:" .. id  .. ",metaId:" .. tostring(oDoc.id))
    return meta_dao:fillVideoMeta(oDoc)
+end
+
+_M.sked  = function(id, source)
+    if not source then
+        return nil, "source is nil"
+    elseif not source.data then
+        return nil, "source.data is nil"
+    end
+    -- local str_date = decode_base64(source.data)
+    -- local data = cjson_safe.decode(str_date)
+    local data = source.data
+    if not data then
+        return nil, "es[source.data] is not json"
+    elseif not data.skeds then
+        return nil, "source.data.skeds is nil"
+    end
+    local task = source.task
+    local oDocs = data.skeds
+    log(ERR,"handle_sked:" .. tostring(task.type) .. ",id:" .. id  .. ",count:" .. tostring(#oDocs))
+    return sked_dao:index_docs(oDocs)
 end
 
 

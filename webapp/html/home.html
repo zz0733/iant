@@ -26,14 +26,14 @@
                <input type="hidden" id="offset" name="offset" value="{{data.offset}}">
                <input type="hidden" id="hasmore" name="hasmore" value="{{data.hasmore}}">
 
-               
+
 
                <ul class="feed-ul">
 
-                
 
-              
- 
+
+
+
                {% if not data or not data.contents or #data.contents < 1 then %}
                   <li class="item-box">暂无内容推荐</li>
                {% else
@@ -60,9 +60,9 @@
                             </div>
                             <div class="progressBar" style="width: 0%;"></div>
                         </div>
-                      
+
                          <div class="video-box">
-                               <video data-url="/vmeta/{{v.id}}.info" poster="{*v.img*}" ></video>  
+                               <video data-url="/vmeta/{{v.id}}.info" poster="{*v.img*}" ></video>
                          </div>
                     </div>
                   </li>
@@ -70,23 +70,23 @@
                   <li class="item-box">
                    <div class="item-inner">
                       <div class="lbox">
-                        <a class="img-wrap" target="_blank" href="/movie/detail/{{v.id}}.html"> 
-                          <img alt="{{v.title}}" src="{*v.img*}" /> 
+                        <a class="img-wrap" target="_blank" href="/movie/detail/{{v.id}}.html">
+                          <img alt="{{v.title}}" src="{*v.img*}" />
                           {%if v.cost then%}
                           <i class="ftype video"> <span>{{v.cost}}</span> </i>
                           {%end%}
-                        </a> 
+                        </a>
                       </div>
                       <div class="rbox ">
-                            <div class="rbox-inner"> 
-                                <div class="title-box"> 
+                            <div class="rbox-inner">
+                                <div class="title-box">
                                     <a class="atitle" target="_blank" href="/movie/detail/{{v.id}}.html"> {{v.title}}
-                                    </a> 
+                                    </a>
                                 </div>
                                 <div class="tag-box">
                                  {% if v.genres then %}
                                     {% for i,v in ipairs(v.genres) do  %}
-                                      <a target="_blank" class="lbtn-tag tag-size" 
+                                      <a target="_blank" class="lbtn-tag tag-size"
                                       href="/movie/genre/{*string.encodeURI(v)*}.html">{{v}}</a>
                                     {% end  %}
                                   {% end %}
@@ -96,7 +96,7 @@
                                   {%if v.epmax then %}
                                   <span class="tag-ep">第{{v.epmax}}集</span>
                                   {%end%}
-                                </div>  
+                                </div>
                             </div>
                       </div>
                    </div>
@@ -109,7 +109,7 @@
                 </ul>
               </div>
 
-              <div class="col-md-4 "> 
+              <div class="col-md-4 ">
                 <div class="wx-mp-box">
                     <h4 class="wx-mp-txt">微信<span style="color: blue;">扫一扫关注</span>公众号</h4>
                     <div class="wx-mp-img">
@@ -132,7 +132,7 @@
                       上传磁力网络，即可在线播放
                     </div>
                 </div> -->
-       
+
                 <div class="msgbox">
                   <div class="playing-head"> 正在热播 </div>
                   <ul class="playing-list">
@@ -140,29 +140,26 @@
                       local playing_movie = context.playing_movie.hits;
                       for _,v in ipairs(playing_movie) do
                           local source = v._source;
-                          local article = source.article;
                           local genres = source.genres;
                           local digests = source.digests;
-                          local evaluates = source.evaluates;
+                          local evaluate = source.douban;
                           local rate = 0
                           local comment = 0
-                          if evaluates and evaluates[1] then
-                               rate = evaluates[1].rate
-                               comment = evaluates[1].comment
+                          if evaluate then
+                               rate = evaluate.rate
+                               comment = evaluate.comment
                           end
                           local str_cost
-                          if article.cost then
-                             local lcost = article.cost / 60
-                             str_cost =  math.modf(lcost) .. ":" .. math.fmod(article.cost, 60 ) .. ":00"
+                          if source.cost then
+                             local lcost = math.floor(source.cost / 60 )
+                             str_cost =  math.modf(lcost / 60) .. ":" .. math.fmod(lcost, 60) .. ":00"
                           end
                           local str_img
                           if digests then
                              for _,v in ipairs(digests) do
-                                if v.sort == 'img' then
-                                   str_img = v.content
-                                   str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
-                                   break
-                                end
+                                 str_img = v
+                                 str_img = ngx.re.sub(str_img, "[%.]webp", ".jpg")
+                                 break
                              end
                           end
                           if str_img then
@@ -175,17 +172,17 @@
                         <div class="video-item">
                           <a href="/movie/detail/{{v._id}}.html" target="_blank">
                             <div class="video-pic">
-                              <img alt="{{article.title}}" src="{*str_img*}">
+                              <img alt="{{source.title}}" src="{*str_img*}">
                               <i class="ftype video"> <span>{{str_cost}}</span> </i>
                             </div>
-                            
-                            <div class="video-txt"> 
-                                <h4>{{article.title}}</h4> 
-                                <p> 
+
+                            <div class="video-txt">
+                                <h4>{{source.title}}</h4>
+                                <p>
                                  <span>{{lcount}}资源</span>
-                                 <span>⋅{{comment}}评论</span> 
+                                 <span>⋅{{comment}}评论</span>
                                  <span>⋅{{rate}}评分</span>
-                                </p> 
+                                </p>
                             </div>
                           </a>
                         </div>
@@ -193,7 +190,7 @@
                       {%
                       end
                     %}
-                  
+
                   </ul>
               </div>
              </div>
