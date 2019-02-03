@@ -160,8 +160,8 @@ curl -XPUT 'http://localhost:9200/meta_v2/_mapping/table?pretty' -d '
     },
     "utime": {
       "type": "date"
-    },
-    "epmax_time": {
+    }
+    ,"epmax_time": {
       "type": "date"
     }
   }
