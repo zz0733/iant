@@ -152,17 +152,7 @@ weixin_router:post("/msgcb", function(req, res, next)
         function validateLink(query, resp)
             local hasVal = wx_msg_dict:get_stale(query)
             if not hasVal then
-                local hits = resp.hits.hits
-                local level = 2
-                local retry = 5
-                local resp, status, count = task_service:create_task_by_links(hits, level, retry)
-                local sresp = "OK"
-                if resp.errors then
-                    sresp = cjson_safe.encode(resp)
-                end
-                log(ERR, "create_task,query:" .. tostring(query)
-                        .. ",hits:" .. tostring(#hits) .. ",task:" .. tostring(count)
-                        .. ",status:" .. tostring(status) .. ",resp:" .. tostring(sresp))
+                return
             end
             -- seconds
             local ttl = 2 * 60 * 60
