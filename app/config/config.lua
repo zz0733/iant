@@ -4,6 +4,7 @@ return {
 		"^/m1",
 		"^/m2",
 		"^/snap",
+		"^/auth/wx",
 
 		"^/index$",
 		"^/ask$",
