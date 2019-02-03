@@ -1,5 +1,5 @@
-local util_table = require "util.table"
-local util_string = require "util.string"
+local util_table = require "app.libs.util.table"
+local util_string = require "app.libs.util.string"
 local decode_base64 = ngx.decode_base64
 local _M = util_table.new_table(0, 1)
 _M._VERSION = '0.01'

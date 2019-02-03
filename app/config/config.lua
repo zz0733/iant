@@ -3,6 +3,7 @@ return {
 	whitelist = {
 		"^/m1",
 		"^/m2",
+		"^/snap",
 
 		"^/index$",
 		"^/ask$",

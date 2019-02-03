@@ -47,7 +47,8 @@ local function _multipart_formdata(config)
                     extname = getextension(origin_filename)
                 end
 
-                if extname ~= "png" and extname ~= "jpg" and extname ~= "jpeg" and extname ~= "bmp" and extname ~= "gif" then
+                if extname ~= "png" and extname ~= "jpg" and extname ~= "jpeg" and extname ~= "bmp"
+                        and extname ~= "gif" and extname ~= "js" then
                     success = false
                     msg = "not allowed upload file type"
                     ngx.log(ngx.ERR, "not allowed upload file type:", origin_filename)
@@ -56,7 +57,6 @@ local function _multipart_formdata(config)
 
                 filename = unique_name .. "." .. extname
                 path = config.dir .. "/" .. filename
-
 
                 file, err = io.open(path, "w+")
 
@@ -95,6 +95,14 @@ end
 
 local function uploader(config)
     return function(req, res, next)
+        --        if match(req.path, "^/snap/script$") then
+        --            local util_request = require("app.libs.util.request")
+        --            local script = util_request.post_body(req)
+        --            local log = ngx.log
+        --            local ERR = ngx.ERR
+        --            log(ERR, "script:" .. tostring(script))
+        --            return next()
+        --        end
         if ngx_var.request_method == "POST" then
             local get_headers = ngx.req.get_headers()
             local header = get_headers['Content-Type']

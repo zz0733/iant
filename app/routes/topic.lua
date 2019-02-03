@@ -5,6 +5,7 @@ local lor = require("lor.index")
 local topic_model = require("app.model.topic")
 local collect_model = require("app.model.collect")
 local like_model = require("app.model.like")
+local status_model = require("app.model.status")
 local topic_router = lor:Router()
 
 local function isself(req, uid)
@@ -12,8 +13,8 @@ local function isself(req, uid)
 
     if req and req.session and req.session.get("user") then
         local userid = req.session.get('user').userid
-        if uid and userid and uid==userid then
-            result= true
+        if uid and userid and uid == userid then
+            result = true
         end
     end
 
@@ -51,7 +52,6 @@ topic_router:get("/:topic_id/delete", function(req, res, next)
             msg = "删除文章失败"
         })
     end
-
 end)
 
 topic_router:get("/:topic_id/view", function(req, res, next)
@@ -74,7 +74,8 @@ topic_router:get("/:topic_id/query", function(req, res, next)
         })
     end
 
-    local current_userid = req.session.get("user").userid
+    local user_dict = req.session.get("user")
+    local current_userid = user_dict and user_dict.userid
     local is_collect = false
     local is_like = false
 
@@ -85,14 +86,21 @@ topic_router:get("/:topic_id/query", function(req, res, next)
 
     -- topic_id must be number
     local result, err = topic_model:get(topic_id)
-    
-    if not result or err or type(result) ~= "table" or #result ~= 1 then
+
+    if not result or err or type(result) ~= "table" or not result.id then
         return res:json({
-            succes= false,
+            succes = false,
             msg = "无法查找到该文章."
         })
     else
-        local topic = result[1]
+        local topic = result
+        local status_dict = status_model:get(topic_id)
+        if status_dict then
+            for status_k, status_v in pairs(status_dict) do
+                topic[status_k] = status_v
+            end
+        end
+        topic.view_template = 1
         local is_self = isself(req, topic.user_id)
         res:json({
             success = true,
@@ -103,7 +111,7 @@ topic_router:get("/:topic_id/query", function(req, res, next)
                     is_collect = is_collect,
                     is_like = is_like
                 }
-            }   
+            }
         })
     end
 end)
@@ -111,7 +119,7 @@ end)
 
 topic_router:get("/new", function(req, res, next)
     local diff_days, diff = utils.days_after_registry(req)
-    if diff_days<3 then
+    if diff_days < 3 then
         return res:render("error", {
             errMsg = "注册时间不到3天，不允许发布文章"
         })
@@ -122,13 +130,13 @@ end)
 
 topic_router:post("/new", function(req, res, next)
     local diff_days, diff = utils.days_after_registry(req)
-    if diff_days<3 then
+    if diff_days < 3 then
         return res:json({
             success = false,
             msg = "注册时间不到3天，不允许发布文章"
         })
     end
-    
+
     local category_id = req.body.category_id
     local title = req.body.title
     local content = req.body.content
@@ -191,7 +199,7 @@ topic_router:get("/:topic_id/edit", function(req, res, next)
             errMsg = "您要编辑的文章不存在或者您没有权限编辑."
         })
     else
-        res:render("topic/edit",{
+        res:render("topic/edit", {
             topic = result[1]
         })
     end

@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenResty China社区 &raquo;</title>
-  {(meta.html)}
+    <title>OpenResty China社区 &raquo;</title>
+    {(meta.html)}
     <link rel="stylesheet" media="screen" href="/static/css/jquery.fileupload.css"/>
     <link rel="stylesheet" media="screen" href="/static/css/jquery.fileupload-ui.css"/>
 </head>
 <body>
 {(header.html)}
-
 
 
 <div id="main" class="main-container container">
@@ -23,16 +22,17 @@
                 <div class="total panel-heading">
                     共收到
                     <b class="reply-num-text total-comment-count">
-                       0
+                        0
                     </b>
                     条评论
                 </div>
                 <div class="items panel-body">
-                    <div id="comments-body"></div><!-- comments -->  
-                    <div class="panel-footer clearfix" id="comment-pagebar" style="display:none;"></div><!-- page bar -->  
+                    <div id="comments-body"></div><!-- comments -->
+                    <div class="panel-footer clearfix" id="comment-pagebar" style="display:none;"></div>
+                    <!-- page bar -->
                 </div>
             </div>
-            <div id="reply" class="panel panel-default"  style="display:none;">
+            <div id="reply" class="panel panel-default" style="display:none;">
                 <div class="panel-heading">
                     评论
                 </div>
@@ -41,7 +41,7 @@
                         <div class="opts pull-right"><!--上传文件-->
                             <span class="fileinput-button">
                                  <i class="fa fa-fa fa-image"></i>
-                                <input type="file" id="upload_image"  multiple="">
+                                <input type="file" id="upload_image" multiple="">
                             </span>
                         </div>
                         <ul class="nav nav-pills" style="clear:none;">
@@ -57,11 +57,13 @@
                         <input name="utf8" type="hidden" value="✓">
                         <div class="form-group">
                             <div class="topic-editor-dropzone dz-clickable" id="edit-area">
-                                <textarea class="topic-editor form-control" rows="4" tabindex="1" id="reply_content" style="height: auto;min-height:80px;"></textarea>
+                                <textarea class="topic-editor form-control" rows="4" tabindex="1" id="reply_content"
+                                          style="height: auto;min-height:80px;"></textarea>
                             </div>
 
-                            <div class="markdown form-control" id="preview-area" style="display:none;height:auto;border:1px solid #ddd;padding:20px 20px;"></div>
-                    
+                            <div class="markdown form-control" id="preview-area"
+                                 style="display:none;height:auto;border:1px solid #ddd;padding:20px 20px;"></div>
+
                         </div>
                         <div class="submit-buttons">
                             <a id="reply-btn" class="btn btn-primary" tabindex="2">
@@ -92,8 +94,16 @@
 
                         <div class="group" style="height:30px;margin-left: 60px;">
                             <!-- share Button BEGIN -->
-                            <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a><a href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#" class="bds_sqq" data-cmd="sqq" title="分享到QQ好友"></a><a href="#" class="bds_youdao" data-cmd="youdao" title="分享到有道云笔记"></a></div>
-                            
+                            <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#"
+                                                                                                              class="bds_tsina"
+                                                                                                              data-cmd="tsina"
+                                                                                                              title="分享到新浪微博"></a><a
+                                    href="#" class="bds_weixin" data-cmd="weixin" title="分享到微信"></a><a href="#"
+                                                                                                       class="bds_sqq"
+                                                                                                       data-cmd="sqq"
+                                                                                                       title="分享到QQ好友"></a><a
+                                    href="#" class="bds_youdao" data-cmd="youdao" title="分享到有道云笔记"></a></div>
+
                             <!-- share Button END -->
                         </div>
                         <hr>
@@ -126,31 +136,34 @@
 <script id="ops-area-tpl" type="text/template">
     <div class="group likes opts">
         {@if meta.is_like }
-            <a title="赞" id="like-btn" data-id="${topic.id}" data-op="cancel_like" class="likeable active" href="javascript:void(0);">
-                <i class="fa fa-thumbs-up"></i>
-                <span class="like-num-text">${topic.like_num}</span> 个赞
-            </a>
+        <a title="赞" id="like-btn" data-id="${topic.id}" data-op="cancel_like" class="likeable active"
+           href="javascript:void(0);">
+            <i class="fa fa-thumbs-up"></i>
+            <span class="like-num-text">${topic.like_num}</span> 个赞
+        </a>
         {@/if}
 
         {@if !meta.is_like }
-            <a title="赞" id="like-btn" data-id="${topic.id}" data-op="like" class="likeable " href="javascript:void(0);">
-                <i class="fa fa-thumbs-up"></i>
-                <span class="like-num-text">${topic.like_num}</span> 个赞
-            </a>
+        <a title="赞" id="like-btn" data-id="${topic.id}" data-op="like" class="likeable " href="javascript:void(0);">
+            <i class="fa fa-thumbs-up"></i>
+            <span class="like-num-text">${topic.like_num}</span> 个赞
+        </a>
         {@/if}
     </div>
     <div class="group">
         <div class="btn-group" role="group">
             {@if meta.is_collect }
-                <a title="收藏" id="collect-btn" class="bookmark active btn btn-default" data-op="cancel_collect" data-id="${topic.id}" href="javascript:void(0);">
-                    <i class="fa fa-bookmark"></i> 收藏
-                </a>
+            <a title="收藏" id="collect-btn" class="bookmark active btn btn-default" data-op="cancel_collect"
+               data-id="${topic.id}" href="javascript:void(0);">
+                <i class="fa fa-bookmark"></i> 收藏
+            </a>
             {@/if}
 
             {@if !meta.is_collect }
-                <a title="收藏" id="collect-btn" class="bookmark  btn btn-default" data-op="collect" data-id="${topic.id}" href="javascript:void(0);">
-                    <i class="fa fa-bookmark"></i> 收藏
-                </a>
+            <a title="收藏" id="collect-btn" class="bookmark  btn btn-default" data-op="collect" data-id="${topic.id}"
+               href="javascript:void(0);">
+                <i class="fa fa-bookmark"></i> 收藏
+            </a>
             {@/if}
         </div>
     </div>
@@ -170,48 +183,54 @@
                 <a data-author="true" data-name="${topic.user_name}" href="/user/${topic.user_name}/index">
                     ${topic.user_name}
                 </a>
-                 于
+                于
                 <abbr class="timeago" title="${topic.create_time}">
-                    ${topic.create_time}
+                    ${topic.ctime}
                 </abbr>
                 发布
                 {@if topic.update_time && topic.update_time!="0000-00-00 00:00:00" }
-                    ·
-                    <abbr class="timeago" title="${topic.create_time}">
-                        ${topic.update_time} 更新
-                    </abbr>
+                ·
+                <abbr class="timeago" title="${topic.create_time}">
+                    ${topic.utime} 更新
+                </abbr>
                 {@/if}
 
-                 {@if topic.last_reply_id!=0 }
-                    · 最后由
-                    <a data-name="shawnqi" href="/user/${topic.last_reply_name}/index">
-                        ${topic.last_reply_name}
-                    </a>
-                    于
-                    <abbr class="timeago" title="${topic.last_reply_time}">
-                        ${topic.last_reply_time}
-                    </abbr>
-                    回复
+                {@if topic.last_reply_id!=0 }
+                · 最后由
+                <a data-name="shawnqi" href="/user/${topic.last_reply_name}/index">
+                    ${topic.last_reply_name}
+                </a>
+                于
+                <abbr class="timeago" title="${topic.last_reply_time}">
+                    ${topic.last_reply_time}
+                </abbr>
+                回复
                 {@/if}
 
-                · ${topic.view_num}次阅读
+                · ${topic.view}次阅读
                 &nbsp;
                 {@if is_self}
-                    <a href="/topic/${topic.id}/edit" class="edit-topic" style="color:#000"><i title="编辑该文章" class="fa fa-pencil"></i></a>&nbsp;
-                    <a href="javascript:void(0)" class="delete-topic" data-id="${topic.id}" style="color:#FF6969"><i title="删除此文章" class="fa fa-trash"></i></a>
+                <a href="/topic/${topic.id}/edit" class="edit-topic" style="color:#000"><i title="编辑该文章"
+                                                                                           class="fa fa-pencil"></i></a>&nbsp;
+                <a href="javascript:void(0)" class="delete-topic" data-id="${topic.id}" style="color:#FF6969"><i
+                        title="删除此文章" class="fa fa-trash"></i></a>
                 {@/if}
             </div>
         </div>
         <div class="avatar media-right">
             <a href="/user/${topic.user_name}/index" title="${topic.user_name}">
                 <img class="media-object avatar-48" src="/static/avatar/${topic.avatar}"
-                alt="2">
+                     alt="2">
             </a>
         </div>
     </div>
     <div class="panel-body markdown">
+        {@if topic.mediaId == 2}
+        {(cell/video.html)}
+        {@/if}
         <article id="article-content">
-            $${topic.content}
+            $${topic.html}
+            ${topic.view_tpl}
         </article>
     </div>
 
@@ -219,12 +238,12 @@
         <div class="opts" style="font-size: 12px;">
             <span title="赞" class="likeable " href="javascript:void(0);">
                 <i class="fa fa-thumbs-up"></i>
-                <span class="like-num-text">${topic.like_num}</span> 个赞
+                <span class="like-num-text">${topic.like}</span> 个赞
             </span>
             &nbsp;
             <span title="收藏" class="bookmark " href="javascript:void(0);">
                 <i class="fa fa-bookmark"></i>
-                <span id="collect-num-text">${topic.collect_num}</span> 收藏
+                <span id="collect-num-text">${topic.collect}</span> 收藏
             </span>
         </div>
     </div>
@@ -257,11 +276,13 @@
                     &nbsp;
 
                     {@if current_user_id==c.user_id }
-                        <a href="javascript:void(0)" class="delete-comment" data-id="${c.id}" style="color:#FF6969"><i title="删除此评论" class="fa fa-trash"></i></a>
+                        <a href="javascript:void(0)" class="delete-comment" data-id="${c.id}" style="color:#FF6969"><i
+                                title="删除此评论" class="fa fa-trash"></i></a>
                     {@/if}
                 </span>
                 <span class="opts pull-right">
-                    <a title="回复此楼" class="btn-reply fa fa-mail-reply reply_to_this" data-name="${c.user_name}" href="javascript:void(0);"></a>
+                    <a title="回复此楼" class="btn-reply fa fa-mail-reply reply_to_this" data-name="${c.user_name}"
+                       href="javascript:void(0);"></a>
                 </span>
             </div>
             <div class="markdown">
@@ -289,13 +310,15 @@
                 ·
                 <span class="time">
                     <abbr class="timeago">
-                        ${c.create_time}
+                        ${c.ctime}
                     </abbr>
                     &nbsp;
-                    <a href="javascript:void(0)" class="delete-comment" data-id="${c.id}" style="color:#FF6969"><i title="删除此评论" class="fa fa-trash"></i></a>
+                    <a href="javascript:void(0)" class="delete-comment" data-id="${c.id}" style="color:#FF6969"><i
+                            title="删除此评论" class="fa fa-trash"></i></a>
                 </span>
                 <span class="opts pull-right">
-                    <a title="回复此楼" class="btn-reply fa fa-mail-reply reply_to_this" data-name="${c.user_name}" href="#new_reply"></a>
+                    <a title="回复此楼" class="btn-reply fa fa-mail-reply reply_to_this" data-name="${c.user_name}"
+                       href="#new_reply"></a>
                 </span>
             </div>
             <div class="markdown">
@@ -312,13 +335,24 @@
 <script src="/static/js/jquery.iframe-transport.js"></script>
 <script src="/static/js/topic.js"></script>
 <script type="text/javascript">
-    $(document).ready(function(){
+    $(document).ready(function () {
         APP.Topic.init("{{topic.id}}");
     });
 </script>
 
 <!-- share buttons -->
-<script>window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"16"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];</script>
+<script>window._bd_share_config = {
+    "common": {
+        "bdSnsKey": {},
+        "bdText": "",
+        "bdMini": "2",
+        "bdMiniList": false,
+        "bdPic": "",
+        "bdStyle": "0",
+        "bdSize": "16"
+    }, "share": {}
+};
+with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = '//bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];</script>
 
 </body>
 </html>

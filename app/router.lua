@@ -9,6 +9,8 @@ local upload_router = require("app.routes.upload")
 local category_router = require("app.routes.category")
 local notification_router = require("app.routes.notification")
 local error_router = require("app.routes.error")
+local crawler_router = require("app.routes.crawler")
+local weixin_router = require("app.routes.weixin")
 
 
 
@@ -21,7 +23,9 @@ return function(app)
     app:use("/topics", topics_router())
     app:use("/comment", comment_router())
     app:use("/comments", comments_router())
-    
+    app:use("/snap", crawler_router())
+    app:use("/auth/wx", weixin_router())
+
     app:use("/notification", notification_router())
     app:use("/upload", upload_router())
 
@@ -32,7 +36,5 @@ return function(app)
     app:get("/ask", common_router.ask)
     app:get("/settings", common_router.settings)
     app:get("/about", common_router.about)
-
-
 end
 

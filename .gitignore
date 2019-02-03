@@ -11,4 +11,4 @@ conf/deny_ips.conf
 *.iml
 *.ipr
 
-nginx.pid
+iant.pid

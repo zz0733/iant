@@ -1,5 +1,6 @@
 local pairs = pairs
 local ipairs = ipairs
+local cjson_safe = require "cjson.safe"
 local utils = require("app.libs.utils")
 local page_config = require("app.config.config").page_config
 local lor = require("lor.index")
@@ -15,8 +16,9 @@ topics_router:get("/all", function(req, res, next)
 
     local total_count = topic_model:get_total_count(topic_type, category)
     local total_page = utils.total_page(total_count, page_size)
+
     local topics = topic_model:get_all(topic_type, category, page_no, page_size)
-  
+
     res:json({
         success = true,
         data = {

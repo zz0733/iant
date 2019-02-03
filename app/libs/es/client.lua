@@ -2,6 +2,9 @@ local log = ngx.log
 local ERR = ngx.ERR
 local CRIT = ngx.CRIT
 
+local cjson_safe = require "cjson.safe"
+
+
 
 local ok, new_tab = pcall(require, "table.new")
 if not ok or type(new_tab) ~= "function" then
@@ -11,6 +14,7 @@ end
 
 
 local client_utils = require("app.libs.util.client_utils")
+local table_util = require "app.libs.util.table"
 
 local ESClient = new_tab(0, 6)
 ESClient._VERSION = '0.01'
@@ -41,6 +45,21 @@ function ESClient:new(o)
         log(ERR, "ESClient:new", error)
     end
     return o, error
+end
+
+function ESClient:to_index(source)
+    if not source or not self.template then
+        return source
+    end
+    local dest_index = {}
+    for k, v in pairs(self.template) do
+        local value = source[k]
+        if table_util.is_table(v) and table_util.is_empty_table(value) then
+            value = cjson_safe.empty_array
+        end
+        dest_index[k] = value
+    end
+    return dest_index
 end
 
 function ESClient:create_docs(docs, configs)
@@ -301,12 +320,37 @@ end
 function ESClient:statusErr(status, statusOk)
     status = tonumber(status)
     statusOk = tonumber(statusOk) or 200
-    string.error("status:", status, "statusOk:", statusOk)
-    local err
+--    string.error("status:", status, "statusOk:", statusOk)
+    local errs
     if status and (status ~= statusOk) then
         err = "statusErr:" .. tostring(status)
     end
     return err
 end
+
+function ESClient:to_synonym(body, field)
+    if body then
+        local resp = self:analyze(body, field)
+        if resp and resp.tokens then
+            for _, tv in ipairs(resp.tokens) do
+                if tv.type == "SYNONYM" then
+                    return tv.token
+                end
+            end
+        end
+    end
+    return body
+end
+
+function ESClient:response_to_ids(resp)
+    local id_arr = {}
+    if resp and resp.hits and resp.hits.hits then
+        for _, v in ipairs(resp.hits.hits) do
+            table.insert(id_arr, v._id)
+        end
+    end
+    return id_arr
+end
+
 
 return ESClient
