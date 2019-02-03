@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>《狸猫资讯》为你所用，才是资讯！- LezoMao.com</title>
+  {(meta.html)}
+    <link href="https://cdn.bootcss.com/mediaelement/4.2.9/mediaelementplayer.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/mediaelement/4.2.9/mediaelement-and-player.min.js"></script>
+    <script src="/static/js/player.js"></script>
+</head>
+<body data-controller-name="topics">
+{(header.html)}
+
+
+<div id="main" class="main-container container">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-7">
+            <div class="topics panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="filter pull-right" id="topic-type-tab">
+                        <span class="l">查看:</span>
+                        <a id="default-topics-btn" href="javascript:void(0);" class="active">推荐</a> /
+                        <a id="recent-reply-topics-btn" href="javascript:void(0);">最近回复</a> /
+                        <a id="good-topics-btn" href="javascript:void(0);" class="popular"><i class="fa fa-diamond"></i> 优质帖子</a> /
+                        <a id="noreply-topics-btn" href="javascript:void(0);">无人问津</a>
+                    </div>
+                </div>
+                <div class="panel-body" id="topics-body"></div><!-- topics -->
+                <div class="panel-footer clearfix" id="pagebar" style="display:none;"></div><!-- page bar -->
+            </div>
+
+            <!-- <div class="panel panel-default">
+                <div class="panel-heading">热门城市</div>
+                <div class="panel-body location-list" style="text-align:center;">
+                     <span class="name"><a href="/users/city/%E5%8C%97%E4%BA%AC">北京</a></span>
+                     <span class="name"><a href="/users/city/%E4%B8%8A%E6%B5%B7">上海</a></span>
+                     <span class="name"><a href="/users/city/%E6%9D%AD%E5%B7%9E">杭州</a></span>
+                     <span class="name"><a href="/users/city/%E6%B7%B1%E5%9C%B3">深圳</a></span>
+                     <span class="name"><a href="/users/city/%E5%B9%BF%E5%B7%9E">广州</a></span>
+                </div>
+            </div> -->
+        </div>
+        <div class="sidebar col-md-3">
+            <!--{% if diff_days < 3 then %}-->
+            <!--<div class="panel panel-default">-->
+                <!--<div class="panel-heading">新手必读</div>-->
+                <!--<div class="panel-body">-->
+                    <!--<p>为提高社区质量，防止新注册用户一来就发帖提问问题，新用户需要达到下面条件才可发帖：</p>-->
+                    <!--<ul style="color:#ad2b2d;list-style:none;padding-left:8px;font-size:12px;">-->
+                        <!--<li>注册时间超过3天</li>-->
+                        <!--{% if locals and locals.create_time then%}-->
+                        <!--<li>您注册于{{locals.create_time}}</li>-->
+                        <!--{% end %}-->
+                    <!--</ul>-->
+                    <!--<p>请在新人阶段多浏览，看看其他老用户是如何在社区里面分享与解决问题的。</p>-->
+                    <!--</p>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--{% end %}-->
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="wx-mp-txt" style="text-align: center;">微信<span style="color: blue;">扫一扫关注</span>公众号</h4>
+                </div>
+                <ul class="list-group" style="text-align:center">
+                    <li class="list-group-item">
+                        <a href="https://ruby-china.org" target="_blank" rel="nofollow">
+                            <img src="/static/img/wx-mp-qrcode.jpg" style="width: 120px; margin: 0px 0;">
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!--<div class="panel panel-default">-->
+                <!--<div class="panel-heading">推荐 OpenResty 资源</div>-->
+                <!--<ul class="list-group">-->
+                    <!--<li class="list-group-item"><a href="https://moonbingbing.gitbooks.io/openresty-best-practices/content/" target="_blank" rel="nofollow">OpenResty最佳实践电子书</a>-->
+                    <!--</li>-->
+                    <!--<li class="list-group-item"><a href="https://github.com/sumory/lor">本站框架 Lor Framework</a>-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</div>-->
+            <!--<div class="panel panel-default">-->
+                <!--<div class="panel-heading">统计信息</div>-->
+                <!--<ul class="list-group">-->
+                    <!--<li class="list-group-item">社区会员: {{user_count}} 人</li>-->
+                    <!--<li class="list-group-item">文章数: {{topic_count}} 个</li>-->
+                    <!--<li class="list-group-item">评论数: {{comment_count}} 条</li>-->
+                <!--</ul>-->
+            <!--</div>-->
+        </div>
+    </div>
+</div>
+
+{(footer.html)}
+
+
+<script id="topic-item-tpl" type="text/template">
+
+    {@each topics as topic}
+        {@if topic.mediaId == 1 }
+           {(cell/news.html)}
+        {@else if topic.mediaId == 2 }
+           {(cell/video.html)}
+        {@else}
+           {(cell/topic.html)}
+        {@/if}
+    {@/each}
+</script>
+<script src="/static/js/index.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var current_category = "{{current_category}}";
+        var nav = "nav-index";
+        if(current_category == "0"){
+            nav = "nav-index";
+        }else if(current_category == "1"){
+            nav = "nav-share";
+        }else if(current_category == "2"){
+            nav = "nav-ask";
+        }
+        APP.Common.resetNav(nav);
+        APP.Index.init(current_category);
+
+    });
+</script>
+</body>
+</html>

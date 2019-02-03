@@ -134,7 +134,9 @@ function makeOrderContents( ... )
             	if hits[index] then
             		-- _source = hits[index]._source
             		_source = meta_dao:get(hits[index]._id)
-            		_source.id = hits[index]._id
+            		if _source then
+            		   _source.id = hits[index]._id
+            		end
             	end
             else
             	local destIndex = index - keepCount
