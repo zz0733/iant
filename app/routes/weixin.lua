@@ -87,8 +87,7 @@ weixin_router:post("/msgcb", function(req, res, next)
         xml_doc = xmlParser:ParseXmlText(decrypt_body)
         xml_node = xml_doc.xml;
     end
-    --    local from_user = xml_node.FromUserName:ownValue()
-    --    local to_user = xml_node.ToUserName:ownValue()
+
     local content = xml_node.Content:ownValue()
     local resp
     if content then
@@ -198,19 +197,21 @@ weixin_router:post("/msgcb", function(req, res, next)
     else
         msg_content = "💗亲爱的，你发的剧名可能不对或暂时没有收录(可以去后台留言哟)。\n每日最新最全更新,更多免费资源尽在狸猫资讯\nhttp://www.lezomao.com?r=mp\n 感谢您的关注 么么哒😘"
     end
-    log(ERR, "from_user:", from_user)
-    log(ERR, "to_user:", to_user)
-    log(ERR, "msgid:", msgid)
-    log(ERR, "req.content:", content)
-    log(ERR, "resp.msg_count:", tostring(msg_count))
+
     local timestamp = ngx.time()
     local xml_msg = context.WX_REPLY_TEMPLATE;
+    local from_user = xml_node.FromUserName:ownValue()
+    local to_user = xml_node.ToUserName:ownValue()
     xml_msg = ngx_re_sub(xml_msg, "{MsgType}", "text");
     xml_msg = ngx_re_sub(xml_msg, "{fromUser}", to_user);
     xml_msg = ngx_re_sub(xml_msg, "{toUser}", from_user);
     xml_msg = ngx_re_sub(xml_msg, "{createTime}", timestamp);
     xml_msg = ngx_re_sub(xml_msg, "{content}", msg_content);
     -- log(ERR,"xml_msg:",xml_msg)
+    log(ERR, "from_user:", from_user)
+    log(ERR, "to_user:", to_user)
+    log(ERR, "req.content:", content)
+    log(ERR, "resp.msg_count:", tostring(msg_count))
     if origin_xml_node.Encrypt then
         local encrypt_xml_template = '<xml><ToUserName><![CDATA[{toUser}]]></ToUserName><Encrypt><![CDATA[{encrypt}]]></Encrypt><MsgSignature><![CDATA[{msgsignature}]]></MsgSignature><TimeStamp>{timestamp}</TimeStamp><Nonce><![CDATA[{nonce}]]></Nonce></xml>';
         local encrypt_xml = wxcrypt.encrypt(xml_msg, aseKey)
