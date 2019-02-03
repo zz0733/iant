@@ -148,12 +148,12 @@ function topic_model:get_all(topic_type, category, page_no, page_size)
         table.insert(must_arr, {
             exists = { field = "issueds" }
         })
-        table.insert(must_arr, {
-            match = { albumId = "1462395459" }
-        })
-        table.insert(must_arr, {
-            match = { _id = "17903652696774212526" }
-        })
+--        table.insert(must_arr, {
+--            match = { albumId = "1462395459" }
+--        })
+--        table.insert(must_arr, {
+--            match = { _id = "17903652696774212526" }
+--        })
         body = {
             from = from,
             size = page_size,
