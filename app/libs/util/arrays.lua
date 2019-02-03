@@ -1,4 +1,4 @@
-local util_table = require "util.table"
+local util_table = require "app.libs.util.table"
 local cjson_safe = require "cjson.safe"
 local _M = util_table.new_table(0, 1)
 _M._VERSION = '0.01'
