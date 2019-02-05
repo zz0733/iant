@@ -110,7 +110,7 @@ function ESClient:bulk_docs(docs, configs)
             ["_id"] = id
         }
         es_body[#es_body + 1] = cmd_doc
-        val.id = nil
+        --        val.id = nil
         val[self.bulk_cmd_field] = nil
         if not val.ctime then
             val.ctime = ngx.time()
@@ -320,7 +320,7 @@ end
 function ESClient:statusErr(status, statusOk)
     status = tonumber(status)
     statusOk = tonumber(statusOk) or 200
---    string.error("status:", status, "statusOk:", statusOk)
+    --    string.error("status:", status, "statusOk:", statusOk)
     local errs
     if status and (status ~= statusOk) then
         err = "statusErr:" .. tostring(status)

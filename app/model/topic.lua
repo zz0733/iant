@@ -4,6 +4,7 @@ local table_util = require("app.libs.util.table")
 local topic_es = require("app.libs.es.topic")
 local topic_ssdb = require("app.libs.ssdb.topic")
 local status_ssdb = require("app.libs.ssdb.status")
+local channel_ssdb = require("app.libs.ssdb.channel")
 
 local status_model = require("app.model.status")
 
@@ -144,6 +145,7 @@ function topic_model:get_all(topic_type, category, page_no, page_size)
             }
         }
     else
+
         local must_arr = {}
         table.insert(must_arr, {
             exists = { field = "issueds" }
