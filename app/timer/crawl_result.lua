@@ -7,8 +7,8 @@ local util_table = require("app.libs.util.table")
 local handlers = require("app.libs.handler.handlers")
 local ssdb_result = require "app.libs.ssdb.result"
 
-local max_delay = 30
-local min_delay = 1 -- in seconds
+local max_delay = 60
+local min_delay = 5 -- in seconds
 
 local LIMIT_SIZE = 2
 local MAX_GC_MEM = 6000
