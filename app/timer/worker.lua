@@ -13,10 +13,8 @@ end
 
 function _M:trigger(premature)
     if premature then
-        log(ERR, "trigger timer1")
         return
     end
-    log(ERR, "trigger timer2")
     if self:can_run() then
         self:run()
     end
@@ -24,7 +22,6 @@ function _M:trigger(premature)
 end
 
 function _M:run()
-    log(ERR, "run timer")
 end
 
 function _M:can_run()
