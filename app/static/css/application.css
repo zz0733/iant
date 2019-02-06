@@ -1794,7 +1794,7 @@ a.like-action {
 
 .video-inner .video-box {
     background-color: #999;
-    height: 224px;
+    height: 90%;
 }
 
 .video-inner .title-box {
@@ -1804,6 +1804,10 @@ a.like-action {
     padding-bottom: 10px;
     display: block;
     max-height: 52px;
+}
+
+#topic-body .video-inner {
+    height: 328px;
 }
 
 .media-head-right {
