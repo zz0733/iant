@@ -15,7 +15,7 @@ local ERR = ngx.ERR
 local _M = worker_timer:new({
     name = "build_channel",
     loop = true,
-    delay = 1, -- in seconds
+    delay = 30, -- in seconds
 })
 _M._VERSION = '0.01'
 

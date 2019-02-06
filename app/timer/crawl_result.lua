@@ -57,7 +57,7 @@ function _M:run()
     ngx.update_time()
     local cost = (ngx.now() - start)
     cost = tonumber(string.format("%.3f", cost))
-    log(ERR, "ssdb_result_keys,limit:" .. LIMIT_SIZE .. ",data:" .. #resultArr .. ",cost:" .. cost .. ",gc:" .. gcMem)
+    log(ERR, "crawl_result,limit:" .. LIMIT_SIZE .. ",data:" .. #resultArr .. ",cost:" .. cost .. ",gc:" .. gcMem)
 end
 
 return _M
