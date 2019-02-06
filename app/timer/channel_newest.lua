@@ -1,5 +1,5 @@
 if not (0 == ngx.worker.id()) then
-    return
+    return { do_loop = function() end }
 end
 
 local cjson_safe = require("cjson.safe")
