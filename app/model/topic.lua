@@ -1,5 +1,7 @@
 local utils = require("app.libs.utils")
 local cjson_safe = require("cjson.safe")
+local bit = require("bit")
+
 local table_util = require("app.libs.util.table")
 local topic_es = require("app.libs.es.topic")
 local topic_ssdb = require("app.libs.ssdb.topic")
@@ -74,8 +76,8 @@ function topic_model:save_if_absent(source)
     local err_count = 0
     for _, v in pairs(source_array) do
         local bexists = topic_ssdb:exists(v.id)
-        bexists = false
-        ngx.log(ngx.ERR, "topic_ssdb:exists:" .. tostring(bexists) .. ",val:" .. cjson_safe.encode(v))
+        --        bexists = false
+        --        ngx.log(ngx.ERR, "topic_ssdb:exists:" .. tostring(bexists) .. ",val:" .. cjson_safe.encode(v))
         if not bexists then
             local _, es_status = topic_es:save(v)
             local es_err = topic_es:statusErr(es_status)
@@ -118,6 +120,32 @@ function topic_model:get(id)
     return topic_dict, err
 end
 
+local random_get = function(topic_arr, topic_dict, limit, channel)
+    if topic_arr and not table_util.is_array(topic_arr) then
+        topic_arr = topic_arr.topics
+    end
+    if not topic_arr then
+        return
+    end
+    math.randomseed(os.time())
+    local hit_size = #topic_arr / 2
+    for _, iv in ipairs(topic_arr) do
+        if limit >= #topic_arr or (math.random(#topic_arr) < hit_size) then
+            local has_topic = topic_dict[iv.id]
+            if has_topic then
+                has_topic.channel = has_topic.channel or 0
+                has_topic.channel = has_topic.channel + bit.lshift(1, channel)
+            else
+                iv.channel = bit.lshift(1, channel)
+                topic_dict[iv.id] = iv
+            end
+            limit = limit - 1
+        end
+        if limit < 1 then
+            break
+        end
+    end
+end
 
 function topic_model:get_all(topic_type, category, page_no, page_size)
     page_no = tonumber(page_no)
@@ -126,9 +154,10 @@ function topic_model:get_all(topic_type, category, page_no, page_size)
     if page_no < 1 then
         page_no = 1
     end
+    local topic_dict = {}
 
-    local res, status
     local from = (page_no - 1) * page_size
+    local res, status
     local body
     if sortId ~= 0 then
         local must_arr = {}
@@ -145,17 +174,19 @@ function topic_model:get_all(topic_type, category, page_no, page_size)
             }
         }
     else
+        local newest_ssdb = channel_ssdb:get("newest")
+        random_get(newest_ssdb, topic_dict, 5, 1)
 
         local must_arr = {}
         table.insert(must_arr, {
             exists = { field = "issueds" }
         })
---        table.insert(must_arr, {
---            match = { albumId = "1462395459" }
---        })
---        table.insert(must_arr, {
---            match = { _id = "17903652696774212526" }
---        })
+        --        table.insert(must_arr, {
+        --            match = { albumId = "1462395459" }
+        --        })
+        --        table.insert(must_arr, {
+        --            match = { _id = "17903652696774212526" }
+        --        })
         body = {
             from = from,
             size = page_size,
@@ -169,22 +200,47 @@ function topic_model:get_all(topic_type, category, page_no, page_size)
     res, status = topic_es:search(body)
     local err = topic_es:statusErr(status)
     local id_arr = topic_es:response_to_ids(res)
-    local topic_dict = topic_ssdb:multi_get(id_arr)
-    local status_dict = status_ssdb:multi_get(id_arr)
+    local query_arr = {}
+    for index, ival in ipairs(id_arr) do
+        local topic = {}
+        topic.id = ival
+        topic.score = index
+        table.insert(query_arr, topic)
+    end
+
+    random_get(query_arr, topic_dict, #query_arr, 2)
     local topic_arr = {}
-    if topic_dict then
-        for tk, v in pairs(topic_dict) do
-            local status_obj = status_dict[tk]
+    for _, channel in pairs(topic_dict) do
+        table.insert(topic_arr, channel)
+    end
+    table.sort(topic_arr, function(a, b)
+        if a.score ~= b.score then
+            return b.score > a.score
+        end
+        return a.channel > b.channel
+    end)
+    local id_arr = {}
+
+    for index = 1, math.min(page_size, #topic_arr), 1 do
+        table.insert(id_arr, topic_arr[index].id)
+    end
+
+    local topic_ssdb_dict = topic_ssdb:multi_get(id_arr)
+    local status_ssdb_dict = status_ssdb:multi_get(id_arr)
+    local topic_dest_arr = {}
+    if topic_ssdb_dict then
+        for tk, v in pairs(topic_ssdb_dict) do
+            local status_obj = status_ssdb_dict[tk]
             if status_obj then
                 for sk, sv in pairs(status_obj) do
                     v[sk] = sv
                 end
             end
             wrap_topic(v)
-            table.insert(topic_arr, v)
+            table.insert(topic_dest_arr, v)
         end
     end
-    return topic_arr, err
+    return topic_dest_arr, err
 end
 
 

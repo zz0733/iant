@@ -41,16 +41,19 @@ function _M:run()
     if status_err then
         log(ERR, "build_newest, status:" .. tostring(status_err))
     else
-        local id_arr = {}
+        local topic_arr = {}
         if resp and resp.hits and resp.hits.hits then
             for _, v in ipairs(resp.hits.hits) do
-                table.insert(id_arr, v._id)
+                local topic = {}
+                topic.id = v._id
+                topic.score = #topic_arr + 1
+                table.insert(topic_arr, topic)
             end
         end
         local channel = {}
-        channel.id_arr = id_arr
-        log(ERR, "build_newest:" .. tostring(#id_arr) .. ",val:" .. cjson_safe.encode(channel))
-        if #id_arr > 0 then
+        channel.topics = topic_arr
+        log(ERR, "build_newest:" .. tostring(#topic_arr) .. ",val:" .. cjson_safe.encode(channel))
+        if #topic_arr > 0 then
             channel_ssdb:set("newest", channel)
         end
     end

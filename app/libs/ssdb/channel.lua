@@ -1,7 +1,7 @@
 local ssdb_client = require "app.libs.ssdb.client"
 
 local template = {
-    id_arr = { "id" }
+    topics = { { id = "id" } }
 }
 
 local _M = ssdb_client:new({
