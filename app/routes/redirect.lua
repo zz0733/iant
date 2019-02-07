@@ -1,16 +1,20 @@
-local cjson_safe = require("cjson.safe")
 local lor = require("lor.index")
 
 local redirectRouter = lor:Router()
 
-local log = ngx.log
-local ERR = ngx.ERR
-local CRIT = ngx.CRIT
+local to_topic_id = function(uri)
+    if not uri then
+        return
+    end
+    local m = ngx.re.match(uri, '/movie/detail/([0-9]{3,})', 'ijo')
+    if m then
+        return m[1]
+    end
+end
 
-
-redirectRouter:get("/detail/:topic_id.html", function(req, res, next)
-    local topic_id = req.params.topic_id
-    res:redirect("/topic/" .. topic_id .. "/view?mediaId=2")
+redirectRouter:get("/detail/:suffix", function(req, res, next)
+    local topic_id = to_topic_id(req.path)
+    res:redirect("/topic/" .. topic_id .. "/view?mediaId=1")
 end)
 
 

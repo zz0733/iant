@@ -29,7 +29,6 @@ local function check_login(whitelist)
         end
 
         local islogin, user = is_login(req)
-
         if in_white_list then
             res.locals.login = islogin
             res.locals.username = user and (user.nickname or user.username)

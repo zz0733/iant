@@ -20,6 +20,12 @@ comments_router:get("/all", function(req, res, next)
     local total_count = 1
     local total_page = utils.total_page(total_count, page_size)
     local comments = {}
+    local current_user_id
+    if req and req.session then
+        local user = req.session.get("user")
+        current_user_id = (user and user.userid) or 0
+    end
+
 
 
     res:json({
@@ -30,7 +36,7 @@ comments_router:get("/all", function(req, res, next)
             currentPage = page_no,
             comments = comments,
             base = (page_no - 1) * page_size,
-            current_user_id = tonumber(req.session.get("user").userid) or 0
+            current_user_id = current_user_id
         }
     })
 end)
