@@ -30,6 +30,7 @@ function status_model:save_by_crawler(source)
                     save_source[key] = v[key]
                 end
             end
+            save_source.userId = save_source.userId or v.userId or "0"
             local _, es_status = status_es:save(save_source)
             local es_err = status_es:statusErr(es_status)
             if es_err then

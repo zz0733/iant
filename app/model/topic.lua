@@ -39,7 +39,12 @@ local wrap_topic = function(topic)
     end
     topic.avatar = "https://icdn.lezomao.com/img/154x100/f177ccc60abdc1ce.jpg"
     topic.user_name = "user_name"
-    topic.is_good = 1
+    topic.userId = topic.userId or "0"
+    if topic.userId == "0" then
+        topic.user_name = "狸猫"
+    else
+        topic.is_good = 1
+    end
 end
 
 local add_topic_status = function(dest_arr, topic, status_dict, limit, dest_dict)
@@ -101,6 +106,7 @@ function topic_model:save_if_absent(source)
         --        bexists = false
         --        ngx.log(ngx.ERR, "topic_ssdb:exists:" .. tostring(bexists) .. ",val:" .. cjson_safe.encode(v))
         if not bexists then
+            v.userId = v.userId or "0"
             local _, es_status = topic_es:save(v)
             local es_err = topic_es:statusErr(es_status)
             if es_err then
