@@ -15,7 +15,7 @@ table.insert(parser_arr, "https://okjx.lrkdzx.com/?url=")
 table.insert(parser_arr, "https://www.wocao.xyz/index.php?url=")
 table.insert(parser_arr, "https://api.7kki.cn/api/?url=")
 table.insert(parser_arr, "https://api.927.la/vip/?url=")
-table.insert(parser_arr, "https://dd.tt-hk.cn/beac.php?url=")
+--table.insert(parser_arr, "https://dd.tt-hk.cn/beac.php?url=")  -- 低俗广告
 
 local select_parser = function(url)
     if not url or string.match(url, "%.mp4") or string.match(url, "%.m3u8") then
