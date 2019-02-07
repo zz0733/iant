@@ -1,9 +1,9 @@
 <div class="header">
     <nav class="navbar navbar-inverse navbar-static-top navbar-default">
         <div class="container">
-            <div class="navbar-header" id="navbar-header"> 
+            <div class="navbar-header" id="navbar-header">
                 <a href="/" class="navbar-brand"><b>狸猫</b>资讯</a>
-            </div> 
+            </div>
 
             <span>
               <ul class="nav navbar-nav" id="main-nav-menu">
@@ -13,37 +13,46 @@
                   <li id="nav-about" class=""><a href="/about">关于</a></li>
               </ul>
             </span>
- 
+
             <ul class="nav user-bar navbar-nav navbar-right">
+
+                {%if locals and locals.login and locals.login == true and locals.role <= 2 then%}
+                <li><a href="/auth/sign_up">注册</a></li>
+                {% end %}
                 {%
-                    if locals and locals.login and locals.login == true then
+                if locals and locals.login and locals.login == true then
                 %}
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{ locals.username }} 
-                    <span class="caret"></span>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">{{
+                        locals.username }}
+                        <span class="caret"></span>
                     </a>
- 
-                    <button class="navbar-toggle" type="button" data-toggle="dropdown" role="button" aria-expanded="false"> 
+
+                    <button class="navbar-toggle" type="button" data-toggle="dropdown" role="button"
+                            aria-expanded="false">
                         <span class="sr-only">Toggle</span>
                         <i class="fa fa-reorder"></i>
                     </button>
                     <ul class="dropdown-menu" role="menu">
-                        <li class=""><a href="/user/{{locals.username}}/index">我的主页</a></li>
-                        <li class=""><div class="divider"></div></li>
+                        <li class=""><a href="/user/{{locals.userid}}/index">我的主页</a></li>
+                        <li class="">
+                            <div class="divider"></div>
+                        </li>
                         <li class=""><a href="/settings">个人设置</a></li>
                         <li class=""><a href="/topic/new">发布新文章</a></li>
-                        <li class=""><div class="divider"></div></li>
+                        <li class="">
+                            <div class="divider"></div>
+                        </li>
                         <li class=""><a rel="nofollow" href="/auth/logout">退出</a></li>
                     </ul>
                 </li>
 
                 {% else %}
-                    <li><a href="/auth/sign_up">注册</a></li>
                     <li><a href="/auth/login">登录</a></li>
                 {% end %}
             </ul>
 
-            
+
             <ul class="nav navbar-nav navbar-right">
                 <!-- <li class="nav-search hidden-xs">
                     <form class="navbar-form form-search active" action="/search" method="GET">
@@ -52,14 +61,14 @@
                         </div> <i class="fa btn-search fa-search"></i>
                     </form>
                 </li> -->
-                <li class="notification-count" id="notification-area"> 
+                <li class="notification-count" id="notification-area">
                     <a href="/notification/" class="" title="通知">
                         <i class="fa fa-bell"></i>
                         <span class="count"></span>
                     </a>
                 </li>
             </ul>
-            
+
         </div>
     </nav>
 </div>

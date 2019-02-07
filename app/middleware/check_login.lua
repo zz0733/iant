@@ -32,16 +32,19 @@ local function check_login(whitelist)
 
         if in_white_list then
             res.locals.login = islogin
-            res.locals.username = user and user.username
+            res.locals.username = user and (user.nickname or user.username)
             res.locals.userid = user and user.userid
             res.locals.create_time = user and user.create_time
+            res.locals.role = user and user.role
             next()
         else
             if islogin then
                 res.locals.login = true
-                res.locals.username = user.username
+                res.locals.username = (user.nickname or user.username)
                 res.locals.userid = user.userid
                 res.locals.create_time = user.create_time
+                res.locals.role = user.role
+                string.error("locals:", res.locals)
                 next()
             else
                 if sfind(req.headers["Accept"], "application/json") then

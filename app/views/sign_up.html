@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OpenResty China 社区 &raquo; 注册</title>
-  {(meta.html)}
+    <title>狸猫资讯 &raquo; 注册</title>
+    {(meta.html)}
 </head>
 <body data-controller-name="sessions">
 {(header.html)}
@@ -20,7 +20,14 @@
                             <input type="text" class="form-control" placeholder="用户名" name="username">
                         </div>
 
-                       
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="昵称" name="nickname">
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="普通用户" value="3" name="role">
+                        </div>
+
                         <div class="form-group">
                             <input class="form-control" placeholder="密码" type="password" name="password">
                         </div>
@@ -41,65 +48,77 @@
                 </div>
             </div>
         </div>
-        
+
     </div>
 </div>
 
 {(footer.html)}
 
 <script type="text/javascript">
-    $(document).ready(function(){
-        $("#sign-up-btn").click(function(){
-            var username =$("input[name=username]").val();
+    $(document).ready(function () {
+        $("#sign-up-btn").click(function () {
+            var username = $("input[name=username]").val();
+            var nickname = $("input[name=nickname]").val();
             var password = $("input[name=password]").val();
-            var password_confirm= $("input[name=password_confirm]").val();
+            var role = $("input[name=role]").val();
+
+            var password_confirm = $("input[name=password_confirm]").val();
 
             $("#tip").hide();
 
             var pattern = /^[A-Za-z][A-Za-z0-9_]+$/;
-            if(!username || username.length<4 || username.length>50 || !username.match(pattern)) {
+            if (!username || username.length < 4 || username.length > 50 || !username.match(pattern)) {
                 $("#tip div").text("用户名为4~50位, 只能输入字母、下划线、数字，必须以字母开头.");
                 $("#tip").show();
                 return;
             }
 
-            if(!password || password.length<6 || password.length>50){
+            var nickReg = /^[A-Za-z0-9_\u4e00-\u9fa5]{2,10}$/;
+            if (!nickname || nickname.trim().length < 2 || nickname.trim().length > 10 || !nickname.match(nickReg)) {
+                $("#tip div").text("昵称为2~10位, 只能输入字母、下划线、数字、中文");
+                $("#tip").show();
+                return;
+            }
+
+            if (!password || password.length < 6 || password.length > 50) {
                 $("#tip div").text("密码长度须为6~50位!");
                 $("#tip").show();
                 return;
             }
 
-            if(password!==password_confirm){
+            if (password !== password_confirm) {
                 $("#tip div").text("两次输入的密码不一样!");
                 $("#tip").show();
                 return;
             }
 
             $.ajax({
-                url : '/auth/sign_up',
-                type : 'post',
-                data : {
+                url: '/auth/sign_up',
+                type: 'post',
+                data: {
                     username: username,
+                    nickname: nickname,
+                    role: role,
                     password: hex_md5(password + APP.pwd_secret),
                 },
-                dataType : 'json',
-                success : function(result) {
-                    if(result.success){
+                dataType: 'json',
+                success: function (result) {
+                    if (result.success) {
                         var count = 5;
-                        setInterval(function(){
+                        setInterval(function () {
                             count = count - 1;
-                            $("#tip div").removeClass("alert-danger").addClass("alert-info").text("注册成功，将跳转至登录页面! "+count+"秒.");
+                            $("#tip div").removeClass("alert-danger").addClass("alert-info").text("注册成功，将跳转至登录页面! " + count + "秒.");
                             $("#tip").show();
-                            if(count==0){
-                                 window.location.href="/login";
+                            if (count == 0) {
+                                window.location.href = "/auth/login";
                             }
                         }, 1000);
-                    }else{
+                    } else {
                         $("#tip div").text(result.msg);
                         $("#tip").show();
                     }
                 },
-                error : function() {
+                error: function () {
                     $("#tip div").text("注册请求出错!");
                     $("#tip").show();
                 }

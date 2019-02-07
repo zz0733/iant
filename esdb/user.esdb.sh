@@ -3,7 +3,6 @@
 curl -XPUT http://localhost:9200/user_v1
 
 
-
 curl -XPUT http://localhost:9200/user_v1/_settings?pretty -d '
 {
   "index": {
@@ -11,45 +10,20 @@ curl -XPUT http://localhost:9200/user_v1/_settings?pretty -d '
   }
 }
 '
+
 curl -XPUT 'http://localhost:9200/user_v1/_mapping/table?pretty' -d '
 {
+   "_all": {
+        "enabled": false
+   },
    "_source": {
-        "enabled": true
+      "enabled": false
   },
-  "include_in_all": false,
-  "properties": {
-    "role": {
-      "type": "integer"
-    },
-    "name": {
-      "type": "keyword"
-    },
-    "pwd": {
-      "type": "keyword"
-    },
-    "phone": {
-      "type": "keyword"
-    },
-    "email": {
-      "type": "keyword"
-    },
-    "avatar": {
-      "type": "keyword"
-    },
-    "family": {
-      "type": "keyword"
-    },
-    "ctime": {
-      "type": "date"
-    },
-    "utime": {
-      "type": "date"
-    }
-  }
+  "include_in_all": false
 }
 '
 
 #取别名
-curl -XPUT http://localhost:9200/user_v1/_alias/user 
+curl -XPUT http://localhost:9200/user_v1/_alias/user
 # curl -XGET http://localhost:9200/user_v1/_alias/*
 # curl -XGET http://localhost:9200/*/_alias/user

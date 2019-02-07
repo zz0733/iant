@@ -12,7 +12,7 @@ local resty_sha256 = require "resty.sha256"
 local str = require "resty.string"
 local ngx_quote_sql_str = ngx.quote_sql_str
 
-   
+
 
 local _M = {}
 
@@ -66,7 +66,7 @@ function _M.total_page(total_count, page_size)
     if total_count % page_size == 0 then
         total_page = total_count / page_size
     else
-        local tmp, _ = mmodf(total_count/page_size)
+        local tmp, _ = mmodf(total_count / page_size)
         total_page = tmp + 1
     end
 
@@ -80,10 +80,9 @@ function _M.days_after_registry(req)
 
     if req and req.session then
         local user = req.session.get("user")
-        local create_time = user and user.create_time
-        if create_time then
+        if user and user.create_time then
             local now = date() -- seconds
-            create_time = date(create_time)
+            local create_time = date(user.create_time)
             diff = date.diff(now, create_time):spandays()
             diff_days = mfloor(diff)
         end
@@ -104,12 +103,12 @@ end
 
 
 function _M.string_split(str, delimiter)
-    if str==nil or str=='' or delimiter==nil then
+    if str == nil or str == '' or delimiter == nil then
         return nil
     end
-    
+
     local result = {}
-    for match in (str..delimiter):gmatch("(.-)"..delimiter) do
+    for match in (str .. delimiter):gmatch("(.-)" .. delimiter) do
         tinsert(result, match)
     end
     return result
