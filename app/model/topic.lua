@@ -41,6 +41,27 @@ local wrap_topic = function(topic)
     topic.is_good = 1
 end
 
+local add_topic_status = function(dest_arr, topic, status_dict, limit, dest_dict)
+    if not topic or (#dest_arr >= limit) then
+        return false
+    end
+    if dest_dict and dest_dict[topic.id] then
+        return false
+    end
+    local status_obj = status_dict[topic.id]
+    if status_obj then
+        for sk, sv in pairs(status_obj) do
+            topic[sk] = sv
+        end
+    end
+    wrap_topic(topic)
+    table.insert(dest_arr, topic)
+    dest_dict[topic.id] = true
+    if #dest_arr >= limit then
+        return true
+    end
+end
+
 local topic_model = {}
 
 
@@ -241,6 +262,100 @@ function topic_model:get_all(topic_type, category, page_no, page_size)
         end
     end
     return topic_dest_arr, err
+end
+
+function topic_model:get_relateds(title, albumId, epindex, page_size)
+    page_size = tonumber(page_size)
+    epindex = tonumber(epindex)
+
+    local must_arr = {}
+    if albumId then
+        table.insert(must_arr, { match = { albumId = albumId } })
+    end
+    if epindex then
+        local min_index = epindex - 1
+        table.insert(must_arr, { range = { epindex = { gte = min_index } } })
+    end
+    if #must_arr < 1 then
+        table.insert(must_arr, { match = { title = title } })
+    end
+    local body = {
+        size = 0,
+        query = {
+            bool = {
+                must = must_arr
+            }
+        },
+        aggs = {
+            min_epindex = {
+                top_hits = {
+                    size = "3",
+                    sort = { { epindex = { order = "asc" } } }
+                }
+            },
+            max_epindex = {
+                top_hits = {
+                    size = page_size,
+                    sort = { { epindex = { order = "desc" } } }
+                }
+            }
+        }
+    }
+    res, status = topic_es:search(body)
+
+    local es_err = topic_es:statusErr(status)
+    local min_id_arr = topic_es:response_to_ids(res)
+    local id_arr = {}
+    local id_dict = {}
+    local min_id_arr = {}
+    local max_id_arr = {}
+    if res and res.aggregations then
+        min_id_arr = topic_es:response_to_ids(res.aggregations.min_epindex)
+        max_id_arr = topic_es:response_to_ids(res.aggregations.max_epindex)
+        for _, min_id in ipairs(min_id_arr) do
+            if not id_dict[min_id] then
+                table.insert(id_arr, min_id)
+                id_dict[min_id] = true
+            end
+        end
+        for _, max_id in ipairs(max_id_arr) do
+            if not id_dict[max_id] then
+                table.insert(id_arr, max_id)
+                id_dict[max_id] = true
+            end
+        end
+    end
+
+    local topic_ssdb_dict = topic_ssdb:multi_get(id_arr)
+    local status_ssdb_dict = status_ssdb:multi_get(id_arr)
+    local topic_dest_arr = {}
+    if topic_ssdb_dict then
+        local album_arr = {}
+        local remain_arr = {}
+        local dest_dict = {}
+        for _, min_id in ipairs(min_id_arr) do
+            local min_topic = topic_ssdb_dict[min_id]
+            if epindex and min_topic and min_topic.epindex == epindex then
+                min_topic = nil
+            end
+            add_topic_status(topic_dest_arr, min_topic, topic_ssdb_dict, page_size, dest_dict)
+        end
+
+        for _, max_id in ipairs(max_id_arr) do
+            local max_topic = topic_ssdb_dict[max_id]
+            add_topic_status(topic_dest_arr, max_topic, topic_ssdb_dict, page_size, dest_dict)
+        end
+    end
+    table.sort(topic_dest_arr, function(a, b)
+        if not a.epindex then
+            return false
+        end
+        if not b.epindex then
+            return true
+        end
+        return a.epindex > b.epindex
+    end)
+    return topic_dest_arr, es_err
 end
 
 

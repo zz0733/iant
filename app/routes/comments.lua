@@ -13,11 +13,15 @@ comments_router:get("/all", function(req, res, next)
     local topic_id = req.query.topic_id
     local page_size = topic_comment_page_size
 
-    local total_count = comment_model:get_total_count_of_topic(topic_id)
-    local total_page = utils.total_page(total_count, page_size)
-    local comments = comment_model:get_all_of_topic(topic_id, page_no, page_size)
+    --    local total_count = comment_model:get_total_count_of_topic(topic_id)
+    --    local total_page = utils.total_page(total_count, page_size)
+    --    local comments = comment_model:get_all_of_topic(topic_id, page_no, page_size)
 
-  
+    local total_count = 1
+    local total_page = utils.total_page(total_count, page_size)
+    local comments = {}
+
+
     res:json({
         success = true,
         data = {

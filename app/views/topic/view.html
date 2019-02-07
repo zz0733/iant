@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>OpenResty China社区 &raquo;</title>
+    <title>狸猫资讯 &raquo;</title>
     {(meta.html)}
     <link rel="stylesheet" media="screen" href="/static/css/jquery.fileupload.css"/>
     <link rel="stylesheet" media="screen" href="/static/css/jquery.fileupload-ui.css"/>
@@ -15,7 +15,11 @@
         <div class="col-md-9">
             <div id="topic-body" class="topic-detail panel panel-default" style="display:none;">
             </div><!-- topic body stop -->
-
+            <div id="topic-related" class="panel panel-default" style="display:none;">
+                <div class="items panel-body">
+                    <div id="relateds-body"></div>
+                </div>
+            </div>
 
             <!--评论-->
             <div id="replies" class="panel panel-default" style="display:none;">
@@ -247,6 +251,18 @@
             </span>
         </div>
     </div>
+</script>
+
+<script id="topic-related-tpl" type="text/template">
+    {@each relateds as topic}
+    {@if topic.mediaId == 1 }
+    {(cell/news.html)}
+    {@else if topic.mediaId == 2 }
+    {(cell/video.html)}
+    {@else}
+    {(cell/topic.html)}
+    {@/if}
+    {@/each}
 </script>
 
 <script id="comment-item-tpl" type="text/template">

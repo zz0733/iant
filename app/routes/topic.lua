@@ -1,5 +1,3 @@
-local pairs = pairs
-local ipairs = ipairs
 local utils = require("app.libs.utils")
 local lor = require("lor.index")
 local topic_model = require("app.model.topic")
@@ -7,6 +5,8 @@ local collect_model = require("app.model.collect")
 local like_model = require("app.model.like")
 local status_model = require("app.model.status")
 local topic_router = lor:Router()
+local cjson_safe = require("cjson.safe")
+
 
 local function isself(req, uid)
     local result = false
@@ -114,6 +114,27 @@ topic_router:get("/:topic_id/query", function(req, res, next)
             }
         })
     end
+end)
+
+topic_router:get("/:topic_id/relateds", function(req, res, next)
+    local topicId = req.params.topic_id
+    if not topicId then
+        return res:json({
+            success = false,
+            msg = "要查询的文章id参数不能为空."
+        })
+    end
+    local page_size = 5
+    local title = req.query.title
+    local albumId = req.query.albumId
+    local epindex = req.query.epindex
+    local related_arr = topic_model:get_relateds(title, albumId, epindex, page_size)
+    res:json({
+        success = true,
+        data = {
+            relateds = related_arr
+        }
+    })
 end)
 
 

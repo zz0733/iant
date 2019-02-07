@@ -11,6 +11,7 @@ local notification_router = require("app.routes.notification")
 local error_router = require("app.routes.error")
 local crawler_router = require("app.routes.crawler")
 local weixin_router = require("app.routes.weixin")
+local redirect_router = require("app.routes.redirect")
 
 
 
@@ -28,6 +29,7 @@ return function(app)
 
     app:use("/notification", notification_router())
     app:use("/upload", upload_router())
+    app:use("/movie", redirect_router())
 
 
     app:get("/", common_router.index)
