@@ -15,6 +15,7 @@ table.insert(parser_arr, "https://okjx.lrkdzx.com/?url=")
 table.insert(parser_arr, "https://www.wocao.xyz/index.php?url=")
 table.insert(parser_arr, "https://api.7kki.cn/api/?url=")
 table.insert(parser_arr, "https://api.927.la/vip/?url=")
+table.insert(parser_arr, "https://dd.tt-hk.cn/beac.php?url=")
 
 local select_parser = function(url)
     if not url or string.match(url, "%.mp4") or string.match(url, "%.m3u8") then
@@ -343,6 +344,9 @@ function topic_model:get_relateds(title, albumId, epindex, page_size)
 
         for _, max_id in ipairs(max_id_arr) do
             local max_topic = topic_ssdb_dict[max_id]
+            if epindex and max_topic and max_topic.epindex == epindex then
+                max_topic = nil
+            end
             add_topic_status(topic_dest_arr, max_topic, topic_ssdb_dict, page_size, dest_dict)
         end
     end
