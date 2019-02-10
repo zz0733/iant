@@ -8,13 +8,12 @@
     <div class="infos media-body">
         <div class="title media-heading single-mode-box">
             <a class="news-title" title="${topic.title}" href="/topic/${topic.id}/view">${topic.title}</a>
-            <!-- <i class="fa fa-thumb-tack" title="置顶"></i> -->
             {@if t.is_good==1 }
             <i title="精华帖" class="fa fa-diamond"></i>
             {@/if}
         </div>
         <div class="info">
-            <a href="/user/${topic.user_name}/index" target="_blank"
+            <a href="/user/${topic.userId}/index" target="_blank"
                class="node-action bar-action source">&nbsp;${topic.user_name}&nbsp;⋅</a>
             <a href="/topic/${topic.id}/comment" target="_blank"
                class="node-action bar-action source">&nbsp;155评论&nbsp;⋅</a>
