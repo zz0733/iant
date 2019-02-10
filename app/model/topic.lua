@@ -36,6 +36,7 @@ local wrap_topic = function(topic)
     topic.poster = "https://icdn.lezomao.com/img/154x100/f177ccc60abdc1ce.jpg"
     if topic.digests then
         topic.poster = topic.digests[1]
+        topic.poster = ngx.re.sub(topic.poster, "[%.]webp", ".jpg")
     end
     topic.avatar = "https://icdn.lezomao.com/img/154x100/f177ccc60abdc1ce.jpg"
     topic.user_name = "user_name"
