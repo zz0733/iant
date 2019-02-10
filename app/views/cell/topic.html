@@ -1,7 +1,7 @@
 <div class="topic media">
     <div class="avatar media-left">
-        <a href="/user/${topic.user_name}/index">
-            <img class="media-object avatar-48" src="/static/avatar/${topic.avatar}">
+        <a href="/user/${topic.userId}/index">
+            <img class="media-object avatar-48" src="${topic.poster}">
         </a>
     </div>
     <div class="infos media-body">
@@ -17,7 +17,7 @@
             {@if topic.category_id!=0}
             <a class="node" href="/category/${topic.category_id}">${topic.category_name}</a> •
             {@/if}
-            &nbsp;<a href="/user/${topic.user_name}/index">${topic.user_name}</a> 发布于 ${topic.create_time}
+            &nbsp;<a href="/user/${topic.userId}/index">${topic.user_name}</a> 发布于 ${topic.create_time}
             • ${topic.view_num} 次浏览
             {@if topic.last_reply_id!=0}
             <span class="hidden-mobile">

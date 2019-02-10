@@ -2,7 +2,6 @@ local cjson_safe = require "cjson.safe"
 local table_util = require "app.libs.util.table"
 local ESClient = require "app.libs.es.client"
 
-
 local _M = ESClient:new({
     index = "topic",
     type = "table",
