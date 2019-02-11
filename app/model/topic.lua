@@ -205,19 +205,23 @@ function topic_model:get_all(topic_type, category, page_no, page_size)
     else
         local newest_ssdb = channel_ssdb:get("newest")
         random_get(newest_ssdb, topic_dict, 5, 1)
-
+        local sort_arr = {}
+        table.insert(sort_arr, {
+            utime = { sort = "desc" }
+        })
         local must_arr = {}
         table.insert(must_arr, {
             exists = { field = "issueds" }
         })
-        --        table.insert(must_arr, {
-        --            match = { albumId = "1462395459" }
-        --        })
+        table.insert(must_arr, {
+            match = { mediaId = "2" }
+        })
         --        table.insert(must_arr, {
         --            match = { _id = "17903652696774212526" }
         --        })
         body = {
             from = from,
+            sort = sort_arr,
             size = page_size,
             query = {
                 bool = {
@@ -236,8 +240,11 @@ function topic_model:get_all(topic_type, category, page_no, page_size)
         topic.score = index
         table.insert(query_arr, topic)
     end
-
+    local newest_size = table_util.size(topic_dict)
     random_get(query_arr, topic_dict, #query_arr, 2)
+    local sum_size = table_util.size(topic_dict)
+    local es_size = sum_size - newest_size
+    string.error("recmd.newest:", newest_size, "es:", es_size, "sum:", sum_size)
     local topic_arr = {}
     for _, channel in pairs(topic_dict) do
         table.insert(topic_arr, channel)
