@@ -4,8 +4,10 @@ local lor = require("lor.index")
 local config = require("app.config.config")
 local reponse_time_middleware = require("app.middleware.response_time")
 local powered_by_middleware = require("app.middleware.powered_by")
+local cookie_middleware = require("lor.lib.middleware.cookie")
 local session_middleware = require("lor.lib.middleware.session")
 local check_login_middleware = require("app.middleware.check_login")
+local check_cookie_middleware = require("app.middleware.check_cookie")
 local uploader_middleware = require("app.middleware.uploader")
 local router = require("app.router")
 local whitelist = config.whitelist
@@ -25,6 +27,8 @@ app:use(reponse_time_middleware({
     suffix = true
 }))
 
+app:use(cookie_middleware())
+
 app:use(session_middleware({
     secret = config.session_secret, -- 必须修改此值
     session_key = "_sid_"
@@ -35,6 +39,7 @@ app:use(session_middleware({
 
 -- intercepter: login or not
 app:use(check_login_middleware(whitelist))
+app:use(check_cookie_middleware())
 -- uploader
 app:use(uploader_middleware({
     dir = upload_config.dir
