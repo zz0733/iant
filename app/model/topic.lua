@@ -46,6 +46,14 @@ local wrap_topic = function(topic)
     else
         topic.is_good = 1
     end
+    if topic.cost then
+        local minute = source.cost / 60
+        local hour = minute / 60
+        topic.cost_str = math.modf(hour) .. ":" .. math.fmod(minute, 60) .. ":00"
+    end
+    topic.like = topic.like and 0
+    topic.comment = topic.comment and 0
+    topic.latest_comment_str = "刚刚"
 end
 
 local add_topic_status = function(dest_arr, topic, status_dict, limit, dest_dict)

@@ -2,13 +2,13 @@
     <div class="avatar media-left">
         <a href="/user/${topic.userId}/index">
             <img class="media-object avatar-154x100" src="${topic.poster}">
-            <i class="video-cost"> <span>2:12:00</span> </i>
+            <i class="video-cost"> <span>${topic.cost_str}</span> </i>
         </a>
     </div>
     <div class="infos media-body">
         <div class="title media-heading single-mode-box">
             <a class="news-title" title="${topic.title}" href="/topic/${topic.id}/view">${topic.title}</a>
-            {@if t.is_good==1 }
+            {@if topic.is_good==1 }
             <i title="精华帖" class="fa fa-diamond"></i>
             {@/if}
         </div>
@@ -16,14 +16,14 @@
             <a href="/user/${topic.userId}/index" target="_blank"
                class="node-action bar-action source">&nbsp;${topic.user_name}&nbsp;⋅</a>
             <a href="/topic/${topic.id}/comment" target="_blank"
-               class="node-action bar-action source">&nbsp;155评论&nbsp;⋅</a>
-            <span class="hidden-mobile bar-action">&nbsp;34分钟前</span>
+               class="node-action bar-action source">&nbsp;${topic.comment}评论&nbsp;⋅</a>
+            <span class="hidden-mobile bar-action">&nbsp;${topic.latest_comment_str}</span>
         </div>
     </div>
     <div class="like media-right">
         <a class="text-center like-action active" data-id="${topic.id}" href="javascript:void(0);">
             <i class="fa fa-heart" aria-hidden="true"> </i>
-            <div class="like-count">1000</div>
+            <div class="like-count">${topic.like}</div>
         </a>
     </div>
 </div>
