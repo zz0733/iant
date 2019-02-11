@@ -46,6 +46,7 @@ local wrap_topic = function(topic)
     else
         topic.is_good = 1
     end
+    topic.cost = topic.cost or topic.duration
     if topic.cost then
         local minute = topic.cost / 60
         local hour = minute / 60
