@@ -51,10 +51,10 @@ local wrap_topic = function(topic)
         local hour = minute / 60
         topic.cost_str = math.modf(hour) .. ":" .. math.fmod(minute, 60) .. ":00"
     end
-    if topic.like then
+    if not topic.like then
         topic.like = 0
     end
-    if topic.comment then
+    if not topic.comment then
         topic.comment = 0
     end
     topic.latest_comment_str = "刚刚"
