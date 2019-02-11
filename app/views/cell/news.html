@@ -2,7 +2,9 @@
     <div class="avatar media-left">
         <a href="/user/${topic.userId}/index">
             <img class="media-object avatar-154x100" src="${topic.poster}">
+            {@if topic.cost_str }
             <i class="video-cost"> <span>${topic.cost_str}</span> </i>
+            {@/if}
         </a>
     </div>
     <div class="infos media-body">
