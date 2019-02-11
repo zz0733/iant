@@ -76,7 +76,7 @@ function _M.isNull(val)
 end
 
 function _M.size(val)
-    local size = size
+    local size = 0
     if (val == nil) or (val == ngx.null) then
         return size
     end
