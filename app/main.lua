@@ -53,7 +53,8 @@ app:erroruse(function(err, req, res, next)
 
     -- 404 error
     if req:is_found() ~= true then
-        if sfind(req.headers["Accept"], "application/json") then
+        local accept_val = req.headers["Accept"]
+        if accept_val and sfind(accept_val, "application/json") then
             res:status(404):json({
                 success = false,
                 msg = "404! sorry, not found."
@@ -62,7 +63,8 @@ app:erroruse(function(err, req, res, next)
             res:status(404):send("404! sorry, not found.")
         end
     else
-        if sfind(req.headers["Accept"], "application/json") then
+        local accept_val = req.headers["Accept"]
+        if accept_val and sfind(accept_val, "application/json") then
             res:status(500):json({
                 success = false,
                 msg = "500! server error."
