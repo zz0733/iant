@@ -26,7 +26,7 @@ function _M:run()
     local must_arr = {}
     table.insert(sort_arr, { ctime = { order = "desc" } })
     table.insert(sort_arr, { year = "desc" })
-    table.insert(must_arr, { match = { mediaId = 1}})
+    table.insert(must_arr, { match = { mediaId = 2}})
     local body = {
         size = page_size,
         sort = sort_arr,
